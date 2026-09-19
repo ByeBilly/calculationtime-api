@@ -1,0 +1,21 @@
+{
+  "name": "time-coordinate-api",
+  "version": "0.1.0",
+  "description": "Coordinate-to-local-time API using IANA timezone boundaries and server tzdb.",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test",
+    "test:api": "node --test test/api-routes.test.js",
+    "generate:openapi": "node scripts/generate-openapi.js",
+    "benchmark:api": "node scripts/benchmark-api.js"
+  },
+  "dependencies": {
+    "@photostructure/tz-lookup": "^11.6.0",
+    "astronomy-engine": "^2.1.19",
+    "fastify": "^5.10.0",
+    "luxon": "^3.7.2",
+    "pg": "^8.22.0"
+  }
+}

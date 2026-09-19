@@ -1,0 +1,734 @@
+# CalculationTime API
+
+Reliable time, date, geo, holiday, solar, astronomy, and utility calculations for apps, websites, dashboards, and AI agents.
+
+Base URL:
+
+```text
+https://api.calculationtime.com
+```
+
+The API is built around visible assumptions and auditable calculation methods. It is useful when a product needs more than a loose snippet: scheduling rules, local time, business-day windows, geospatial estimates, solar geometry, or calculation utilities that should be repeatable and explainable.
+
+## Public Demo Endpoint
+
+### `GET /v1/time/utc`
+
+Returns the API host's current UTC timestamp, Unix seconds, Unix milliseconds, and clock-accuracy wording. This is public and exists for proof/status surfaces, not as a hard SLA statement.
+
+```bash
+curl 'https://api.calculationtime.com/v1/time/utc'
+```
+
+### `GET /v1/status`
+
+Returns live service status, route-family inventory, uptime for the current API process, and measured-status wording. This endpoint deliberately reports that no public SLA is claimed yet.
+
+```bash
+curl 'https://api.calculationtime.com/v1/status'
+```
+
+### `GET /api/v1/utility/tagline`
+
+Returns one deterministic daily tagline for the current UTC date. It is public, lightweight, and edge-cacheable.
+
+```bash
+curl 'https://api.calculationtime.com/api/v1/utility/tagline'
+```
+
+Example response:
+
+```json
+{
+  "date": "2026-07-29",
+  "tagline": "Pi never repeats itself, but it keeps the circle honest.",
+  "category": "Mathematical Anomalies"
+}
+```
+
+The selected tagline is seeded by `YYYY-MM-DD` in UTC, so every user receives the same line for the same global calendar day.
+
+## API Families
+
+- Time by coordinate.
+- Geospatial calculations.
+- Date calculations.
+- Holiday/business-day helpers.
+- Solar position calculations.
+- Astronomy ephemeris calculations.
+- Account credits and usage visibility.
+- Observatory private share links.
+- Daily utility content.
+
+## Accuracy Model
+
+This API does not estimate time from longitude. It resolves the coordinate to an IANA timezone identifier using geographic timezone boundary lookup, then calculates local time with IANA timezone rules from the server runtime.
+
+This matters because real time is political as well as geographic: daylight saving rules, island territories, border towns, and historical rule changes cannot be handled by simple UTC offset math.
+
+## Time Endpoints
+
+### `GET /v1/time`
+
+Query parameters:
+
+- `lat`: latitude, `-90` to `90`.
+- `lon`: longitude, `-180` to `180`.
+- `at`: optional ISO-8601 timestamp, epoch seconds, or epoch milliseconds. Defaults to now.
+
+Example:
+
+```bash
+curl 'https://api.calculationtime.com/v1/time?lat=48.137154&lon=11.576124&at=2026-07-29T12:00:00Z' \
+  -H 'X-API-Key: your-key'
+```
+
+### `POST /v1/time/batch`
+
+Body:
+
+```json
+{
+  "at": "2026-07-12T12:00:00Z",
+  "points": [
+    { "lat": 48.137154, "lon": 11.576124 },
+    { "lat": -33.8688, "lon": 151.2093 }
+  ]
+}
+```
+
+Maximum batch size: 100 points.
+
+### `GET /health`
+
+Basic service health response. Public.
+
+### `GET /v1/canary`
+
+Protected monitoring endpoint for external uptime probes that need to verify the API-key path as well as the public health path.
+
+```bash
+curl 'https://api.calculationtime.com/v1/canary' \
+  -H 'X-API-Key: monitoring-key'
+```
+
+Use a private monitoring-only key for this endpoint. Do not place that key in public site code, public docs, screenshots, or client-side JavaScript.
+
+## Account Endpoint
+
+### `GET /v1/account/profile`
+
+Returns the authenticated customer's account identity, plan rate limit, and which account features are backed by persistent storage.
+
+```bash
+curl 'https://api.calculationtime.com/v1/account/profile' \
+  -H 'X-API-Key: your-key'
+```
+
+This is the safest endpoint for a customer dashboard or agent to verify that a key works without running a calculation.
+
+### `GET /v1/account/usage`
+
+Returns current-month usage totals and a per-route breakdown when the persistent usage database is configured.
+
+```bash
+curl 'https://api.calculationtime.com/v1/account/usage' \
+  -H 'X-API-Key: your-key'
+```
+
+If the API is running with environment-only keys, the endpoint returns `usage.configured: false` rather than inventing request history.
+
+### `GET /v1/account/limits`
+
+Returns the authenticated customer's rate limit and documented batch limits.
+
+```bash
+curl 'https://api.calculationtime.com/v1/account/limits' \
+  -H 'X-API-Key: your-key'
+```
+
+### `GET /v1/account/credits`
+
+Returns the authenticated customer's account status, rate limit, current-month request count, and API credit balance when the persistent credit ledger is configured.
+
+```bash
+curl 'https://api.calculationtime.com/v1/account/credits' \
+  -H 'X-API-Key: your-key'
+```
+
+If the API is running with environment-only keys or without the credit ledger table, the endpoint returns `credits.configured: false` and does not invent a balance.
+
+To enable database-backed credits, apply:
+
+```text
+docs/credit-ledger-schema.sql
+```
+
+## Admin Commercial Operations
+
+Admin endpoints are disabled unless `TIME_API_ADMIN_KEY` is configured on the server. They require `X-Admin-Key`; ordinary customer `X-API-Key` credentials cannot call them.
+
+### `GET /v1/admin/customers`
+
+Returns active customer accounts with active key count, rate limit, current-month usage, credit balance, trial expiry, and last request timestamp.
+
+```bash
+curl 'https://api.calculationtime.com/v1/admin/customers?limit=100' \
+  -H 'X-Admin-Key: admin-key'
+```
+
+Use `include_inactive=true` to include paused or disabled accounts.
+
+### `GET /v1/admin/customers/{customer_id}`
+
+Returns detailed customer account state, including usage, credit balance, trial expiry, and non-secret API key prefixes.
+
+```bash
+curl 'https://api.calculationtime.com/v1/admin/customers/customer_slug' \
+  -H 'X-Admin-Key: admin-key'
+```
+
+### `POST /v1/admin/customers`
+
+Creates or updates a customer account in the persistent API database.
+
+```bash
+curl 'https://api.calculationtime.com/v1/admin/customers' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Admin-Key: admin-key' \
+  -d '{"customer_id":"customer_slug","display_name":"Customer Name","rate_limit_per_minute":120,"status":"active"}'
+```
+
+### `POST /v1/admin/customers/{customer_id}/credits`
+
+Adds an append-only credit ledger event for a customer. Positive `delta` grants credits; negative `delta` records a reversal or future debit.
+
+```bash
+curl 'https://api.calculationtime.com/v1/admin/customers/customer_slug/credits' \
+  -H 'Content-Type: application/json' \
+  -H 'X-Admin-Key: admin-key' \
+  -d '{"delta":1000,"reason":"launch grant","reference":"manual:launch"}'
+```
+
+### `GET /v1/admin/customers/{customer_id}/credits`
+
+Returns the customer's current credit balance and recent credit ledger events.
+
+```bash
+curl 'https://api.calculationtime.com/v1/admin/customers/customer_slug/credits?limit=25' \
+  -H 'X-Admin-Key: admin-key'
+```
+
+## Commercial Enforcement
+
+Protected calculation endpoints are billable. Before a billable request runs, the API checks that the authenticated customer is active, has not passed a recorded trial expiry, and has a positive API-credit balance. Successful billable responses append a `-1` `billable_request` event to `calculationtime_api.credit_ledger`.
+
+Default developer onboarding is intentionally generous:
+
+- Trial length: `365` days.
+- Trial grant: `1,000,000` API credits.
+- Trial expiry is stored in credit-ledger metadata as `trial_ends_at`.
+
+Server-side onboarding command:
+
+```bash
+node scripts/onboard-trial-customer.js \
+  --customer customer_slug \
+  --name "Customer Name" \
+  --reference "source-or-sales-note"
+```
+
+The onboarding command prints the raw API key once. Store it securely outside chat, public logs, screenshots, or client-side code.
+
+Free routes remain unaffected:
+
+- `GET /`
+- `GET /health`
+- `GET /openapi.json`
+- `GET /v1/status`
+- `GET /v1/time/utc`
+- `GET /api/v1/utility/tagline`
+- Protected account visibility routes.
+- Protected monitoring canary.
+
+Commercial errors:
+
+- `403 trial_expired`: recorded trial window has lapsed.
+- `403 account_suspended`: customer status is not active.
+- `402 credits_exhausted`: credit balance is zero or below.
+
+Server-side reports:
+
+```bash
+node scripts/export-customer-summary.js
+node scripts/export-customer-summary.js --format json
+node scripts/export-customer-summary.js --format csv
+```
+
+## Observatory Share Endpoints
+
+### `POST /v1/observatory/share`
+
+Creates an unlisted private share token for Observatory/Orrery links. The response includes an expiry timestamp and a `https://calculationtime.com/observatory/share/{token}/` URL. Share responses set `X-Robots-Tag: noindex, nofollow`.
+
+```bash
+curl 'https://api.calculationtime.com/v1/observatory/share' \
+  -H 'Content-Type: application/json' \
+  -d '{"poster":"moment","date":"2026-08-01","location":{"name":"Munich","lat":48.137154,"lng":11.576124},"time":"12:00","ttl_days":30}'
+```
+
+### `GET /v1/observatory/share/{token}`
+
+Resolves a valid, unexpired token into the stored Observatory parameters. Expired or invalid tokens return `404`.
+
+## Astronomy Endpoints
+
+### `GET /v1/astronomy/ephemeris`
+
+Returns geocentric and heliocentric telemetry for the Sun, Moon, and planets on a requested UTC date or timestamp.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/ephemeris?date=2029-10-21' \
+  -H 'X-API-Key: your-key'
+```
+
+Query parameters:
+
+- `date`: ISO date or timestamp, for example `2029-10-21` or `2029-10-21T00:00:00Z`.
+
+The beta endpoint accepts dates from `1900-01-01` through `2100-12-31`. Results include astronomical-unit vectors, heliocentric distance, geocentric distance, right ascension, declination, and ecliptic longitude/latitude. It is designed as the backend feed for semantic astronomy pages and interactive orrery hydration, not as a location-specific sky visibility forecast.
+
+### `POST /v1/astronomy/crux-midnight`
+
+Returns Parkes-calibrated midnight positions for the Hand of Crux clock face. The zero reference is `2026-03-31T00:00:00+10:00` at Parkes Observatory coordinates `32.99° S, 148.26° E`.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/crux-midnight' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"start_date":"2026-03-31","days":365,"timezone":"+10:00"}'
+```
+
+Credit cost: `2`.
+
+### `POST /v1/astronomy/crux-hourly`
+
+Returns a 24-hour local-date table from `00:00` through `23:00`, using the same Parkes calibration and the sidereal hourly rate of roughly `15.041°` per solar hour.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/crux-hourly' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"date":"2026-03-31","timezone":"+10:00"}'
+```
+
+Credit cost: `5`.
+
+### `POST /v1/astronomy/crux-current`
+
+Returns the Crux hand angle for an exact timestamp, sidereal hours, and the Parkes alignment delta from the March 31, 2026 zero point. If `timestamp` is omitted, the API uses the server's current UTC time.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/crux-current' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"timestamp":"2026-04-01T00:00:00+10:00"}'
+```
+
+Credit cost: `2`.
+
+## Geospatial Endpoints
+
+### `GET /v1/geo/distance`
+
+Calculates distance and initial bearing between two coordinates.
+
+```bash
+curl 'https://api.calculationtime.com/v1/geo/distance?from_lat=48.137154&from_lon=11.576124&to_lat=52.52&to_lon=13.405' \
+  -H 'X-API-Key: your-key'
+```
+
+Returns kilometers, miles, meters, nautical miles, bearing degrees, and compass direction.
+
+### `GET /v1/geo/midpoint`
+
+Calculates the great-circle midpoint between two coordinates.
+
+```bash
+curl 'https://api.calculationtime.com/v1/geo/midpoint?from_lat=48.137154&from_lon=11.576124&to_lat=52.52&to_lon=13.405' \
+  -H 'X-API-Key: your-key'
+```
+
+### `GET /v1/geo/bounding-box`
+
+Returns a spherical-approximation bounding box around a coordinate and radius.
+
+```bash
+curl 'https://api.calculationtime.com/v1/geo/bounding-box?lat=48.137154&lon=11.576124&radius_km=50' \
+  -H 'X-API-Key: your-key'
+```
+
+### `GET /v1/geo/elevation`
+
+Returns terrain elevation for a latitude/longitude using the Open-Meteo Elevation API backed by Copernicus DEM GLO-90.
+
+```bash
+curl 'https://api.calculationtime.com/v1/geo/elevation?lat=48.137154&lon=11.576124' \
+  -H 'X-API-Key: your-key'
+```
+
+This is open-data terrain elevation, not survey-grade property elevation, building height, or tree-canopy height.
+
+## Solar Endpoints
+
+### `GET /v1/solar/position`
+
+Returns local solar geometry for a coordinate and UTC timestamp without calling a paid provider.
+
+```bash
+curl 'https://api.calculationtime.com/v1/solar/position?lat=48.137154&lon=11.576124&at=2026-07-26T12:00:00Z' \
+  -H 'X-API-Key: your-key'
+```
+
+The response includes solar azimuth, elevation, apparent elevation, zenith, hour angle, declination, equation of time, and daylight state. Terrain horizon, buildings, trees, weather, and local obstructions are not included in this endpoint.
+
+## Date Endpoints
+
+### `GET /v1/date/difference`
+
+Calculates calendar day difference.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/difference?start=2026-07-12&end=2026-08-01' \
+  -H 'X-API-Key: your-key'
+```
+
+### `GET /v1/date/add`
+
+Adds years, months, weeks, and days to a date.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/add?start=2026-07-12&months=1&days=5' \
+  -H 'X-API-Key: your-key'
+```
+
+### `POST /v1/date/business-days`
+
+Counts business days between two dates, excluding Saturdays, Sundays, and optional holiday dates.
+
+```json
+{
+  "start": "2026-07-12",
+  "end": "2026-07-31",
+  "holidays": ["2026-07-20"]
+}
+```
+
+## API Keys
+
+## Financial, Statistical, And Payroll Endpoints
+
+These endpoints are protected and billable. They use strict JSON validation and return `400` errors for malformed payloads.
+
+Credit weights:
+
+- Standard finance/payroll math: 1-2 credits.
+- Dataset summary: 3 credits.
+- Loan amortization schedule: 5 credits.
+
+### `POST /v1/finance/margin-markup`
+
+Calculates gross profit, margin percentage, markup percentage, selling price from target margin/markup, and cost variance.
+
+```bash
+curl 'https://api.calculationtime.com/v1/finance/margin-markup' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"cost":60,"selling_price":100,"actual_cost":66}'
+```
+
+Example response fields:
+
+```json
+{
+  "gross_profit": 40,
+  "gross_margin_percent": 40,
+  "markup_percent": 66.6667
+}
+```
+
+Credit cost: `1`.
+
+### `POST /v1/finance/loan-amortization`
+
+Generates a fixed-rate payment schedule with per-period principal, interest, payment, and remaining balance, plus annual totals.
+
+```bash
+curl 'https://api.calculationtime.com/v1/finance/loan-amortization' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"principal":250000,"annual_interest_rate_percent":6.25,"term_months":360}'
+```
+
+Credit cost: `5`.
+
+### `POST /v1/finance/tax-extraction`
+
+Calculates tax add-on and reverse tax-inclusive extraction across line items and tax rates.
+
+```bash
+curl 'https://api.calculationtime.com/v1/finance/tax-extraction' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"amounts":[{"label":"VAT inclusive","amount":120,"tax_rate_percent":20,"mode":"inclusive"},{"label":"GST exclusive","amount":100,"tax_rate_percent":10,"mode":"exclusive"}]}'
+```
+
+Credit cost: `2`.
+
+### `POST /v1/finance/freelancer-rate`
+
+Calculates required revenue, hourly rate, daily rate, and weekly revenue target from income, expenses, tax overhead, and billable capacity.
+
+```bash
+curl 'https://api.calculationtime.com/v1/finance/freelancer-rate' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"target_annual_income":80000,"annual_expenses":20000,"tax_overhead_percent":25,"billable_weeks":40,"billable_hours_per_week":25}'
+```
+
+Credit cost: `2`.
+
+### `POST /v1/stats/summary`
+
+Returns count, min, max, sum, mean, median, modes, population/sample variance, population/sample standard deviation, and quartiles.
+
+```bash
+curl 'https://api.calculationtime.com/v1/stats/summary' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"values":[1,2,2,4,9]}'
+```
+
+Credit cost: `3`.
+
+### `POST /v1/payroll/decimal-hours`
+
+Converts clock parts to decimal hours, or decimal hours back to clock parts. Includes optional overtime multiplier output.
+
+```bash
+curl 'https://api.calculationtime.com/v1/payroll/decimal-hours' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"hours":1,"minutes":30,"seconds":0,"overtime_multiplier":1.5}'
+```
+
+Reverse conversion:
+
+```bash
+curl 'https://api.calculationtime.com/v1/payroll/decimal-hours' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"decimal_hours":2.75}'
+```
+
+Credit cost: `1`.
+
+## Tradie Accounting Endpoints
+
+These endpoints are built for accounting teams serving trade clients such as painters, builders, decorators, electricians, and subcontractors. They are protected, billable, and return clean `400` validation errors for malformed JSON.
+
+Credit weights:
+
+- Simple claim/deduction math: 1-2 credits.
+- VAT summaries, depreciation schedules, and invoice aging: 3 credits.
+
+### `POST /v1/tradie/job-margin`
+
+Calculates quote profitability from labour, materials, subcontractor costs, overhead, and quoted price.
+
+```bash
+curl 'https://api.calculationtime.com/v1/tradie/job-margin' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"labour_hours":40,"labour_rate":35,"materials_cost":600,"subcontractor_cost":300,"overhead_percent":10,"quoted_price":3200}'
+```
+
+Example response fields:
+
+```json
+{
+  "total_cost": 2530,
+  "gross_profit": 670,
+  "gross_margin_percent": 20.9375
+}
+```
+
+Credit cost: `2`.
+
+### `POST /v1/tradie/vat-return-summary`
+
+Summarizes sales output VAT and purchase input VAT, including mixed inclusive and exclusive line items.
+
+```bash
+curl 'https://api.calculationtime.com/v1/tradie/vat-return-summary' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"sales":[{"amount":1200,"tax_rate_percent":20,"mode":"inclusive"}],"purchases":[{"amount":300,"tax_rate_percent":20,"mode":"exclusive"}]}'
+```
+
+Credit cost: `3`.
+
+### `POST /v1/tradie/cis-deduction`
+
+Models a UK CIS-style deduction from labour after materials are excluded.
+
+```bash
+curl 'https://api.calculationtime.com/v1/tradie/cis-deduction' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"gross_labour":1000,"materials":200,"deduction_rate_percent":20}'
+```
+
+Credit cost: `2`.
+
+### `POST /v1/tradie/mileage-claim`
+
+Calculates a business mileage claim, unreimbursed amount, and any reimbursed excess.
+
+```bash
+curl 'https://api.calculationtime.com/v1/tradie/mileage-claim' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"miles":120,"rate_per_mile":0.45,"reimbursed_amount":20}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/tradie/tool-depreciation`
+
+Generates a straight-line depreciation schedule for trade tools and equipment, adjusted for business use.
+
+```bash
+curl 'https://api.calculationtime.com/v1/tradie/tool-depreciation' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"purchase_price":1200,"salvage_value":200,"useful_life_years":5,"business_use_percent":80}'
+```
+
+Credit cost: `3`.
+
+### `POST /v1/tradie/invoice-aging`
+
+Buckets unpaid invoices into current, 1-30, 31-60, 61-90, and 90+ day aging bands.
+
+```bash
+curl 'https://api.calculationtime.com/v1/tradie/invoice-aging' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"as_of":"2026-09-30","invoices":[{"invoice_id":"INV-1","customer":"Painter A","due_date":"2026-09-15","amount":1000,"paid_amount":200}]}'
+```
+
+Credit cost: `3`.
+
+Set `TIME_API_KEYS` to a comma-separated list of accepted keys. Clients may send either:
+
+- `Authorization: Bearer <key>`
+- `X-API-Key: <key>`
+
+Most calculation endpoints require an API key on the public service. Public demo and health endpoints do not.
+
+Keys can optionally be scoped as `customer_id:key-value` so rate limits and usage logs can identify the customer without logging the secret.
+
+## Webhooks
+
+Heavy successful calculations can optionally notify a tenant-owned HTTPS endpoint. The current event group is:
+
+```text
+calculation.heavy.completed
+```
+
+Eligible routes:
+
+- `POST /v1/finance/loan-amortization`
+- `POST /v1/finance/tax-extraction`
+- `POST /v1/stats/summary`
+- `POST /v1/tradie/vat-return-summary`
+- `POST /v1/tradie/tool-depreciation`
+- `POST /v1/tradie/invoice-aging`
+
+Register or update a tenant webhook with the admin key:
+
+```bash
+curl -X PUT 'https://api.calculationtime.com/v1/admin/customers/taxserve-demo/webhooks' \
+  -H 'X-Admin-Key: admin-key' \
+  -H 'Content-Type: application/json' \
+  -d '{"event_type":"calculation.heavy.completed","destination_url":"https://integrator.example/webhooks/calculationtime","status":"active"}'
+```
+
+Webhook payloads include event id, event type, customer id, route, method, status code, duration, and credit cost. Delivery is non-blocking: a webhook timeout or remote error is logged but does not fail the customer's calculation response.
+
+## CORS
+
+Browser access is deliberately allowlisted, not wildcarded. The default allowed origins are:
+
+- `https://www.calculationtime.com`
+- `https://calculationtime.com`
+- `https://buildaiops.com`
+- `http://localhost:3000`
+- `http://127.0.0.1:3000`
+
+Override with `CORS_ORIGINS` as a comma-separated list when staging or production origins change.
+
+## Rate Limiting
+
+Set `RATE_LIMIT_PER_MINUTE` to control basic in-process rate limiting. The default is `120` requests per minute per customer. Set `TIME_API_CUSTOMER_RATE_LIMITS` to a JSON object such as `{"customer_a":240}` for customer-specific limits. Set the default to `0` only behind a stronger gateway-level limiter.
+
+## Deterministic Cache
+
+Set `TIME_API_CACHE=memory` for the default in-process cache, `TIME_API_CACHE=off` to disable it, or `TIME_API_CACHE=redis` only after Redis is deliberately provisioned and `REDIS_URL` is configured.
+
+The API does not cache current-time responses where `at` is omitted. It can cache deterministic inputs such as explicit timestamp coordinate conversions, date calculations, business-day calculations, distance, midpoint, and bounding-box results.
+
+## Logging
+
+The Fastify HTTP layer emits structured request logs with route, status, latency, customer id, API key fingerprint, and cache status. It avoids logging request bodies, query inputs, or raw API keys.
+
+## Use Cases
+
+CalculationTime API is useful for:
+
+- Local time and timezone-aware scheduling.
+- Payroll, billing, SLA, and deadline windows.
+- Business-day and holiday-aware planning.
+- Field-service distance/radius checks.
+- Delivery, dispatch, and branch proximity tools.
+- Solar angle, outdoor-work, and education prototypes.
+- Astronomy and time explainer pages.
+- AI-agent workflows that need repeatable calculation calls.
+
+## Commercial Notes
+
+This API is suitable for scheduling, compliance timestamps, logistics, CRM records, remote workforce tools, event planning, travel, billing cutoffs, and time-sensitive customer notifications.
+
+Geospatial endpoints are suitable for territory checks, routing estimates, field-service assignment, delivery radius filters, branch proximity tools, and customer segmentation. They are not a replacement for surveyed legal boundaries or turn-by-turn routing engines.
+
+Date endpoints are suitable for billing windows, SLA calculations, business-day estimates, subscription periods, due dates, and payroll-like date workflows. Jurisdiction-specific holidays should be supplied by the client or a future jurisdiction-holiday module.
+
+Public commercial usage should account for:
+
+- API keys per customer.
+- Rate limits per customer.
+- Usage logging without storing unnecessary personal data.
+- SLA wording tied to IANA timezone database freshness.
+- Versioned response schema.
+- Monitoring and external uptime checks.
+
+## Example Files
+
+Internal example pack:
+
+```text
+/root/.openclaw/workspace/ops/calculationtime/promotion/api-examples/
+```
+
+That pack contains curl, Node.js, Python, and agent-integration notes.
