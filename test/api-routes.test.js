@@ -920,6 +920,70 @@ test('holiday business-day endpoint merges jurisdiction holidays into business-d
   assert.equal(response.json().method, 'business_days_with_rule_generated_public_holidays_beta');
 });
 
+test('phase 2 date routes expose pure math endpoint suite with one-credit costs', async () => {
+  const debits = [];
+  const keyStore = {
+    async findByKey() {
+      return {
+        customerId: 'customer_a',
+        planId: 'database',
+        rateLimitPerMinute: 240,
+        keyFingerprint: 'ct_live_test',
+        authenticated: true
+      };
+    },
+    async checkBillableAccess(_customerId, options) {
+      return { balance: 1000, required: options.creditCost };
+    },
+    async debitBillableRequest(_customerId, event) {
+      debits.push([event.route, event.creditCost]);
+    },
+    async recordUsage() {}
+  };
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_CACHE: 'memory'
+    },
+    keyStore,
+    logger: false
+  });
+  const headers = { 'x-api-key': 'test-key' };
+  const requests = [
+    ['/v1/date/business-days-add', { start: '2026-07-13', business_days: 5, holidays: ['2026-07-15'] }, 'result_date'],
+    ['/v1/date/iso-week', { date: '2026-01-01' }, 'iso_week'],
+    ['/v1/date/age-breakdown', { birth_date: '2000-01-01', as_of: '2026-01-02T03:04:05Z' }, 'age'],
+    ['/v1/date/countdown-precise', { start: '2026-09-21T00:00:00Z', end: '2027-01-01T12:30:15Z' }, 'delta'],
+    ['/v1/date/epoch-converter', { epoch: 946684800, unit: 'seconds' }, 'iso_utc'],
+    ['/v1/date/quarter-calculator', { date: '2026-09-21', fiscal_start_month: 4 }, 'calendar_quarter'],
+    ['/v1/date/leap-year-check', { year: 1900 }, 'gregorian'],
+    ['/v1/date/days-in-month', { year: 2028, month: 2 }, 'days_in_month'],
+    ['/v1/date/timezone-offset', { timestamp: '2026-09-21T00:00:00Z', offset: '+10:00' }, 'local_timestamp'],
+    ['/v1/date/calendar-range', { start: '2026-09-21', days: 3 }, 'dates']
+  ];
+
+  for (const [url, payload, marker] of requests) {
+    const response = await app.inject({ method: 'POST', url, headers, payload });
+    assert.equal(response.statusCode, 200, url);
+    assert.notEqual(response.json()[marker], undefined, url);
+  }
+  await app.close();
+
+  for (const [url] of requests) {
+    assert.equal(debits.some(([route, cost]) => route === url && cost === 1), true, url);
+  }
+});
+
+test('status advertises phase 2 date route inventory', async () => {
+  const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
+  const response = await app.inject('/v1/status');
+  await app.close();
+
+  const date = response.json().endpoint_families.find((family) => family.family === 'date');
+  assert.ok(date.routes.includes('POST /v1/date/business-days-add'));
+  assert.ok(date.routes.includes('POST /v1/date/calendar-range'));
+});
+
 test('holiday is-business-day endpoint identifies public holidays', async () => {
   const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
   const response = await app.inject('/v1/holidays/is-business-day?country=AU&date=2026-01-26');

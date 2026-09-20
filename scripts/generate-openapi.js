@@ -40,6 +40,47 @@ const routes = [
     end: '2026-07-17',
     jurisdiction: 'US'
   }),
+  billablePost('/v1/date/business-days-add', 'Add or subtract configurable business days', 1, {
+    start: '2026-07-13',
+    business_days: 10,
+    weekend_days: [6, 7],
+    holidays: ['2026-07-20']
+  }),
+  billablePost('/v1/date/iso-week', 'ISO week number, week-year, and weekday', 1, {
+    date: '2026-01-01'
+  }),
+  billablePost('/v1/date/age-breakdown', 'Exact age duration breakdown from birth date to timestamp', 1, {
+    birth_date: '1990-05-15',
+    as_of: '2026-09-21T00:00:00Z'
+  }),
+  billablePost('/v1/date/countdown-precise', 'Precise calendar delta between timestamps', 1, {
+    start: '2026-09-21T00:00:00Z',
+    end: '2027-01-01T12:30:15Z'
+  }),
+  billablePost('/v1/date/epoch-converter', 'Unix epoch seconds or milliseconds to ISO/RFC strings', 1, {
+    epoch: 1789941600,
+    unit: 'seconds'
+  }),
+  billablePost('/v1/date/quarter-calculator', 'Calendar and fiscal quarter with progress percentage', 1, {
+    date: '2026-09-21',
+    fiscal_start_month: 4
+  }),
+  billablePost('/v1/date/leap-year-check', 'Gregorian and Julian leap-year proof check', 1, {
+    year: 2028
+  }),
+  billablePost('/v1/date/days-in-month', 'Days in a Gregorian month', 1, {
+    year: 2028,
+    month: 2
+  }),
+  billablePost('/v1/date/timezone-offset', 'Fixed UTC offset conversion without DST lookup', 1, {
+    timestamp: '2026-09-21T00:00:00Z',
+    offset: '+10:00'
+  }),
+  billablePost('/v1/date/calendar-range', 'Generate a deterministic date range with weekday and ISO week facts', 1, {
+    start: '2026-09-21',
+    days: 14,
+    weekend_days: [6, 7]
+  }),
   billableGet('/v1/holidays', 'Holidays for a jurisdiction and year', ['jurisdiction', 'year']),
   billableGet('/v1/holidays/next', 'Next holiday for a jurisdiction', ['jurisdiction', 'from']),
   billableGet('/v1/holidays/is-business-day', 'Business-day check for one date', ['jurisdiction', 'date']),

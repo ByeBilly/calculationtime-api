@@ -9,7 +9,22 @@ import { createKeyStore } from './key-store.js';
 import { getTimeForCoordinate } from './time-service.js';
 import { batchDistanceBetweenPoints, boundingBox, distanceBetweenPoints, midpointBetweenPoints } from './geo-service.js';
 import { elevationForCoordinate } from './elevation-service.js';
-import { addToDate, batchDateDifference, businessDays, dateDifference } from './date-service.js';
+import {
+  addToDate,
+  ageBreakdown,
+  batchDateDifference,
+  businessDays,
+  businessDaysAdd,
+  calendarRange,
+  countdownPrecise,
+  dateDifference,
+  daysInMonth,
+  epochConverter,
+  isoWeek,
+  leapYearCheck,
+  quarterCalculator,
+  timezoneOffset
+} from './date-service.js';
 import {
   businessDaysInJurisdiction,
   holidaysForYear,
@@ -68,7 +83,23 @@ const ENDPOINT_FAMILIES = [
   },
   {
     family: 'date',
-    routes: ['GET /v1/date/difference', 'POST /v1/date/difference/batch', 'GET /v1/date/add', 'POST /v1/date/business-days', 'POST /v1/date/business-days/jurisdiction']
+    routes: [
+      'GET /v1/date/difference',
+      'POST /v1/date/difference/batch',
+      'GET /v1/date/add',
+      'POST /v1/date/business-days',
+      'POST /v1/date/business-days/jurisdiction',
+      'POST /v1/date/business-days-add',
+      'POST /v1/date/iso-week',
+      'POST /v1/date/age-breakdown',
+      'POST /v1/date/countdown-precise',
+      'POST /v1/date/epoch-converter',
+      'POST /v1/date/quarter-calculator',
+      'POST /v1/date/leap-year-check',
+      'POST /v1/date/days-in-month',
+      'POST /v1/date/timezone-offset',
+      'POST /v1/date/calendar-range'
+    ]
   },
   {
     family: 'holiday',
@@ -707,6 +738,46 @@ export async function buildServer({
     const input = request.body || {};
     return cached(request, reply, 'date.business_days_jurisdiction', input, () => businessDaysInJurisdiction(input));
   });
+
+  app.post('/v1/date/business-days-add', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.business_days_add', request.body || {}, () => businessDaysAdd(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/iso-week', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.iso_week', request.body || {}, () => isoWeek(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/age-breakdown', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.age_breakdown', request.body || {}, () => ageBreakdown(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/countdown-precise', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.countdown_precise', request.body || {}, () => countdownPrecise(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/epoch-converter', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.epoch_converter', request.body || {}, () => epochConverter(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/quarter-calculator', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.quarter_calculator', request.body || {}, () => quarterCalculator(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/leap-year-check', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.leap_year_check', request.body || {}, () => leapYearCheck(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/days-in-month', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.days_in_month', request.body || {}, () => daysInMonth(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/timezone-offset', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.timezone_offset', request.body || {}, () => timezoneOffset(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/date/calendar-range', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'date.calendar_range', request.body || {}, () => calendarRange(request.body || {}), deterministicCache(604_800))
+  ));
 
   app.get('/v1/holidays', billableRoute(), async (request, reply) => (
     cached(request, reply, 'holidays.year', request.query, () => holidaysForYear(request.query))

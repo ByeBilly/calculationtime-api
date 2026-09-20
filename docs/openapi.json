@@ -469,6 +469,505 @@
         }
       }
     },
+    "/v1/date/business-days-add": {
+      "post": {
+        "summary": "Add or subtract configurable business days",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "start": "2026-07-13",
+                "business_days": 10,
+                "weekend_days": [
+                  6,
+                  7
+                ],
+                "holidays": [
+                  "2026-07-20"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/iso-week": {
+      "post": {
+        "summary": "ISO week number, week-year, and weekday",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "date": "2026-01-01"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/age-breakdown": {
+      "post": {
+        "summary": "Exact age duration breakdown from birth date to timestamp",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "birth_date": "1990-05-15",
+                "as_of": "2026-09-21T00:00:00Z"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/countdown-precise": {
+      "post": {
+        "summary": "Precise calendar delta between timestamps",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "start": "2026-09-21T00:00:00Z",
+                "end": "2027-01-01T12:30:15Z"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/epoch-converter": {
+      "post": {
+        "summary": "Unix epoch seconds or milliseconds to ISO/RFC strings",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "epoch": 1789941600,
+                "unit": "seconds"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/quarter-calculator": {
+      "post": {
+        "summary": "Calendar and fiscal quarter with progress percentage",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "date": "2026-09-21",
+                "fiscal_start_month": 4
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/leap-year-check": {
+      "post": {
+        "summary": "Gregorian and Julian leap-year proof check",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "year": 2028
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/days-in-month": {
+      "post": {
+        "summary": "Days in a Gregorian month",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "year": 2028,
+                "month": 2
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/timezone-offset": {
+      "post": {
+        "summary": "Fixed UTC offset conversion without DST lookup",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "timestamp": "2026-09-21T00:00:00Z",
+                "offset": "+10:00"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/date/calendar-range": {
+      "post": {
+        "summary": "Generate a deterministic date range with weekday and ISO week facts",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "start": "2026-09-21",
+                "days": 14,
+                "weekend_days": [
+                  6,
+                  7
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/holidays": {
       "get": {
         "summary": "Holidays for a jurisdiction and year",

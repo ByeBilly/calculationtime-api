@@ -556,6 +556,118 @@ Counts business days between two dates, excluding Saturdays, Sundays, and option
 }
 ```
 
+### `POST /v1/date/business-days-add`
+
+Adds or subtracts business days from a start date with configurable weekend weekdays and optional holidays.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/business-days-add' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"start":"2026-07-13","business_days":10,"weekend_days":[6,7],"holidays":["2026-07-20"]}'
+```
+
+### `POST /v1/date/iso-week`
+
+Returns ISO week-year, ISO week number, weekday number, and weekday name.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/iso-week' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"date":"2026-01-01"}'
+```
+
+### `POST /v1/date/age-breakdown`
+
+Returns age as years, months, days, hours, minutes, seconds, plus total days/weeks/seconds.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/age-breakdown' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"birth_date":"1990-05-15","as_of":"2026-09-21T00:00:00Z"}'
+```
+
+### `POST /v1/date/countdown-precise`
+
+Returns precise calendar delta and total seconds/milliseconds between two ISO timestamps.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/countdown-precise' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"start":"2026-09-21T00:00:00Z","end":"2027-01-01T12:30:15Z"}'
+```
+
+### `POST /v1/date/epoch-converter`
+
+Converts Unix epoch seconds or milliseconds into ISO, RFC 2822, HTTP-date, and UTC calendar formats.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/epoch-converter' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"epoch":1789941600,"unit":"seconds"}'
+```
+
+### `POST /v1/date/quarter-calculator`
+
+Returns calendar quarter and fiscal quarter with start/end dates and progress percentage.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/quarter-calculator' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"date":"2026-09-21","fiscal_start_month":4}'
+```
+
+### `POST /v1/date/leap-year-check`
+
+Returns Gregorian and Julian leap-year booleans with a short proof statement.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/leap-year-check' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"year":2028}'
+```
+
+### `POST /v1/date/days-in-month`
+
+Returns the number of days in a Gregorian month.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/days-in-month' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"year":2028,"month":2}'
+```
+
+### `POST /v1/date/timezone-offset`
+
+Converts a UTC timestamp to a fixed UTC offset without DST or timezone-database lookup.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/timezone-offset' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"timestamp":"2026-09-21T00:00:00Z","offset":"+10:00"}'
+```
+
+### `POST /v1/date/calendar-range`
+
+Generates a deterministic date range with weekday, weekend, and ISO-week metadata.
+
+```bash
+curl 'https://api.calculationtime.com/v1/date/calendar-range' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"start":"2026-09-21","days":14,"weekend_days":[6,7]}'
+```
+
+Credit cost: `1` each. These date endpoints are pure local calendar math. They do not call external APIs, databases, holiday services, or timezone providers.
+
 ## API Keys
 
 ## Financial, Statistical, And Payroll Endpoints
