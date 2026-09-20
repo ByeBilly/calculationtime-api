@@ -742,6 +742,52 @@ curl 'https://api.calculationtime.com/v1/finance/freelancer-rate' \
 
 Credit cost: `2`.
 
+### Phase 4 Finance Utility Endpoints
+
+These endpoints are pure local arithmetic and cost `1` credit each.
+
+```bash
+curl 'https://api.calculationtime.com/v1/finance/simple-interest' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"principal":1000,"annual_rate_percent":5,"years":3}'
+
+curl 'https://api.calculationtime.com/v1/finance/compound-interest' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"principal":1000,"annual_rate_percent":5,"years":10,"compounds_per_year":12}'
+
+curl 'https://api.calculationtime.com/v1/finance/loan-amortization-summary' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"principal":250000,"annual_interest_rate_percent":6.25,"term_months":360}'
+
+curl 'https://api.calculationtime.com/v1/finance/rule-of-72' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"annual_rate_percent":6}'
+
+curl 'https://api.calculationtime.com/v1/finance/roi' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"cost":1000,"net_gain":250}'
+
+curl 'https://api.calculationtime.com/v1/finance/discount-calculator' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"original_price":120,"discount_percent":15}'
+
+curl 'https://api.calculationtime.com/v1/finance/markup-margin' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"margin_percent":40}'
+
+curl 'https://api.calculationtime.com/v1/finance/break-even' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"fixed_costs":10000,"price_per_unit":50,"variable_cost_per_unit":30}'
+
+curl 'https://api.calculationtime.com/v1/finance/salestax' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"amount":120,"tax_rate_percent":20,"mode":"inclusive"}'
+
+curl 'https://api.calculationtime.com/v1/finance/cagr' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"beginning_value":1000,"ending_value":1500,"years":5}'
+```
+
 ### `POST /v1/stats/summary`
 
 Returns count, min, max, sum, mean, median, modes, population/sample variance, population/sample standard deviation, and quartiles.
@@ -776,6 +822,32 @@ curl 'https://api.calculationtime.com/v1/payroll/decimal-hours' \
 ```
 
 Credit cost: `1`.
+
+## Health And Practical Body Math Endpoints
+
+These endpoints are protected, billable, and cost `1` credit each. They are arithmetic support tools, not medical advice.
+
+```bash
+curl 'https://api.calculationtime.com/v1/health/bmi' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"unit":"metric","weight_kg":70,"height_cm":175}'
+
+curl 'https://api.calculationtime.com/v1/health/bmr' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"unit":"metric","weight_kg":70,"height_cm":175,"age":35,"sex":"male"}'
+
+curl 'https://api.calculationtime.com/v1/health/tdee' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"unit":"metric","weight_kg":70,"height_cm":175,"age":35,"sex":"male","activity_level":"moderate"}'
+
+curl 'https://api.calculationtime.com/v1/health/macro-split' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"calories":2000,"protein_percent":30,"carbs_percent":40,"fat_percent":30}'
+
+curl 'https://api.calculationtime.com/v1/health/pace-calculator' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"distance":5,"unit":"km","minutes":25}'
+```
 
 ## Tradie Accounting Endpoints
 

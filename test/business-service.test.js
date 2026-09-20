@@ -1,10 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  breakEven,
+  cagr,
+  compoundInterest,
   decimalHours,
+  discountCalculator,
   freelancerRate,
   loanAmortization,
+  loanAmortizationSummary,
   marginMarkup,
+  markupMargin,
+  roi,
+  ruleOf72,
+  salesTax,
+  simpleInterest,
   statsSummary,
   taxExtraction,
   tradieCisDeduction,
@@ -143,4 +153,17 @@ test('ages tradie invoices into overdue buckets', () => {
   assert.equal(result.totals.overdue_amount, 1300);
   assert.equal(result.buckets['1_30'], 800);
   assert.equal(result.buckets['90_plus'], 500);
+});
+
+test('calculates phase 4 finance endpoints', () => {
+  assert.equal(simpleInterest({ principal: 1000, annual_rate_percent: 5, years: 3 }).interest, 150);
+  assert.ok(compoundInterest({ principal: 1000, annual_rate_percent: 5, years: 10, compounds_per_year: 12 }).future_value > 1640);
+  assert.equal(loanAmortizationSummary({ principal: 1000, annual_interest_rate_percent: 12, term_months: 12 }).periods, 12);
+  assert.equal(ruleOf72({ annual_rate_percent: 6 }).doubling_time_years, 12);
+  assert.equal(roi({ cost: 1000, net_gain: 250 }).roi_percent, 25);
+  assert.equal(discountCalculator({ original_price: 120, discount_percent: 15 }).final_price, 102);
+  assert.equal(markupMargin({ margin_percent: 40 }).markup_percent, 66.666667);
+  assert.equal(breakEven({ fixed_costs: 10000, price_per_unit: 50, variable_cost_per_unit: 30 }).break_even_units, 500);
+  assert.equal(salesTax({ amount: 120, tax_rate_percent: 20, mode: 'inclusive' }).totals.net_amount, 100);
+  assert.equal(cagr({ beginning_value: 1000, ending_value: 1500, years: 5 }).cagr_percent, 8.447177);
 });

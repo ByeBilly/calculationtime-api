@@ -164,6 +164,148 @@ export function freelancerRate(input = {}) {
   };
 }
 
+export function simpleInterest(input = {}) {
+  const principal = money(input.principal, 'principal');
+  const annualRatePercent = percent(input.annual_rate_percent ?? input.rate_percent ?? input.rate, 'annual_rate_percent', 0, 1000);
+  const years = number(input.years ?? input.time_years, 'years', 0, 1000);
+  const interest = principal * (annualRatePercent / 100) * years;
+  return {
+    input: { principal, annual_rate_percent: annualRatePercent, years },
+    interest: roundMoney(interest),
+    total_amount: roundMoney(principal + interest),
+    method: 'simple_interest_principal_rate_time'
+  };
+}
+
+export function compoundInterest(input = {}) {
+  const principal = money(input.principal, 'principal');
+  const annualRatePercent = percent(input.annual_rate_percent ?? input.rate_percent ?? input.rate, 'annual_rate_percent', -100, 1000);
+  const years = number(input.years ?? input.time_years, 'years', 0, 1000);
+  const compoundsPerYear = integer(input.compounds_per_year ?? input.n ?? 12, 'compounds_per_year', 1, 365);
+  const contribution = optionalMoney(input.periodic_contribution ?? input.contribution, 'periodic_contribution') ?? 0;
+  const rate = annualRatePercent / 100 / compoundsPerYear;
+  const periods = Math.round(years * compoundsPerYear);
+  const principalFutureValue = principal * (1 + rate) ** periods;
+  const contributionFutureValue = contribution === 0
+    ? 0
+    : rate === 0 ? contribution * periods : contribution * (((1 + rate) ** periods - 1) / rate);
+  const futureValue = principalFutureValue + contributionFutureValue;
+
+  return {
+    input: { principal, annual_rate_percent: annualRatePercent, years, compounds_per_year: compoundsPerYear, periodic_contribution: contribution },
+    future_value: roundMoney(futureValue),
+    total_contributions: roundMoney(principal + contribution * periods),
+    interest_earned: roundMoney(futureValue - principal - contribution * periods),
+    periods,
+    method: 'compound_interest_with_optional_periodic_contribution'
+  };
+}
+
+export function loanAmortizationSummary(input = {}) {
+  const schedule = loanAmortization(input);
+  return {
+    input: schedule.input,
+    payment_per_period: schedule.payment_per_period,
+    total_payments: schedule.total_payments,
+    total_interest: schedule.total_interest,
+    total_cost: schedule.total_payments,
+    periods: schedule.periods,
+    method: 'fixed_rate_level_payment_amortization_summary'
+  };
+}
+
+export function ruleOf72(input = {}) {
+  const annualRatePercent = percent(input.annual_rate_percent ?? input.rate_percent ?? input.rate, 'annual_rate_percent', 0.000001, 1000);
+  return {
+    input: { annual_rate_percent: annualRatePercent },
+    doubling_time_years: round(72 / annualRatePercent, 6),
+    method: 'rule_of_72_estimated_doubling_time'
+  };
+}
+
+export function roi(input = {}) {
+  const cost = money(input.cost ?? input.initial_investment, 'cost');
+  const netGain = input.net_gain !== undefined || input.netGain !== undefined
+    ? number(input.net_gain ?? input.netGain, 'net_gain', -1_000_000_000, 1_000_000_000)
+    : money(input.final_value ?? input.finalValue, 'final_value') - cost;
+  return {
+    input: { cost, net_gain: roundMoney(netGain) },
+    roi_percent: round((netGain / cost) * 100, 6),
+    final_value: roundMoney(cost + netGain),
+    method: 'return_on_investment_net_gain_over_cost'
+  };
+}
+
+export function discountCalculator(input = {}) {
+  const originalPrice = money(input.original_price ?? input.price, 'original_price');
+  const discountPercent = percent(input.discount_percent ?? input.discount, 'discount_percent', 0, 100);
+  const discountAmount = originalPrice * (discountPercent / 100);
+  return {
+    input: { original_price: originalPrice, discount_percent: discountPercent },
+    discount_amount: roundMoney(discountAmount),
+    final_price: roundMoney(originalPrice - discountAmount),
+    savings_percent: discountPercent,
+    method: 'percentage_discount_from_original_price'
+  };
+}
+
+export function markupMargin(input = {}) {
+  if (input.cost !== undefined && (input.selling_price !== undefined || input.sellingPrice !== undefined)) {
+    return marginMarkup(input);
+  }
+  const marginPercent = optionalPercent(input.margin_percent ?? input.gross_margin_percent, 'margin_percent');
+  const markupPercent = optionalPercent(input.markup_percent, 'markup_percent');
+  if (marginPercent === null && markupPercent === null) throw badRequest('margin_percent or markup_percent is required', 'missing_margin_or_markup');
+  if (marginPercent !== null && marginPercent >= 100) throw badRequest('margin_percent must be below 100', 'invalid_margin_percent');
+  const resolvedMarkup = markupPercent ?? (marginPercent / (100 - marginPercent)) * 100;
+  const resolvedMargin = marginPercent ?? (markupPercent / (100 + markupPercent)) * 100;
+  return {
+    input: { margin_percent: marginPercent, markup_percent: markupPercent },
+    gross_margin_percent: round(resolvedMargin, 6),
+    markup_percent: round(resolvedMarkup, 6),
+    method: 'gross_margin_markup_percent_conversion'
+  };
+}
+
+export function breakEven(input = {}) {
+  const fixedCosts = money(input.fixed_costs ?? input.fixedCosts, 'fixed_costs');
+  const pricePerUnit = money(input.price_per_unit ?? input.pricePerUnit, 'price_per_unit');
+  const variableCostPerUnit = money(input.variable_cost_per_unit ?? input.variableCostPerUnit, 'variable_cost_per_unit');
+  const contributionMargin = pricePerUnit - variableCostPerUnit;
+  if (contributionMargin <= 0) throw badRequest('price_per_unit must exceed variable_cost_per_unit', 'invalid_contribution_margin');
+  const units = fixedCosts / contributionMargin;
+  return {
+    input: { fixed_costs: fixedCosts, price_per_unit: pricePerUnit, variable_cost_per_unit: variableCostPerUnit },
+    contribution_margin_per_unit: roundMoney(contributionMargin),
+    break_even_units: Math.ceil(units),
+    exact_break_even_units: round(units, 6),
+    break_even_revenue: roundMoney(Math.ceil(units) * pricePerUnit),
+    method: 'break_even_units_fixed_costs_over_contribution_margin'
+  };
+}
+
+export function salesTax(input = {}) {
+  return taxExtraction({
+    amounts: [{
+      label: input.label || 'line_1',
+      amount: input.amount,
+      tax_rate_percent: input.tax_rate_percent ?? input.rate_percent ?? input.tax_rate,
+      mode: input.mode ?? 'exclusive'
+    }]
+  });
+}
+
+export function cagr(input = {}) {
+  const beginningValue = money(input.beginning_value ?? input.start_value, 'beginning_value');
+  const endingValue = money(input.ending_value ?? input.end_value, 'ending_value');
+  const years = number(input.years, 'years', 0.000001, 1000);
+  return {
+    input: { beginning_value: beginningValue, ending_value: endingValue, years },
+    cagr_percent: round((((endingValue / beginningValue) ** (1 / years)) - 1) * 100, 6),
+    method: 'compound_annual_growth_rate'
+  };
+}
+
 export function statsSummary(input = {}) {
   const values = array(input.values, 'values', 1, MAX_DATASET_SIZE).map((value, index) => finiteNumber(value, `values[${index}]`));
   const sorted = [...values].sort((a, b) => a - b);

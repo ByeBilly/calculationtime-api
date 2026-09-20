@@ -1631,6 +1631,65 @@ test('business calculation routes reject malformed JSON bodies', async () => {
   assert.equal(response.json().error.code, 'invalid_array_length');
 });
 
+test('phase 4 finance and phase 5 health routes return calculations and one-credit costs', async () => {
+  const debits = [];
+  const keyStore = {
+    async findByKey() {
+      return {
+        customerId: 'customer_a',
+        planId: 'database',
+        rateLimitPerMinute: 240,
+        keyFingerprint: 'ct_live_test',
+        authenticated: true
+      };
+    },
+    async checkBillableAccess(_customerId, options) {
+      return { balance: 1000, required: options.creditCost };
+    },
+    async debitBillableRequest(_customerId, event) {
+      debits.push([event.route, event.creditCost]);
+    },
+    async recordUsage() {}
+  };
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_CACHE: 'memory'
+    },
+    keyStore,
+    logger: false
+  });
+  const headers = { 'x-api-key': 'test-key' };
+  const requests = [
+    ['/v1/finance/simple-interest', { principal: 1000, annual_rate_percent: 5, years: 3 }, 'interest'],
+    ['/v1/finance/compound-interest', { principal: 1000, annual_rate_percent: 5, years: 10, compounds_per_year: 12 }, 'future_value'],
+    ['/v1/finance/loan-amortization-summary', { principal: 1000, annual_interest_rate_percent: 12, term_months: 12 }, 'total_interest'],
+    ['/v1/finance/rule-of-72', { annual_rate_percent: 6 }, 'doubling_time_years'],
+    ['/v1/finance/roi', { cost: 1000, net_gain: 250 }, 'roi_percent'],
+    ['/v1/finance/discount-calculator', { original_price: 120, discount_percent: 15 }, 'final_price'],
+    ['/v1/finance/markup-margin', { margin_percent: 40 }, 'markup_percent'],
+    ['/v1/finance/break-even', { fixed_costs: 10000, price_per_unit: 50, variable_cost_per_unit: 30 }, 'break_even_units'],
+    ['/v1/finance/salestax', { amount: 120, tax_rate_percent: 20, mode: 'inclusive' }, 'totals'],
+    ['/v1/finance/cagr', { beginning_value: 1000, ending_value: 1500, years: 5 }, 'cagr_percent'],
+    ['/v1/health/bmi', { unit: 'metric', weight_kg: 70, height_cm: 175 }, 'bmi'],
+    ['/v1/health/bmr', { unit: 'metric', weight_kg: 70, height_cm: 175, age: 35, sex: 'male' }, 'bmr_calories_per_day'],
+    ['/v1/health/tdee', { unit: 'metric', weight_kg: 70, height_cm: 175, age: 35, sex: 'male', activity_level: 'moderate' }, 'tdee_calories_per_day'],
+    ['/v1/health/macro-split', { calories: 2000, protein_percent: 30, carbs_percent: 40, fat_percent: 30 }, 'grams'],
+    ['/v1/health/pace-calculator', { distance: 5, unit: 'km', minutes: 25 }, 'pace_per_km']
+  ];
+
+  for (const [url, payload, marker] of requests) {
+    const response = await app.inject({ method: 'POST', url, headers, payload });
+    assert.equal(response.statusCode, 200, url);
+    assert.notEqual(response.json()[marker], undefined, url);
+  }
+  await app.close();
+
+  for (const [url] of requests) {
+    assert.equal(debits.some(([route, cost]) => route === url && cost === 1), true, url);
+  }
+});
+
 test('tradie accounting routes return calculations and weighted credit costs', async () => {
   const debits = [];
   const keyStore = {

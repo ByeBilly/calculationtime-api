@@ -169,6 +169,82 @@ const routes = [
     billable_weeks: 40,
     billable_hours_per_week: 25
   }),
+  billablePost('/v1/finance/simple-interest', 'Simple interest from principal, rate, and time', 1, {
+    principal: 1000,
+    annual_rate_percent: 5,
+    years: 3
+  }),
+  billablePost('/v1/finance/compound-interest', 'Future value with compound interest frequency options', 1, {
+    principal: 1000,
+    annual_rate_percent: 5,
+    years: 10,
+    compounds_per_year: 12
+  }),
+  billablePost('/v1/finance/loan-amortization-summary', 'Loan payment, total interest, and total cost summary', 1, {
+    principal: 250000,
+    annual_interest_rate_percent: 6.25,
+    term_months: 360
+  }),
+  billablePost('/v1/finance/rule-of-72', 'Estimated investment doubling time using the rule of 72', 1, {
+    annual_rate_percent: 6
+  }),
+  billablePost('/v1/finance/roi', 'Return on investment percentage from cost and net gain', 1, {
+    cost: 1000,
+    net_gain: 250
+  }),
+  billablePost('/v1/finance/discount-calculator', 'Final price and savings from original price and discount rate', 1, {
+    original_price: 120,
+    discount_percent: 15
+  }),
+  billablePost('/v1/finance/markup-margin', 'Convert between gross margin and markup percentages', 1, {
+    margin_percent: 40
+  }),
+  billablePost('/v1/finance/break-even', 'Break-even units from fixed costs, variable cost, and price', 1, {
+    fixed_costs: 10000,
+    price_per_unit: 50,
+    variable_cost_per_unit: 30
+  }),
+  billablePost('/v1/finance/salestax', 'Add or extract sales tax/GST from an amount and tax rate', 1, {
+    amount: 120,
+    tax_rate_percent: 20,
+    mode: 'inclusive'
+  }),
+  billablePost('/v1/finance/cagr', 'Compound annual growth rate from beginning value, ending value, and years', 1, {
+    beginning_value: 1000,
+    ending_value: 1500,
+    years: 5
+  }),
+  billablePost('/v1/health/bmi', 'Body Mass Index and category classification', 1, {
+    unit: 'metric',
+    weight_kg: 70,
+    height_cm: 175
+  }),
+  billablePost('/v1/health/bmr', 'Basal Metabolic Rate using Mifflin-St Jeor', 1, {
+    unit: 'metric',
+    weight_kg: 70,
+    height_cm: 175,
+    age: 35,
+    sex: 'male'
+  }),
+  billablePost('/v1/health/tdee', 'Total Daily Energy Expenditure from BMR and activity multiplier', 1, {
+    unit: 'metric',
+    weight_kg: 70,
+    height_cm: 175,
+    age: 35,
+    sex: 'male',
+    activity_level: 'moderate'
+  }),
+  billablePost('/v1/health/macro-split', 'Protein, carbs, and fat grams from calories and macro percentages', 1, {
+    calories: 2000,
+    protein_percent: 30,
+    carbs_percent: 40,
+    fat_percent: 30
+  }),
+  billablePost('/v1/health/pace-calculator', 'Running or walking pace and speed from distance and duration', 1, {
+    distance: 5,
+    unit: 'km',
+    minutes: 25
+  }),
   billablePost('/v1/stats/summary', 'Descriptive statistics for a numeric dataset', 3, { values: [1, 2, 2, 4, 9] }),
   billablePost('/v1/payroll/decimal-hours', 'Clock time to decimal hours and overtime conversion', 1, {
     hours: 1,

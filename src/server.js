@@ -51,10 +51,20 @@ import { solarPosition } from './solar-service.js';
 import { dailyTagline, secondsUntilNextUtcMidnight } from './tagline-service.js';
 import { createObservatoryShareStore } from './observatory-share-store.js';
 import {
+  breakEven,
+  cagr,
+  compoundInterest,
   decimalHours,
+  discountCalculator,
   freelancerRate,
   loanAmortization,
+  loanAmortizationSummary,
   marginMarkup,
+  markupMargin,
+  roi,
+  ruleOf72,
+  salesTax,
+  simpleInterest,
   statsSummary,
   taxExtraction,
   tradieCisDeduction,
@@ -64,6 +74,7 @@ import {
   tradieToolDepreciation,
   tradieVatReturnSummary
 } from './business-service.js';
+import { bmi, bmr, macroSplit, paceCalculator, tdee } from './health-service.js';
 import { dispatchWebhookEvent } from './webhook-dispatcher.js';
 
 const HOST = process.env.HOST || '127.0.0.1';
@@ -134,7 +145,32 @@ const ENDPOINT_FAMILIES = [
   },
   {
     family: 'finance',
-    routes: ['POST /v1/finance/margin-markup', 'POST /v1/finance/loan-amortization', 'POST /v1/finance/tax-extraction', 'POST /v1/finance/freelancer-rate']
+    routes: [
+      'POST /v1/finance/margin-markup',
+      'POST /v1/finance/loan-amortization',
+      'POST /v1/finance/tax-extraction',
+      'POST /v1/finance/freelancer-rate',
+      'POST /v1/finance/simple-interest',
+      'POST /v1/finance/compound-interest',
+      'POST /v1/finance/loan-amortization-summary',
+      'POST /v1/finance/rule-of-72',
+      'POST /v1/finance/roi',
+      'POST /v1/finance/discount-calculator',
+      'POST /v1/finance/markup-margin',
+      'POST /v1/finance/break-even',
+      'POST /v1/finance/salestax',
+      'POST /v1/finance/cagr'
+    ]
+  },
+  {
+    family: 'health',
+    routes: [
+      'POST /v1/health/bmi',
+      'POST /v1/health/bmr',
+      'POST /v1/health/tdee',
+      'POST /v1/health/macro-split',
+      'POST /v1/health/pace-calculator'
+    ]
   },
   {
     family: 'stats',
@@ -860,9 +896,39 @@ export async function buildServer({
 
   app.post('/v1/finance/freelancer-rate', billableRoute(2), async (request) => freelancerRate(request.body || {}));
 
+  app.post('/v1/finance/simple-interest', billableRoute(1), async (request) => simpleInterest(request.body || {}));
+
+  app.post('/v1/finance/compound-interest', billableRoute(1), async (request) => compoundInterest(request.body || {}));
+
+  app.post('/v1/finance/loan-amortization-summary', billableRoute(1), async (request) => loanAmortizationSummary(request.body || {}));
+
+  app.post('/v1/finance/rule-of-72', billableRoute(1), async (request) => ruleOf72(request.body || {}));
+
+  app.post('/v1/finance/roi', billableRoute(1), async (request) => roi(request.body || {}));
+
+  app.post('/v1/finance/discount-calculator', billableRoute(1), async (request) => discountCalculator(request.body || {}));
+
+  app.post('/v1/finance/markup-margin', billableRoute(1), async (request) => markupMargin(request.body || {}));
+
+  app.post('/v1/finance/break-even', billableRoute(1), async (request) => breakEven(request.body || {}));
+
+  app.post('/v1/finance/salestax', billableRoute(1), async (request) => salesTax(request.body || {}));
+
+  app.post('/v1/finance/cagr', billableRoute(1), async (request) => cagr(request.body || {}));
+
   app.post('/v1/stats/summary', billableRoute(3), async (request) => statsSummary(request.body || {}));
 
   app.post('/v1/payroll/decimal-hours', billableRoute(1), async (request) => decimalHours(request.body || {}));
+
+  app.post('/v1/health/bmi', billableRoute(1), async (request) => bmi(request.body || {}));
+
+  app.post('/v1/health/bmr', billableRoute(1), async (request) => bmr(request.body || {}));
+
+  app.post('/v1/health/tdee', billableRoute(1), async (request) => tdee(request.body || {}));
+
+  app.post('/v1/health/macro-split', billableRoute(1), async (request) => macroSplit(request.body || {}));
+
+  app.post('/v1/health/pace-calculator', billableRoute(1), async (request) => paceCalculator(request.body || {}));
 
   app.post('/v1/tradie/job-margin', billableRoute(2), async (request) => tradieJobMargin(request.body || {}));
 
