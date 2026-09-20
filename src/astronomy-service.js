@@ -156,6 +156,202 @@ export function cruxCurrent(input = {}) {
   };
 }
 
+export function solarNoon(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const observer = observerFromInput(input);
+  const start = date.toJSDate();
+  const transit = Astronomy.SearchHourAngle(Astronomy.Body.Sun, observer, 0, start, +1);
+
+  return {
+    input: astronomyLocationInput(input, date),
+    solar_noon: {
+      utc_time: transit.time.date.toISOString(),
+      apparent_altitude_degrees: round(transit.hor.altitude, 6),
+      azimuth_degrees: round(transit.hor.azimuth, 6)
+    },
+    method: 'astronomy_engine_solar_transit_hour_angle_zero'
+  };
+}
+
+export function equinoxSolstice(input = {}) {
+  const year = integer(input.year ?? DateTime.utc().year, 'year', 1900, 2100);
+  const seasons = Astronomy.Seasons(year);
+
+  return {
+    input: { year },
+    events: [
+      seasonEvent('march_equinox', seasons.mar_equinox),
+      seasonEvent('june_solstice', seasons.jun_solstice),
+      seasonEvent('september_equinox', seasons.sep_equinox),
+      seasonEvent('december_solstice', seasons.dec_solstice)
+    ],
+    method: 'astronomy_engine_seasons'
+  };
+}
+
+export function moonPhase(input = {}) {
+  const timestamp = parseOptionalTimestamp(input.timestamp ?? input.at, 'timestamp');
+  const phaseAngle = Astronomy.MoonPhase(timestamp.toJSDate());
+  const illumination = Astronomy.Illumination(Astronomy.Body.Moon, timestamp.toJSDate());
+  const ageDays = phaseAngle / 360 * 29.530588853;
+
+  return {
+    input: { timestamp: timestamp.toUTC().toISO() },
+    moon: {
+      phase_angle_degrees: round(phaseAngle, 6),
+      age_days: round(ageDays, 6),
+      illumination_percent: round(illumination.phase_fraction * 100, 6),
+      phase_name: moonPhaseName(phaseAngle),
+      apparent_magnitude: round(illumination.mag, 6),
+      distance_au: round(illumination.geo_dist, 9)
+    },
+    method: 'astronomy_engine_moon_phase_and_illumination'
+  };
+}
+
+export function julianDate(input = {}) {
+  const timestamp = parseOptionalTimestamp(input.timestamp ?? input.at, 'timestamp');
+  const unixMilliseconds = timestamp.toMillis();
+  const julianDay = unixMilliseconds / 86400000 + 2440587.5;
+
+  return {
+    input: { timestamp: timestamp.toUTC().toISO() },
+    julian_day: round(julianDay, 9),
+    julian_day_number: Math.floor(julianDay + 0.5),
+    modified_julian_date: round(julianDay - 2400000.5, 9),
+    method: 'unix_epoch_to_julian_day'
+  };
+}
+
+export function siderealTime(input = {}) {
+  const timestamp = parseOptionalTimestamp(input.timestamp ?? input.at, 'timestamp');
+  const longitude = numberInRange(requiredValue(input.lon ?? input.longitude, 'lon'), 'lon', -180, 180);
+  const gmstHours = Astronomy.SiderealTime(timestamp.toJSDate());
+  const lstHours = positiveModulo(gmstHours + longitude / 15, 24);
+
+  return {
+    input: {
+      timestamp: timestamp.toUTC().toISO(),
+      longitude_degrees: longitude
+    },
+    sidereal_time: {
+      gmst_hours: round(gmstHours, 9),
+      gmst_degrees: round(gmstHours * 15, 9),
+      local_sidereal_hours: round(lstHours, 9),
+      local_sidereal_degrees: round(lstHours * 15, 9)
+    },
+    method: 'astronomy_engine_greenwich_sidereal_time'
+  };
+}
+
+export function twilightCalculator(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const observer = observerFromInput(input);
+  const start = date.toJSDate();
+
+  return {
+    input: astronomyLocationInput(input, date),
+    twilight: {
+      civil: twilightPair(observer, start, -6),
+      nautical: twilightPair(observer, start, -12),
+      astronomical: twilightPair(observer, start, -18)
+    },
+    method: 'astronomy_engine_solar_altitude_crossings'
+  };
+}
+
+export function sunPosition(input = {}) {
+  const timestamp = parseOptionalTimestamp(input.timestamp ?? input.at, 'timestamp');
+  const observer = observerFromInput(input);
+  const equator = Astronomy.Equator(Astronomy.Body.Sun, timestamp.toJSDate(), observer, true, true);
+  const horizon = Astronomy.Horizon(timestamp.toJSDate(), observer, equator.ra, equator.dec, 'normal');
+
+  return {
+    input: astronomyLocationInput(input, timestamp),
+    sun: {
+      right_ascension_hours: round(equator.ra, 9),
+      declination_degrees: round(equator.dec, 9),
+      azimuth_degrees: round(horizon.azimuth, 6),
+      elevation_degrees: round(horizon.altitude, 6),
+      distance_au: round(equator.dist, 9)
+    },
+    method: 'astronomy_engine_equator_horizon_sun'
+  };
+}
+
+export function moonPosition(input = {}) {
+  const timestamp = parseOptionalTimestamp(input.timestamp ?? input.at, 'timestamp');
+  const observer = observerFromInput(input);
+  const equator = Astronomy.Equator(Astronomy.Body.Moon, timestamp.toJSDate(), observer, true, true);
+  const horizon = Astronomy.Horizon(timestamp.toJSDate(), observer, equator.ra, equator.dec, 'normal');
+
+  return {
+    input: astronomyLocationInput(input, timestamp),
+    moon: {
+      right_ascension_hours: round(equator.ra, 9),
+      declination_degrees: round(equator.dec, 9),
+      azimuth_degrees: round(horizon.azimuth, 6),
+      elevation_degrees: round(horizon.altitude, 6),
+      distance_au: round(equator.dist, 9)
+    },
+    method: 'astronomy_engine_equator_horizon_moon'
+  };
+}
+
+export function dayLength(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const observer = observerFromInput(input);
+  const start = date.toJSDate();
+  const sunrise = Astronomy.SearchRiseSet(Astronomy.Body.Sun, observer, +1, start, 1);
+  const sunset = Astronomy.SearchRiseSet(Astronomy.Body.Sun, observer, -1, start, 1);
+  const polar = polarNightCheck(input);
+  const daylightHours = sunrise && sunset
+    ? (sunset.date.getTime() - sunrise.date.getTime()) / 3600000
+    : polar.classification === 'midnight_sun' ? 24 : 0;
+
+  return {
+    input: astronomyLocationInput(input, date),
+    sunrise_utc: sunrise?.date.toISOString() ?? null,
+    sunset_utc: sunset?.date.toISOString() ?? null,
+    daylight: {
+      hours_decimal: round(daylightHours, 6),
+      hours: Math.floor(daylightHours),
+      minutes: Math.round((daylightHours % 1) * 60)
+    },
+    polar_state: polar.classification,
+    method: 'astronomy_engine_sunrise_sunset_day_length'
+  };
+}
+
+export function polarNightCheck(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const observer = observerFromInput(input);
+  const noon = Astronomy.SearchHourAngle(Astronomy.Body.Sun, observer, 0, date.toJSDate(), +1);
+  const sunrise = Astronomy.SearchRiseSet(Astronomy.Body.Sun, observer, +1, date.toJSDate(), 1);
+  const sunset = Astronomy.SearchRiseSet(Astronomy.Body.Sun, observer, -1, date.toJSDate(), 1);
+  const midnight = date.plus({ hours: 12 }).toJSDate();
+  const midnightEquator = Astronomy.Equator(Astronomy.Body.Sun, midnight, observer, true, true);
+  const midnightHorizon = Astronomy.Horizon(midnight, observer, midnightEquator.ra, midnightEquator.dec, 'normal');
+  const hasNormalRiseSet = Boolean(sunrise && sunset);
+  const classification = hasNormalRiseSet
+    ? 'normal_day'
+    : noon.hor.altitude > 0 && midnightHorizon.altitude > 0 ? 'midnight_sun' : 'polar_night';
+
+  return {
+    input: astronomyLocationInput(input, date),
+    has_24_hour_daylight: classification === 'midnight_sun',
+    has_24_hour_darkness: classification === 'polar_night',
+    classification,
+    diagnostic: {
+      solar_noon_altitude_degrees: round(noon.hor.altitude, 6),
+      opposite_midday_altitude_degrees: round(midnightHorizon.altitude, 6),
+      sunrise_found: Boolean(sunrise),
+      sunset_found: Boolean(sunset)
+    },
+    method: 'astronomy_engine_rise_set_polar_day_check'
+  };
+}
+
 function bodyTelemetry(body, date, observer) {
   const geocentric = Astronomy.GeoVector(body, date, true);
   const heliocentric = Astronomy.HelioVector(body, date);
@@ -253,6 +449,69 @@ function parseTimestamp(value, label) {
   const parsed = DateTime.fromISO(String(value).trim(), { zone: 'utc' });
   if (parsed.isValid) return parsed.toUTC();
   throw Object.assign(new Error(`${label} must be an ISO timestamp like 2026-03-31T00:00:00+10:00`), {
+    statusCode: 400,
+    code: `invalid_${label}`
+  });
+}
+
+function parseOptionalTimestamp(value, label) {
+  return value ? parseTimestamp(value, label) : DateTime.utc();
+}
+
+function observerFromInput(input) {
+  return new Astronomy.Observer(
+    numberInRange(requiredValue(input.lat ?? input.latitude, 'lat'), 'lat', -90, 90),
+    numberInRange(requiredValue(input.lon ?? input.longitude, 'lon'), 'lon', -180, 180),
+    numberInRange(input.elevation_meters ?? input.elevation ?? 0, 'elevation_meters', -500, 9000)
+  );
+}
+
+function astronomyLocationInput(input, dateTime) {
+  return {
+    date: dateTime.toISODate(),
+    timestamp: dateTime.toUTC().toISO(),
+    latitude_degrees: numberInRange(requiredValue(input.lat ?? input.latitude, 'lat'), 'lat', -90, 90),
+    longitude_degrees: numberInRange(requiredValue(input.lon ?? input.longitude, 'lon'), 'lon', -180, 180),
+    elevation_meters: numberInRange(input.elevation_meters ?? input.elevation ?? 0, 'elevation_meters', -500, 9000)
+  };
+}
+
+function seasonEvent(name, time) {
+  return {
+    name,
+    utc_time: time.date.toISOString()
+  };
+}
+
+function twilightPair(observer, start, altitude) {
+  const morning = Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, +1, start, 1, altitude);
+  const evening = Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, -1, start, 1, altitude);
+  return {
+    altitude_degrees: altitude,
+    morning_utc: morning?.date.toISOString() ?? null,
+    evening_utc: evening?.date.toISOString() ?? null
+  };
+}
+
+function moonPhaseName(phaseAngle) {
+  if (phaseAngle < 22.5 || phaseAngle >= 337.5) return 'new_moon';
+  if (phaseAngle < 67.5) return 'waxing_crescent';
+  if (phaseAngle < 112.5) return 'first_quarter';
+  if (phaseAngle < 157.5) return 'waxing_gibbous';
+  if (phaseAngle < 202.5) return 'full_moon';
+  if (phaseAngle < 247.5) return 'waning_gibbous';
+  if (phaseAngle < 292.5) return 'last_quarter';
+  return 'waning_crescent';
+}
+
+function currentUtcDate() {
+  return DateTime.utc().toISODate();
+}
+
+function numberInRange(value, label, min, max) {
+  const parsed = Number(value);
+  if (Number.isFinite(parsed) && parsed >= min && parsed <= max) return parsed;
+  throw Object.assign(new Error(`${label} must be a number between ${min} and ${max}`), {
     statusCode: 400,
     code: `invalid_${label}`
   });

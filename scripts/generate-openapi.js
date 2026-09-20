@@ -65,6 +65,49 @@ const routes = [
   billablePost('/v1/astronomy/crux-current', 'Current Crux clock hand position and Parkes alignment delta', 2, {
     timestamp: '2026-04-01T00:00:00+10:00'
   }),
+  billablePost('/v1/astronomy/solar-noon', 'Solar transit/noon timestamp for a coordinate and date', 1, {
+    date: '2026-06-21',
+    lat: 48.137154,
+    lon: 11.576124
+  }),
+  billablePost('/v1/astronomy/equinox-solstice', 'Equinox and solstice timestamps for a year', 1, {
+    year: 2026
+  }),
+  billablePost('/v1/astronomy/moon-phase', 'Moon illumination, age, and phase name for a timestamp', 1, {
+    timestamp: '2026-06-21T00:00:00Z'
+  }),
+  billablePost('/v1/astronomy/julian-date', 'Gregorian timestamp to Julian Day and Modified Julian Date', 1, {
+    timestamp: '2026-06-21T00:00:00Z'
+  }),
+  billablePost('/v1/astronomy/sidereal-time', 'Greenwich and local sidereal time for a timestamp and longitude', 1, {
+    timestamp: '2026-06-21T00:00:00Z',
+    lon: 11.576124
+  }),
+  billablePost('/v1/astronomy/twilight-calculator', 'Civil, nautical, and astronomical twilight crossings', 1, {
+    date: '2026-06-21',
+    lat: 48.137154,
+    lon: 11.576124
+  }),
+  billablePost('/v1/astronomy/sun-position', 'Sun right ascension, declination, azimuth, and elevation', 1, {
+    timestamp: '2026-06-21T12:00:00Z',
+    lat: 48.137154,
+    lon: 11.576124
+  }),
+  billablePost('/v1/astronomy/moon-position', 'Moon right ascension, declination, azimuth, and elevation', 1, {
+    timestamp: '2026-06-21T00:00:00Z',
+    lat: 48.137154,
+    lon: 11.576124
+  }),
+  billablePost('/v1/astronomy/day-length', 'Daylight duration between sunrise and sunset', 1, {
+    date: '2026-06-21',
+    lat: 48.137154,
+    lon: 11.576124
+  }),
+  billablePost('/v1/astronomy/polar-night-check', 'Check midnight sun or polar night state for a latitude/date', 1, {
+    date: '2026-06-21',
+    lat: 80,
+    lon: 0
+  }),
   billablePost('/v1/finance/margin-markup', 'Gross margin, markup, selling price, and cost variance', 1, {
     cost: 80,
     selling_price: 125,

@@ -16,7 +16,22 @@ import {
   isBusinessDayInJurisdiction,
   nextHoliday
 } from './holiday-service.js';
-import { cruxCurrent, cruxHourly, cruxMidnightRange, ephemerisForDate } from './astronomy-service.js';
+import {
+  cruxCurrent,
+  cruxHourly,
+  cruxMidnightRange,
+  dayLength,
+  ephemerisForDate,
+  equinoxSolstice,
+  julianDate,
+  moonPhase,
+  moonPosition,
+  polarNightCheck,
+  siderealTime,
+  solarNoon,
+  sunPosition,
+  twilightCalculator
+} from './astronomy-service.js';
 import { solarPosition } from './solar-service.js';
 import { dailyTagline, secondsUntilNextUtcMidnight } from './tagline-service.js';
 import { createObservatoryShareStore } from './observatory-share-store.js';
@@ -69,7 +84,22 @@ const ENDPOINT_FAMILIES = [
   },
   {
     family: 'astronomy',
-    routes: ['GET /v1/astronomy/ephemeris', 'POST /v1/astronomy/crux-midnight', 'POST /v1/astronomy/crux-hourly', 'POST /v1/astronomy/crux-current']
+    routes: [
+      'GET /v1/astronomy/ephemeris',
+      'POST /v1/astronomy/crux-midnight',
+      'POST /v1/astronomy/crux-hourly',
+      'POST /v1/astronomy/crux-current',
+      'POST /v1/astronomy/solar-noon',
+      'POST /v1/astronomy/equinox-solstice',
+      'POST /v1/astronomy/moon-phase',
+      'POST /v1/astronomy/julian-date',
+      'POST /v1/astronomy/sidereal-time',
+      'POST /v1/astronomy/twilight-calculator',
+      'POST /v1/astronomy/sun-position',
+      'POST /v1/astronomy/moon-position',
+      'POST /v1/astronomy/day-length',
+      'POST /v1/astronomy/polar-night-check'
+    ]
   },
   {
     family: 'finance',
@@ -699,6 +729,46 @@ export async function buildServer({
   app.post('/v1/astronomy/crux-hourly', billableRoute(5), async (request) => cruxHourly(request.body || {}));
 
   app.post('/v1/astronomy/crux-current', billableRoute(2), async (request) => cruxCurrent(request.body || {}));
+
+  app.post('/v1/astronomy/solar-noon', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.solar_noon', request.body || {}, () => solarNoon(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/astronomy/equinox-solstice', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.equinox_solstice', request.body || {}, () => equinoxSolstice(request.body || {}), deterministicCache(2_592_000))
+  ));
+
+  app.post('/v1/astronomy/moon-phase', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.moon_phase', request.body || {}, () => moonPhase(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/astronomy/julian-date', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.julian_date', request.body || {}, () => julianDate(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/astronomy/sidereal-time', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.sidereal_time', request.body || {}, () => siderealTime(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/astronomy/twilight-calculator', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.twilight', request.body || {}, () => twilightCalculator(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/astronomy/sun-position', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.sun_position', request.body || {}, () => sunPosition(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/astronomy/moon-position', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.moon_position', request.body || {}, () => moonPosition(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/astronomy/day-length', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.day_length', request.body || {}, () => dayLength(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/astronomy/polar-night-check', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.polar_night', request.body || {}, () => polarNightCheck(request.body || {}), deterministicCache(604_800))
+  ));
 
   app.get('/v1/solar/position', billableRoute(), async (request, reply) => (
     cached(

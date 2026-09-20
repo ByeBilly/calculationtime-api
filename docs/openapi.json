@@ -1243,6 +1243,499 @@
         }
       }
     },
+    "/v1/astronomy/solar-noon": {
+      "post": {
+        "summary": "Solar transit/noon timestamp for a coordinate and date",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "date": "2026-06-21",
+                "lat": 48.137154,
+                "lon": 11.576124
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/equinox-solstice": {
+      "post": {
+        "summary": "Equinox and solstice timestamps for a year",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "year": 2026
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/moon-phase": {
+      "post": {
+        "summary": "Moon illumination, age, and phase name for a timestamp",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "timestamp": "2026-06-21T00:00:00Z"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/julian-date": {
+      "post": {
+        "summary": "Gregorian timestamp to Julian Day and Modified Julian Date",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "timestamp": "2026-06-21T00:00:00Z"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/sidereal-time": {
+      "post": {
+        "summary": "Greenwich and local sidereal time for a timestamp and longitude",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "timestamp": "2026-06-21T00:00:00Z",
+                "lon": 11.576124
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/twilight-calculator": {
+      "post": {
+        "summary": "Civil, nautical, and astronomical twilight crossings",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "date": "2026-06-21",
+                "lat": 48.137154,
+                "lon": 11.576124
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/sun-position": {
+      "post": {
+        "summary": "Sun right ascension, declination, azimuth, and elevation",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "timestamp": "2026-06-21T12:00:00Z",
+                "lat": 48.137154,
+                "lon": 11.576124
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/moon-position": {
+      "post": {
+        "summary": "Moon right ascension, declination, azimuth, and elevation",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "timestamp": "2026-06-21T00:00:00Z",
+                "lat": 48.137154,
+                "lon": 11.576124
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/day-length": {
+      "post": {
+        "summary": "Daylight duration between sunrise and sunset",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "date": "2026-06-21",
+                "lat": 48.137154,
+                "lon": 11.576124
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/astronomy/polar-night-check": {
+      "post": {
+        "summary": "Check midnight sun or polar night state for a latitude/date",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          },
+          "400": {
+            "description": "Invalid request input"
+          },
+          "401": {
+            "description": "A valid API key is required"
+          },
+          "402": {
+            "description": "API credit balance is exhausted"
+          },
+          "403": {
+            "description": "Customer account is suspended or trial has expired"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "security": [
+          {
+            "ApiKeyAuth": []
+          },
+          {
+            "BearerAuth": []
+          }
+        ],
+        "x-credit-cost": 1,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "example": {
+                "date": "2026-06-21",
+                "lat": 80,
+                "lon": 0
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/finance/margin-markup": {
       "post": {
         "summary": "Gross margin, markup, selling price, and cost variance",

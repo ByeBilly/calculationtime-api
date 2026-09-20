@@ -1023,6 +1023,70 @@ test('crux astronomy routes return sidereal positions and weighted credit costs'
   assert.equal(debits.some(([route, cost]) => route === '/v1/astronomy/crux-current' && cost === 2), true);
 });
 
+test('advanced astronomy routes expose pure math endpoint suite with one-credit costs', async () => {
+  const debits = [];
+  const keyStore = {
+    async findByKey() {
+      return {
+        customerId: 'customer_a',
+        planId: 'database',
+        rateLimitPerMinute: 240,
+        keyFingerprint: 'ct_live_test',
+        authenticated: true
+      };
+    },
+    async checkBillableAccess(_customerId, options) {
+      return { balance: 1000, required: options.creditCost };
+    },
+    async debitBillableRequest(_customerId, event) {
+      debits.push([event.route, event.creditCost]);
+    },
+    async recordUsage() {}
+  };
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_CACHE: 'memory'
+    },
+    keyStore,
+    logger: false
+  });
+  const headers = { 'x-api-key': 'test-key' };
+  const requests = [
+    ['/v1/astronomy/solar-noon', { date: '2026-06-21', lat: 48.137154, lon: 11.576124 }, 'solar_noon'],
+    ['/v1/astronomy/equinox-solstice', { year: 2026 }, 'events'],
+    ['/v1/astronomy/moon-phase', { timestamp: '2026-06-21T00:00:00Z' }, 'moon'],
+    ['/v1/astronomy/julian-date', { timestamp: '2000-01-01T12:00:00Z' }, 'julian_day'],
+    ['/v1/astronomy/sidereal-time', { timestamp: '2026-06-21T00:00:00Z', lon: 11.576124 }, 'sidereal_time'],
+    ['/v1/astronomy/twilight-calculator', { date: '2026-06-21', lat: 48.137154, lon: 11.576124 }, 'twilight'],
+    ['/v1/astronomy/sun-position', { timestamp: '2026-06-21T12:00:00Z', lat: 48.137154, lon: 11.576124 }, 'sun'],
+    ['/v1/astronomy/moon-position', { timestamp: '2026-06-21T00:00:00Z', lat: 48.137154, lon: 11.576124 }, 'moon'],
+    ['/v1/astronomy/day-length', { date: '2026-06-21', lat: 48.137154, lon: 11.576124 }, 'daylight'],
+    ['/v1/astronomy/polar-night-check', { date: '2026-06-21', lat: 80, lon: 0 }, 'classification']
+  ];
+
+  for (const [url, payload, marker] of requests) {
+    const response = await app.inject({ method: 'POST', url, headers, payload });
+    assert.equal(response.statusCode, 200, url);
+    assert.notEqual(response.json()[marker], undefined, url);
+  }
+  await app.close();
+
+  for (const [url] of requests) {
+    assert.equal(debits.some(([route, cost]) => route === url && cost === 1), true, url);
+  }
+});
+
+test('status advertises advanced astronomy route inventory', async () => {
+  const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
+  const response = await app.inject('/v1/status');
+  await app.close();
+
+  const astronomy = response.json().endpoint_families.find((family) => family.family === 'astronomy');
+  assert.ok(astronomy.routes.includes('POST /v1/astronomy/solar-noon'));
+  assert.ok(astronomy.routes.includes('POST /v1/astronomy/polar-night-check'));
+});
+
 test('geospatial distance endpoint preserves response contract', async () => {
   const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
   const response = await app.inject('/v1/geo/distance?from_lat=48.137154&from_lon=11.576124&to_lat=52.52&to_lon=13.405');

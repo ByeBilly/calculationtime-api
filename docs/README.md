@@ -337,6 +337,138 @@ curl 'https://api.calculationtime.com/v1/astronomy/crux-current' \
 
 Credit cost: `2`.
 
+### `POST /v1/astronomy/solar-noon`
+
+Returns the solar transit/noon timestamp for a coordinate and date.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/solar-noon' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"date":"2026-06-21","lat":48.137154,"lon":11.576124}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/equinox-solstice`
+
+Returns March equinox, June solstice, September equinox, and December solstice timestamps for a Gregorian year.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/equinox-solstice' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"year":2026}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/moon-phase`
+
+Returns lunar phase angle, age, illumination percentage, phase name, apparent magnitude, and Earth-Moon distance for a timestamp.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/moon-phase' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"timestamp":"2026-06-21T00:00:00Z"}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/julian-date`
+
+Converts an ISO timestamp to Julian Day, Julian Day Number, and Modified Julian Date.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/julian-date' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"timestamp":"2000-01-01T12:00:00Z"}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/sidereal-time`
+
+Returns Greenwich Mean Sidereal Time and Local Sidereal Time for a timestamp and longitude.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/sidereal-time' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"timestamp":"2026-06-21T00:00:00Z","lon":11.576124}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/twilight-calculator`
+
+Returns civil, nautical, and astronomical twilight morning/evening crossings for a coordinate and date.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/twilight-calculator' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"date":"2026-06-21","lat":48.137154,"lon":11.576124}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/sun-position`
+
+Returns solar right ascension, declination, azimuth, elevation, and distance for a coordinate and timestamp.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/sun-position' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"timestamp":"2026-06-21T12:00:00Z","lat":48.137154,"lon":11.576124}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/moon-position`
+
+Returns lunar right ascension, declination, azimuth, elevation, and distance for a coordinate and timestamp.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/moon-position' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"timestamp":"2026-06-21T00:00:00Z","lat":48.137154,"lon":11.576124}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/day-length`
+
+Returns sunrise, sunset, daylight duration, and polar-state classification for a coordinate and date.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/day-length' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"date":"2026-06-21","lat":48.137154,"lon":11.576124}'
+```
+
+Credit cost: `1`.
+
+### `POST /v1/astronomy/polar-night-check`
+
+Returns deterministic midnight-sun or polar-night booleans for a coordinate and date.
+
+```bash
+curl 'https://api.calculationtime.com/v1/astronomy/polar-night-check' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your-key' \
+  -d '{"date":"2026-06-21","lat":80,"lon":0}'
+```
+
+Credit cost: `1`.
+
+These endpoints use local deterministic astronomy calculations. They do not call external providers, databases, weather feeds, or paid ephemeris services. They are suitable for developer tooling, calculators, explainers, and repeatable page hydration; they are not navigation, survey, legal, or safety certification.
+
 ## Geospatial Endpoints
 
 ### `GET /v1/geo/distance`
