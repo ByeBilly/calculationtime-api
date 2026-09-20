@@ -823,6 +823,72 @@ curl 'https://api.calculationtime.com/v1/payroll/decimal-hours' \
 
 Credit cost: `1`.
 
+## Mathematical, Geometric, And Statistical Utility Endpoints
+
+These endpoints are protected, billable, pure local arithmetic, and cost `1` credit each.
+
+```bash
+curl 'https://api.calculationtime.com/v1/math/quadratic-solver' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"a":1,"b":-3,"c":2}'
+
+curl 'https://api.calculationtime.com/v1/math/pythagorean-solve' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"a":3,"b":4}'
+
+curl 'https://api.calculationtime.com/v1/math/triangle-heron' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"a":3,"b":4,"c":5}'
+
+curl 'https://api.calculationtime.com/v1/math/circle-geometry' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"radius":10,"angle_degrees":90}'
+
+curl 'https://api.calculationtime.com/v1/math/sphere-geometry' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"radius":3}'
+
+curl 'https://api.calculationtime.com/v1/math/cylinder-geometry' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"radius":3,"height":10}'
+
+curl 'https://api.calculationtime.com/v1/math/statistics-summary' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"values":[1,2,2,4,9]}'
+
+curl 'https://api.calculationtime.com/v1/math/percentage-change' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"baseline":80,"current":100}'
+
+curl 'https://api.calculationtime.com/v1/math/percent-error' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"true_value":100,"measured_value":96}'
+
+curl 'https://api.calculationtime.com/v1/math/gcd-lcm' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"values":[12,18,30]}'
+
+curl 'https://api.calculationtime.com/v1/math/matrix-determinant' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"matrix":[[1,2],[3,4]]}'
+
+curl 'https://api.calculationtime.com/v1/math/proportion-solver' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"a":2,"b":5,"c":8}'
+
+curl 'https://api.calculationtime.com/v1/math/logarithm-eval' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"value":1000,"base":10}'
+
+curl 'https://api.calculationtime.com/v1/math/exponent-eval' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"base":27,"exponent":2,"root":3}'
+
+curl 'https://api.calculationtime.com/v1/math/combinatorics' \
+  -H 'Content-Type: application/json' -H 'X-API-Key: your-key' \
+  -d '{"n":10,"r":3}'
+```
+
 ## Health And Practical Body Math Endpoints
 
 These endpoints are protected, billable, and cost `1` credit each. They are arithmetic support tools, not medical advice.

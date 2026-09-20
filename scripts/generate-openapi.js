@@ -245,6 +245,66 @@ const routes = [
     unit: 'km',
     minutes: 25
   }),
+  billablePost('/v1/math/quadratic-solver', 'Solve a quadratic equation with real or complex roots and vertex coordinates', 1, {
+    a: 1,
+    b: -3,
+    c: 2
+  }),
+  billablePost('/v1/math/pythagorean-solve', 'Solve the missing side of a right triangle from any two sides', 1, {
+    a: 3,
+    b: 4
+  }),
+  billablePost('/v1/math/triangle-heron', 'Triangle area, perimeter, and angles from three side lengths', 1, {
+    a: 3,
+    b: 4,
+    c: 5
+  }),
+  billablePost('/v1/math/circle-geometry', 'Circle area, circumference, diameter, arc length, and sector area', 1, {
+    radius: 10,
+    angle_degrees: 90
+  }),
+  billablePost('/v1/math/sphere-geometry', 'Sphere diameter, surface area, and volume from radius', 1, {
+    radius: 3
+  }),
+  billablePost('/v1/math/cylinder-geometry', 'Cylinder base area, surface area, and volume from radius and height', 1, {
+    radius: 3,
+    height: 10
+  }),
+  billablePost('/v1/math/statistics-summary', 'Mean, median, mode, variance, standard deviation, and IQR for numbers', 1, {
+    values: [1, 2, 2, 4, 9]
+  }),
+  billablePost('/v1/math/percentage-change', 'Absolute and percentage change from baseline to current value', 1, {
+    baseline: 80,
+    current: 100
+  }),
+  billablePost('/v1/math/percent-error', 'Absolute, relative, and percent error against an accepted true value', 1, {
+    true_value: 100,
+    measured_value: 96
+  }),
+  billablePost('/v1/math/gcd-lcm', 'Greatest common divisor and least common multiple for integer sets', 1, {
+    values: [12, 18, 30]
+  }),
+  billablePost('/v1/math/matrix-determinant', 'Determinants for 2x2 and 3x3 matrices', 1, {
+    matrix: [[1, 2], [3, 4]]
+  }),
+  billablePost('/v1/math/proportion-solver', 'Solve x in equivalent ratios a/b = c/x', 1, {
+    a: 2,
+    b: 5,
+    c: 8
+  }),
+  billablePost('/v1/math/logarithm-eval', 'Evaluate logarithms with custom bases using change of base', 1, {
+    value: 1000,
+    base: 10
+  }),
+  billablePost('/v1/math/exponent-eval', 'Evaluate exponentiation and optional real root extraction', 1, {
+    base: 27,
+    exponent: 2,
+    root: 3
+  }),
+  billablePost('/v1/math/combinatorics', 'Permutations and combinations for n and r', 1, {
+    n: 10,
+    r: 3
+  }),
   billablePost('/v1/stats/summary', 'Descriptive statistics for a numeric dataset', 3, { values: [1, 2, 2, 4, 9] }),
   billablePost('/v1/payroll/decimal-hours', 'Clock time to decimal hours and overtime conversion', 1, {
     hours: 1,

@@ -1690,6 +1690,67 @@ test('phase 4 finance and phase 5 health routes return calculations and one-cred
   }
 });
 
+test('phase 3 math routes return calculations and one-credit costs', async () => {
+  const debits = [];
+  const keyStore = {
+    async findByKey() {
+      return {
+        customerId: 'customer_a',
+        planId: 'database',
+        rateLimitPerMinute: 240,
+        keyFingerprint: 'ct_live_test',
+        authenticated: true
+      };
+    },
+    async checkBillableAccess(_customerId, options) {
+      return { balance: 1000, required: options.creditCost };
+    },
+    async debitBillableRequest(_customerId, event) {
+      debits.push([event.route, event.creditCost]);
+    },
+    async recordUsage() {}
+  };
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_CACHE: 'memory'
+    },
+    keyStore,
+    logger: false
+  });
+  const headers = { 'x-api-key': 'test-key' };
+  const requests = [
+    ['/v1/math/quadratic-solver', { a: 1, b: -3, c: 2 }, 'roots'],
+    ['/v1/math/pythagorean-solve', { a: 3, b: 4 }, 'sides'],
+    ['/v1/math/triangle-heron', { a: 3, b: 4, c: 5 }, 'angles_degrees'],
+    ['/v1/math/circle-geometry', { radius: 10, angle_degrees: 90 }, 'arc_length'],
+    ['/v1/math/sphere-geometry', { radius: 3 }, 'volume'],
+    ['/v1/math/cylinder-geometry', { radius: 3, height: 10 }, 'volume'],
+    ['/v1/math/statistics-summary', { values: [1, 2, 2, 4, 9] }, 'standard_deviation'],
+    ['/v1/math/percentage-change', { baseline: 80, current: 100 }, 'percentage_change'],
+    ['/v1/math/percent-error', { true_value: 100, measured_value: 96 }, 'percent_error'],
+    ['/v1/math/gcd-lcm', { values: [12, 18, 30] }, 'lcm'],
+    ['/v1/math/matrix-determinant', { matrix: [[1, 2], [3, 4]] }, 'determinant'],
+    ['/v1/math/proportion-solver', { a: 2, b: 5, c: 8 }, 'x'],
+    ['/v1/math/logarithm-eval', { value: 1000, base: 10 }, 'logarithm'],
+    ['/v1/math/exponent-eval', { base: 27, exponent: 2, root: 3 }, 'root_value'],
+    ['/v1/math/combinatorics', { n: 10, r: 3 }, 'combinations']
+  ];
+
+  for (const [url, payload, marker] of requests) {
+    const response = await app.inject({ method: 'POST', url, headers, payload });
+    assert.equal(response.statusCode, 200, url);
+    assert.notEqual(response.json()[marker], undefined, url);
+  }
+  const status = await app.inject('/v1/status');
+  await app.close();
+
+  assert.equal(status.json().endpoint_families.some((family) => family.family === 'math' && family.routes.length === 15), true);
+  for (const [url] of requests) {
+    assert.equal(debits.some(([route, cost]) => route === url && cost === 1), true, url);
+  }
+});
+
 test('tradie accounting routes return calculations and weighted credit costs', async () => {
   const debits = [];
   const keyStore = {

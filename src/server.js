@@ -75,6 +75,23 @@ import {
   tradieVatReturnSummary
 } from './business-service.js';
 import { bmi, bmr, macroSplit, paceCalculator, tdee } from './health-service.js';
+import {
+  circleGeometry,
+  combinatorics,
+  cylinderGeometry,
+  exponentEval,
+  gcdLcm,
+  logarithmEval,
+  matrixDeterminant,
+  percentError,
+  percentageChange,
+  proportionSolver,
+  pythagoreanSolve,
+  quadraticSolver,
+  sphereGeometry,
+  statisticsSummary,
+  triangleHeron
+} from './math-service.js';
 import { dispatchWebhookEvent } from './webhook-dispatcher.js';
 
 const HOST = process.env.HOST || '127.0.0.1';
@@ -170,6 +187,26 @@ const ENDPOINT_FAMILIES = [
       'POST /v1/health/tdee',
       'POST /v1/health/macro-split',
       'POST /v1/health/pace-calculator'
+    ]
+  },
+  {
+    family: 'math',
+    routes: [
+      'POST /v1/math/quadratic-solver',
+      'POST /v1/math/pythagorean-solve',
+      'POST /v1/math/triangle-heron',
+      'POST /v1/math/circle-geometry',
+      'POST /v1/math/sphere-geometry',
+      'POST /v1/math/cylinder-geometry',
+      'POST /v1/math/statistics-summary',
+      'POST /v1/math/percentage-change',
+      'POST /v1/math/percent-error',
+      'POST /v1/math/gcd-lcm',
+      'POST /v1/math/matrix-determinant',
+      'POST /v1/math/proportion-solver',
+      'POST /v1/math/logarithm-eval',
+      'POST /v1/math/exponent-eval',
+      'POST /v1/math/combinatorics'
     ]
   },
   {
@@ -929,6 +966,66 @@ export async function buildServer({
   app.post('/v1/health/macro-split', billableRoute(1), async (request) => macroSplit(request.body || {}));
 
   app.post('/v1/health/pace-calculator', billableRoute(1), async (request) => paceCalculator(request.body || {}));
+
+  app.post('/v1/math/quadratic-solver', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.quadratic_solver', request.body || {}, () => quadraticSolver(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/pythagorean-solve', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.pythagorean_solve', request.body || {}, () => pythagoreanSolve(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/triangle-heron', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.triangle_heron', request.body || {}, () => triangleHeron(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/circle-geometry', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.circle_geometry', request.body || {}, () => circleGeometry(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/sphere-geometry', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.sphere_geometry', request.body || {}, () => sphereGeometry(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/cylinder-geometry', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.cylinder_geometry', request.body || {}, () => cylinderGeometry(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/statistics-summary', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.statistics_summary', request.body || {}, () => statisticsSummary(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/percentage-change', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.percentage_change', request.body || {}, () => percentageChange(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/percent-error', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.percent_error', request.body || {}, () => percentError(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/gcd-lcm', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.gcd_lcm', request.body || {}, () => gcdLcm(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/matrix-determinant', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.matrix_determinant', request.body || {}, () => matrixDeterminant(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/proportion-solver', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.proportion_solver', request.body || {}, () => proportionSolver(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/logarithm-eval', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.logarithm_eval', request.body || {}, () => logarithmEval(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/exponent-eval', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.exponent_eval', request.body || {}, () => exponentEval(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/v1/math/combinatorics', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.combinatorics', request.body || {}, () => combinatorics(request.body || {}), deterministicCache(604_800))
+  ));
 
   app.post('/v1/tradie/job-margin', billableRoute(2), async (request) => tradieJobMargin(request.body || {}));
 
