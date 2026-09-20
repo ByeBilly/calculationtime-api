@@ -92,6 +92,18 @@ import {
   statisticsSummary,
   triangleHeron
 } from './math-service.js';
+import {
+  brightStarsReference,
+  constantsReference,
+  constellationsReference,
+  countriesReference,
+  elementsReference,
+  httpStatusReference,
+  meteorShowersReference,
+  mimeTypesReference,
+  timezonesReference,
+  unicodeBlocksReference
+} from './reference-data-service.js';
 import { dispatchWebhookEvent } from './webhook-dispatcher.js';
 
 const HOST = process.env.HOST || '127.0.0.1';
@@ -104,6 +116,21 @@ const ENDPOINT_FAMILIES = [
   {
     family: 'public',
     routes: ['GET /', 'GET /health', 'GET /openapi.json', 'GET /v1/status', 'GET /v1/time/utc', 'GET /api/v1/utility/tagline']
+  },
+  {
+    family: 'data',
+    routes: [
+      'GET /v1/data/countries',
+      'GET /v1/data/timezones',
+      'GET /v1/data/elements',
+      'GET /v1/data/constants',
+      'GET /v1/data/http-status',
+      'GET /v1/data/mime-types',
+      'GET /v1/data/unicode-blocks',
+      'GET /v1/data/constellations',
+      'GET /v1/data/stars/bright',
+      'GET /v1/data/meteor-showers'
+    ]
   },
   {
     family: 'time',
@@ -424,6 +451,46 @@ export async function buildServer({
     reply.header('Vercel-CDN-Cache-Control', `public, s-maxage=${ttlSeconds}`);
     return dailyTagline();
   });
+
+  app.get('/v1/data/countries', async (request, reply) => (
+    cached(request, reply, 'data.countries', request.query || {}, () => countriesReference(request.query || {}), deterministicCache(2_592_000))
+  ));
+
+  app.get('/v1/data/timezones', async (request, reply) => (
+    cached(request, reply, 'data.timezones', request.query || {}, () => timezonesReference(request.query || {}), deterministicCache(86_400))
+  ));
+
+  app.get('/v1/data/elements', async (request, reply) => (
+    cached(request, reply, 'data.elements', request.query || {}, () => elementsReference(request.query || {}), deterministicCache(2_592_000))
+  ));
+
+  app.get('/v1/data/constants', async (request, reply) => (
+    cached(request, reply, 'data.constants', request.query || {}, () => constantsReference(request.query || {}), deterministicCache(2_592_000))
+  ));
+
+  app.get('/v1/data/http-status', async (request, reply) => (
+    cached(request, reply, 'data.http_status', request.query || {}, () => httpStatusReference(request.query || {}), deterministicCache(2_592_000))
+  ));
+
+  app.get('/v1/data/mime-types', async (request, reply) => (
+    cached(request, reply, 'data.mime_types', request.query || {}, () => mimeTypesReference(request.query || {}), deterministicCache(2_592_000))
+  ));
+
+  app.get('/v1/data/unicode-blocks', async (request, reply) => (
+    cached(request, reply, 'data.unicode_blocks', request.query || {}, () => unicodeBlocksReference(request.query || {}), deterministicCache(2_592_000))
+  ));
+
+  app.get('/v1/data/constellations', async (request, reply) => (
+    cached(request, reply, 'data.constellations', request.query || {}, () => constellationsReference(request.query || {}), deterministicCache(2_592_000))
+  ));
+
+  app.get('/v1/data/stars/bright', async (request, reply) => (
+    cached(request, reply, 'data.stars_bright', request.query || {}, () => brightStarsReference(request.query || {}), deterministicCache(2_592_000))
+  ));
+
+  app.get('/v1/data/meteor-showers', async (request, reply) => (
+    cached(request, reply, 'data.meteor_showers', request.query || {}, () => meteorShowersReference(request.query || {}), deterministicCache(2_592_000))
+  ));
 
   app.post('/v1/observatory/share', async (request, reply) => {
     reply.header('X-Robots-Tag', 'noindex, nofollow');

@@ -48,6 +48,38 @@ Example response:
 
 The selected tagline is seeded by `YYYY-MM-DD` in UTC, so every user receives the same line for the same global calendar day.
 
+## Public Reference Data Endpoints
+
+These endpoints are public, cacheable JSON reference tables designed for developer docs, dropdowns, calculators, and lightweight lookup tools. Most support `q` text filtering and `limit`.
+
+```bash
+curl 'https://api.calculationtime.com/v1/data/countries?q=aus'
+curl 'https://api.calculationtime.com/v1/data/timezones?q=Australia&at=2026-09-21T00:00:00Z'
+curl 'https://api.calculationtime.com/v1/data/elements?q=oxygen'
+curl 'https://api.calculationtime.com/v1/data/constants?q=planck'
+curl 'https://api.calculationtime.com/v1/data/http-status?q=429'
+curl 'https://api.calculationtime.com/v1/data/mime-types?extension=json'
+curl 'https://api.calculationtime.com/v1/data/unicode-blocks?q=currency'
+curl 'https://api.calculationtime.com/v1/data/constellations?q=crux'
+curl 'https://api.calculationtime.com/v1/data/stars/bright?q=sirius'
+curl 'https://api.calculationtime.com/v1/data/meteor-showers?q=perseids'
+```
+
+Current reference-data routes:
+
+- `GET /v1/data/countries`
+- `GET /v1/data/timezones`
+- `GET /v1/data/elements`
+- `GET /v1/data/constants`
+- `GET /v1/data/http-status`
+- `GET /v1/data/mime-types`
+- `GET /v1/data/unicode-blocks`
+- `GET /v1/data/constellations`
+- `GET /v1/data/stars/bright`
+- `GET /v1/data/meteor-showers`
+
+Reference data is bundled into the API deployment or generated from the host runtime's ICU/tzdb. These endpoints make no external network calls at request time.
+
 ## API Families
 
 - Time by coordinate.
@@ -56,6 +88,7 @@ The selected tagline is seeded by `YYYY-MM-DD` in UTC, so every user receives th
 - Holiday/business-day helpers.
 - Solar position calculations.
 - Astronomy ephemeris calculations.
+- Public reference data.
 - Account credits and usage visibility.
 - Observatory private share links.
 - Daily utility content.

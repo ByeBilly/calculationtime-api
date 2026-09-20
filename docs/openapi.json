@@ -80,6 +80,116 @@
         "security": []
       }
     },
+    "/v1/data/countries": {
+      "get": {
+        "summary": "Country reference table with capitals, ISO codes, dialing codes, and currencies",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/timezones": {
+      "get": {
+        "summary": "IANA timezone reference with current UTC offsets and DST status",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/elements": {
+      "get": {
+        "summary": "Periodic table reference values",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/constants": {
+      "get": {
+        "summary": "Physical and mathematical constants reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/http-status": {
+      "get": {
+        "summary": "HTTP status code directory",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/mime-types": {
+      "get": {
+        "summary": "MIME type and extension reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/unicode-blocks": {
+      "get": {
+        "summary": "Unicode block range reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/constellations": {
+      "get": {
+        "summary": "IAU constellation names, genitives, abbreviations, and quadrants",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/stars/bright": {
+      "get": {
+        "summary": "Bright star reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/data/meteor-showers": {
+      "get": {
+        "summary": "Major annual meteor shower reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
     "/v1/time": {
       "get": {
         "summary": "Get local time for one coordinate",

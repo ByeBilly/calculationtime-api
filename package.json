@@ -16,6 +16,9 @@
     "astronomy-engine": "^2.1.19",
     "fastify": "^5.10.0",
     "luxon": "^3.7.2",
-    "pg": "^8.22.0"
+    "mime-db": "^1.54.0",
+    "periodic-table": "^0.0.8",
+    "pg": "^8.22.0",
+    "world-countries": "^5.1.0"
   }
 }
