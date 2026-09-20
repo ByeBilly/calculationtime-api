@@ -164,12 +164,16 @@ test('public reference data routes return cacheable JSON without authentication'
     ['/v1/data/timezones?q=Australia/Sydney&at=2026-09-21T00:00:00Z', 'time_zone'],
     ['/v1/data/elements?q=oxygen', 'symbol'],
     ['/v1/data/constants?q=planck', 'symbol'],
+    ['/v1/data/materials/density?q=steel', 'density'],
     ['/v1/data/http-status?q=429', 'phrase'],
     ['/v1/data/mime-types?extension=json', 'mime_type'],
     ['/v1/data/unicode-blocks?q=currency', 'name'],
     ['/v1/data/constellations?q=crux', 'abbreviation'],
     ['/v1/data/stars/bright?q=sirius', 'constellation'],
-    ['/v1/data/meteor-showers?q=perseids', 'radiant_constellation']
+    ['/v1/data/meteor-showers?q=perseids', 'radiant_constellation'],
+    ['/api/v1/data/countries?q=australia', 'iso_alpha2'],
+    ['/api/v1/data/materials/density?q=steel', 'density'],
+    ['/api/v1/data/mime-types?extension=json', 'mime_type']
   ];
 
   for (const [url, marker] of requests) {
@@ -183,7 +187,7 @@ test('public reference data routes return cacheable JSON without authentication'
   await app.close();
 
   const dataFamily = status.json().endpoint_families.find((family) => family.family === 'data');
-  assert.equal(dataFamily.routes.length, 10);
+  assert.equal(dataFamily.routes.length, 11);
 });
 
 test('account credits endpoint requires authentication', async () => {

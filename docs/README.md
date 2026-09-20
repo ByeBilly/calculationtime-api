@@ -53,10 +53,15 @@ The selected tagline is seeded by `YYYY-MM-DD` in UTC, so every user receives th
 These endpoints are public, cacheable JSON reference tables designed for developer docs, dropdowns, calculators, and lightweight lookup tools. Most support `q` text filtering and `limit`.
 
 ```bash
+curl 'https://api.calculationtime.com/api/v1/data/countries?q=aus'
+curl 'https://api.calculationtime.com/api/v1/data/materials/density?q=steel'
+curl 'https://api.calculationtime.com/api/v1/data/mime-types?extension=json'
+
 curl 'https://api.calculationtime.com/v1/data/countries?q=aus'
 curl 'https://api.calculationtime.com/v1/data/timezones?q=Australia&at=2026-09-21T00:00:00Z'
 curl 'https://api.calculationtime.com/v1/data/elements?q=oxygen'
 curl 'https://api.calculationtime.com/v1/data/constants?q=planck'
+curl 'https://api.calculationtime.com/v1/data/materials/density?q=aluminium'
 curl 'https://api.calculationtime.com/v1/data/http-status?q=429'
 curl 'https://api.calculationtime.com/v1/data/mime-types?extension=json'
 curl 'https://api.calculationtime.com/v1/data/unicode-blocks?q=currency'
@@ -71,12 +76,15 @@ Current reference-data routes:
 - `GET /v1/data/timezones`
 - `GET /v1/data/elements`
 - `GET /v1/data/constants`
+- `GET /v1/data/materials/density`
 - `GET /v1/data/http-status`
 - `GET /v1/data/mime-types`
 - `GET /v1/data/unicode-blocks`
 - `GET /v1/data/constellations`
 - `GET /v1/data/stars/bright`
 - `GET /v1/data/meteor-showers`
+
+The same data routes are also available under `/api/v1/data/...` for frontend and documentation workflows that expect the API prefix.
 
 Reference data is bundled into the API deployment or generated from the host runtime's ICU/tzdb. These endpoints make no external network calls at request time.
 

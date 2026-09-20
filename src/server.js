@@ -99,6 +99,7 @@ import {
   countriesReference,
   elementsReference,
   httpStatusReference,
+  materialDensitiesReference,
   meteorShowersReference,
   mimeTypesReference,
   timezonesReference,
@@ -124,6 +125,7 @@ const ENDPOINT_FAMILIES = [
       'GET /v1/data/timezones',
       'GET /v1/data/elements',
       'GET /v1/data/constants',
+      'GET /v1/data/materials/density',
       'GET /v1/data/http-status',
       'GET /v1/data/mime-types',
       'GET /v1/data/unicode-blocks',
@@ -452,45 +454,29 @@ export async function buildServer({
     return dailyTagline();
   });
 
-  app.get('/v1/data/countries', async (request, reply) => (
-    cached(request, reply, 'data.countries', request.query || {}, () => countriesReference(request.query || {}), deterministicCache(2_592_000))
-  ));
+  registerReferenceRoute(app, '/v1/data/countries', 'data.countries', countriesReference);
+  registerReferenceRoute(app, '/v1/data/timezones', 'data.timezones', timezonesReference, { ttlSeconds: 86_400 });
+  registerReferenceRoute(app, '/v1/data/elements', 'data.elements', elementsReference);
+  registerReferenceRoute(app, '/v1/data/constants', 'data.constants', constantsReference);
+  registerReferenceRoute(app, '/v1/data/materials/density', 'data.materials_density', materialDensitiesReference);
+  registerReferenceRoute(app, '/v1/data/http-status', 'data.http_status', httpStatusReference);
+  registerReferenceRoute(app, '/v1/data/mime-types', 'data.mime_types', mimeTypesReference);
+  registerReferenceRoute(app, '/v1/data/unicode-blocks', 'data.unicode_blocks', unicodeBlocksReference);
+  registerReferenceRoute(app, '/v1/data/constellations', 'data.constellations', constellationsReference);
+  registerReferenceRoute(app, '/v1/data/stars/bright', 'data.stars_bright', brightStarsReference);
+  registerReferenceRoute(app, '/v1/data/meteor-showers', 'data.meteor_showers', meteorShowersReference);
 
-  app.get('/v1/data/timezones', async (request, reply) => (
-    cached(request, reply, 'data.timezones', request.query || {}, () => timezonesReference(request.query || {}), deterministicCache(86_400))
-  ));
-
-  app.get('/v1/data/elements', async (request, reply) => (
-    cached(request, reply, 'data.elements', request.query || {}, () => elementsReference(request.query || {}), deterministicCache(2_592_000))
-  ));
-
-  app.get('/v1/data/constants', async (request, reply) => (
-    cached(request, reply, 'data.constants', request.query || {}, () => constantsReference(request.query || {}), deterministicCache(2_592_000))
-  ));
-
-  app.get('/v1/data/http-status', async (request, reply) => (
-    cached(request, reply, 'data.http_status', request.query || {}, () => httpStatusReference(request.query || {}), deterministicCache(2_592_000))
-  ));
-
-  app.get('/v1/data/mime-types', async (request, reply) => (
-    cached(request, reply, 'data.mime_types', request.query || {}, () => mimeTypesReference(request.query || {}), deterministicCache(2_592_000))
-  ));
-
-  app.get('/v1/data/unicode-blocks', async (request, reply) => (
-    cached(request, reply, 'data.unicode_blocks', request.query || {}, () => unicodeBlocksReference(request.query || {}), deterministicCache(2_592_000))
-  ));
-
-  app.get('/v1/data/constellations', async (request, reply) => (
-    cached(request, reply, 'data.constellations', request.query || {}, () => constellationsReference(request.query || {}), deterministicCache(2_592_000))
-  ));
-
-  app.get('/v1/data/stars/bright', async (request, reply) => (
-    cached(request, reply, 'data.stars_bright', request.query || {}, () => brightStarsReference(request.query || {}), deterministicCache(2_592_000))
-  ));
-
-  app.get('/v1/data/meteor-showers', async (request, reply) => (
-    cached(request, reply, 'data.meteor_showers', request.query || {}, () => meteorShowersReference(request.query || {}), deterministicCache(2_592_000))
-  ));
+  registerReferenceRoute(app, '/api/v1/data/countries', 'data.countries.alias', countriesReference);
+  registerReferenceRoute(app, '/api/v1/data/timezones', 'data.timezones.alias', timezonesReference, { ttlSeconds: 86_400 });
+  registerReferenceRoute(app, '/api/v1/data/elements', 'data.elements.alias', elementsReference);
+  registerReferenceRoute(app, '/api/v1/data/constants', 'data.constants.alias', constantsReference);
+  registerReferenceRoute(app, '/api/v1/data/materials/density', 'data.materials_density.alias', materialDensitiesReference);
+  registerReferenceRoute(app, '/api/v1/data/http-status', 'data.http_status.alias', httpStatusReference);
+  registerReferenceRoute(app, '/api/v1/data/mime-types', 'data.mime_types.alias', mimeTypesReference);
+  registerReferenceRoute(app, '/api/v1/data/unicode-blocks', 'data.unicode_blocks.alias', unicodeBlocksReference);
+  registerReferenceRoute(app, '/api/v1/data/constellations', 'data.constellations.alias', constellationsReference);
+  registerReferenceRoute(app, '/api/v1/data/stars/bright', 'data.stars_bright.alias', brightStarsReference);
+  registerReferenceRoute(app, '/api/v1/data/meteor-showers', 'data.meteor_showers.alias', meteorShowersReference);
 
   app.post('/v1/observatory/share', async (request, reply) => {
     reply.header('X-Robots-Tag', 'noindex, nofollow');
@@ -1107,6 +1093,12 @@ export async function buildServer({
   app.post('/v1/tradie/invoice-aging', billableRoute(3), async (request) => tradieInvoiceAging(request.body || {}));
 
   return app;
+}
+
+function registerReferenceRoute(app, path, namespace, resolver, options = {}) {
+  app.get(path, async (request, reply) => (
+    cached(request, reply, namespace, request.query || {}, () => resolver(request.query || {}), deterministicCache(options.ttlSeconds || 2_592_000))
+  ));
 }
 
 async function cached(request, reply, namespace, input, calculator, options = {}) {

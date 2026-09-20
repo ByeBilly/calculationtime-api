@@ -18,6 +18,49 @@ const CONSTANTS = [
   { key: 'golden_ratio', symbol: 'φ', value: (1 + Math.sqrt(5)) / 2, unit: 'dimensionless', category: 'mathematical', note: 'computed from sqrt(5)' }
 ];
 
+const MATERIAL_DENSITIES = [
+  ['steel_mild', 'Mild steel', 'metal', 7850, 'kg/m3', 'typical engineering value'],
+  ['steel_stainless', 'Stainless steel', 'metal', 8000, 'kg/m3', 'typical alloy range center'],
+  ['aluminium', 'Aluminium', 'metal', 2700, 'kg/m3', 'typical pure aluminium value'],
+  ['copper', 'Copper', 'metal', 8960, 'kg/m3', 'typical room-temperature value'],
+  ['brass', 'Brass', 'metal', 8500, 'kg/m3', 'typical alloy value'],
+  ['bronze', 'Bronze', 'metal', 8800, 'kg/m3', 'typical alloy value'],
+  ['lead', 'Lead', 'metal', 11340, 'kg/m3', 'typical room-temperature value'],
+  ['zinc', 'Zinc', 'metal', 7140, 'kg/m3', 'typical room-temperature value'],
+  ['titanium', 'Titanium', 'metal', 4500, 'kg/m3', 'typical room-temperature value'],
+  ['gold', 'Gold', 'metal', 19300, 'kg/m3', 'typical room-temperature value'],
+  ['silver', 'Silver', 'metal', 10490, 'kg/m3', 'typical room-temperature value'],
+  ['concrete_normal', 'Concrete, normal weight', 'masonry', 2400, 'kg/m3', 'typical construction value'],
+  ['brick_common', 'Common brick', 'masonry', 1700, 'kg/m3', 'typical construction value'],
+  ['limestone', 'Limestone', 'stone', 2180, 'kg/m3', 'typical building stone value'],
+  ['marble', 'Marble', 'stone', 2500, 'kg/m3', 'typical building stone value'],
+  ['granite', 'Granite', 'stone', 2700, 'kg/m3', 'typical building stone value'],
+  ['glass_soda_lime', 'Soda-lime glass', 'glass', 2500, 'kg/m3', 'typical glass value'],
+  ['water_fresh', 'Fresh water', 'liquid', 1000, 'kg/m3', 'near 4 C maximum density rounded'],
+  ['seawater', 'Seawater', 'liquid', 1030, 'kg/m3', 'typical salinity rounded'],
+  ['cooking_oil', 'Cooking oil', 'liquid', 920, 'kg/m3', 'typical range center'],
+  ['mercury', 'Mercury', 'liquid_metal', 13595, 'kg/m3', 'near room-temperature value'],
+  ['oak', 'Oak', 'wood', 710, 'kg/m3', 'approximate seasoned wood value'],
+  ['pine', 'Pine', 'wood', 500, 'kg/m3', 'approximate seasoned wood value'],
+  ['timber_general', 'Timber, general', 'wood', 600, 'kg/m3', 'planning value; species and moisture vary'],
+  ['plywood', 'Plywood', 'wood', 600, 'kg/m3', 'typical sheet material value'],
+  ['cork', 'Cork', 'wood', 240, 'kg/m3', 'approximate value'],
+  ['abs_plastic', 'ABS plastic', 'plastic', 1050, 'kg/m3', 'typical polymer value'],
+  ['polycarbonate', 'Polycarbonate', 'plastic', 1200, 'kg/m3', 'typical polymer value'],
+  ['acrylic', 'Acrylic PMMA', 'plastic', 1180, 'kg/m3', 'typical polymer value'],
+  ['expanded_polystyrene', 'Expanded polystyrene insulation', 'insulation', 25, 'kg/m3', 'typical low-density range center'],
+  ['glass_wool', 'Glass wool insulation', 'insulation', 12, 'kg/m3', 'typical low-density value'],
+  ['rockwool', 'Rock wool slab', 'insulation', 24, 'kg/m3', 'typical slab value'],
+  ['air_sea_level', 'Air at sea level', 'gas', 1.225, 'kg/m3', 'dry air near 15 C at 1 atm']
+].map(([key, name, category, density, unit, note]) => ({
+  key,
+  name,
+  category,
+  density,
+  unit,
+  note
+}));
+
 const UNICODE_BLOCKS = [
   ['Basic Latin', '0000', '007F', 'Latin, controls, ASCII punctuation'],
   ['Latin-1 Supplement', '0080', '00FF', 'Western European Latin extensions'],
@@ -187,6 +230,10 @@ export function elementsReference(query = {}) {
 
 export function constantsReference(query = {}) {
   return listResponse(filterList(CONSTANTS, query, ['key', 'symbol', 'category', 'note']), 'curated_codified_constants');
+}
+
+export function materialDensitiesReference(query = {}) {
+  return listResponse(filterList(MATERIAL_DENSITIES, query, ['key', 'name', 'category', 'note']), 'curated_engineering_density_reference');
 }
 
 export function httpStatusReference(query = {}) {

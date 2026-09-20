@@ -124,6 +124,17 @@
         "security": []
       }
     },
+    "/v1/data/materials/density": {
+      "get": {
+        "summary": "Common material density reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
     "/v1/data/http-status": {
       "get": {
         "summary": "HTTP status code directory",
@@ -182,6 +193,127 @@
     "/v1/data/meteor-showers": {
       "get": {
         "summary": "Major annual meteor shower reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/countries": {
+      "get": {
+        "summary": "Alias: country reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/timezones": {
+      "get": {
+        "summary": "Alias: IANA timezone reference",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/elements": {
+      "get": {
+        "summary": "Alias: periodic table reference values",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/constants": {
+      "get": {
+        "summary": "Alias: physical and mathematical constants",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/materials/density": {
+      "get": {
+        "summary": "Alias: common material density reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/http-status": {
+      "get": {
+        "summary": "Alias: HTTP status code directory",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/mime-types": {
+      "get": {
+        "summary": "Alias: MIME type and extension reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/unicode-blocks": {
+      "get": {
+        "summary": "Alias: Unicode block range reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/constellations": {
+      "get": {
+        "summary": "Alias: IAU constellation reference",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/stars/bright": {
+      "get": {
+        "summary": "Alias: bright star reference table",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/data/meteor-showers": {
+      "get": {
+        "summary": "Alias: major annual meteor shower reference table",
         "responses": {
           "200": {
             "description": "Successful response"

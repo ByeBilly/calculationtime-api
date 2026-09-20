@@ -7,6 +7,7 @@ import {
   countriesReference,
   elementsReference,
   httpStatusReference,
+  materialDensitiesReference,
   meteorShowersReference,
   mimeTypesReference,
   timezonesReference,
@@ -28,6 +29,7 @@ test('returns country and timezone reference data with filters', () => {
 test('returns developer and science reference tables', () => {
   assert.equal(elementsReference({ q: 'oxygen' }).data[0].symbol, 'O');
   assert.equal(constantsReference({ q: 'planck' }).data[0].symbol, 'h');
+  assert.equal(materialDensitiesReference({ q: 'steel' }).data[0].unit, 'kg/m3');
   assert.equal(httpStatusReference({ q: '429' }).data[0].phrase, 'Too Many Requests');
   assert.ok(mimeTypesReference({ extension: 'json' }).data.some((row) => row.mime_type === 'application/json'));
   assert.equal(unicodeBlocksReference({ q: 'currency' }).data[0].name, 'Currency Symbols');
