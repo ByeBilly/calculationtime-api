@@ -10,6 +10,8 @@ https://api.calculationtime.com
 
 The API is built around visible assumptions and auditable calculation methods. It is useful when a product needs more than a loose snippet: scheduling rules, local time, business-day windows, geospatial estimates, solar geometry, or calculation utilities that should be repeatable and explainable.
 
+For the current running route inventory, see [`docs/running-endpoints-directory.md`](./running-endpoints-directory.md). It is generated from the OpenAPI contract after the live service has loaded the latest code.
+
 ## Public Demo Endpoint
 
 ### `GET /v1/time/utc`
