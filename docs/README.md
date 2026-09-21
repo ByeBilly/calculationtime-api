@@ -980,6 +980,75 @@ The following `/api/v1/...` endpoints are staged as zero-cost developer utilitie
 - `/api/v1/math/arithmetic-progression`
 - `/api/v1/math/geometric-progression`
 
+## Batch Three Zero-Cost Developer Endpoints
+
+Batch three adds 50 more deterministic `/api/v1/...` utility endpoints for scheduling, colour/design, network debugging, finance, and specialist math. All are `POST`, API-key protected, locally computed, and cost `1` credit per call.
+
+### Scheduling and recurrence
+
+- `/api/v1/schedule/cron-parser`
+- `/api/v1/schedule/workday-shift`
+- `/api/v1/schedule/date-range-split`
+- `/api/v1/schedule/interval-overlap`
+- `/api/v1/schedule/project-timeline`
+- `/api/v1/schedule/shift-calculator`
+- `/api/v1/schedule/countdown-workdays`
+- `/api/v1/schedule/recurring-monthly`
+- `/api/v1/schedule/age-in-days`
+- `/api/v1/schedule/time-blocks`
+
+### Colour, design, and typography
+
+- `/api/v1/color/hex-to-rgb`
+- `/api/v1/color/rgb-to-hex`
+- `/api/v1/color/rgb-to-hsl`
+- `/api/v1/color/hsl-to-rgb`
+- `/api/v1/color/contrast-ratio`
+- `/api/v1/color/luminance`
+- `/api/v1/color/tint-shade`
+- `/api/v1/color/cmyk-conversion`
+- `/api/v1/typography/px-to-rem`
+- `/api/v1/typography/line-height`
+
+### Network, IP, and request utilities
+
+- `/api/v1/network/ip-parse`
+- `/api/v1/network/cidr-range`
+- `/api/v1/network/user-agent-parse`
+- `/api/v1/network/query-string-parse`
+- `/api/v1/network/slug-sanitize`
+- `/api/v1/network/port-lookup`
+- `/api/v1/network/http-status-lookup`
+- `/api/v1/network/mime-lookup`
+- `/api/v1/network/uuid-v5`
+- `/api/v1/network/mac-format`
+
+### Finance and investment extensions
+
+- `/api/v1/finance/npv`
+- `/api/v1/finance/irr-approximation`
+- `/api/v1/finance/bond-yield`
+- `/api/v1/finance/depreciation-straight-line`
+- `/api/v1/finance/depreciation-declining`
+- `/api/v1/finance/loan-payoff-extra`
+- `/api/v1/finance/effective-annual-rate`
+- `/api/v1/finance/markup-margin-split`
+- `/api/v1/finance/break-even-multi`
+- `/api/v1/finance/tip-split`
+
+### Specialist math extensions
+
+- `/api/v1/math/matrix-multiply`
+- `/api/v1/math/vector-magnitude`
+- `/api/v1/math/vector-dot-product`
+- `/api/v1/math/quadratic-vertex`
+- `/api/v1/math/factorial-gamma`
+- `/api/v1/math/fibonacci`
+- `/api/v1/math/base-n-convert`
+- `/api/v1/math/percentile-calc`
+- `/api/v1/math/wind-chill`
+- `/api/v1/math/heat-index`
+
 ## Health And Practical Body Math Endpoints
 
 These endpoints are protected, billable, and cost `1` credit each. They are arithmetic support tools, not medical advice.

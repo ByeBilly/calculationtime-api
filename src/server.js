@@ -58,6 +58,58 @@ import {
 } from './astronomy-service.js';
 import { unitConversion } from './conversion-service.js';
 import { base64Decode, base64Encode, hashPayload } from './crypto-service.js';
+import {
+  ageInDays,
+  baseNConvert,
+  bondYield,
+  breakEvenMulti,
+  cmykConversion,
+  cidrRange,
+  contrastRatio,
+  countdownWorkdays,
+  cronParser,
+  dateRangeSplit,
+  depreciationDeclining,
+  depreciationStraightLine,
+  effectiveAnnualRate,
+  factorialGamma,
+  fibonacci,
+  heatIndex,
+  hexToRgb,
+  hslToRgb,
+  httpStatusLookup,
+  intervalOverlap,
+  ipParse,
+  irrApproximation,
+  lineHeight,
+  loanPayoffExtra,
+  luminance,
+  macFormat,
+  markupMarginSplit,
+  matrixMultiply,
+  mimeLookup,
+  npv,
+  percentileCalc,
+  portLookup,
+  projectTimeline,
+  pxToRem,
+  queryStringParse,
+  quadraticVertex,
+  recurringMonthly,
+  rgbToHex,
+  rgbToHsl,
+  shiftCalculator,
+  slugSanitize,
+  timeBlocks,
+  tintShade,
+  tipSplit,
+  userAgentParse,
+  uuidV5,
+  vectorDotProduct,
+  vectorMagnitude,
+  windChill,
+  workdayShift
+} from './batch3-service.js';
 import { solarPosition } from './solar-service.js';
 import { dailyTagline, secondsUntilNextUtcMidnight } from './tagline-service.js';
 import { createObservatoryShareStore } from './observatory-share-store.js';
@@ -180,6 +232,51 @@ const ENDPOINT_FAMILIES = [
     ]
   },
   {
+    family: 'schedule',
+    routes: [
+      'POST /api/v1/schedule/cron-parser',
+      'POST /api/v1/schedule/workday-shift',
+      'POST /api/v1/schedule/date-range-split',
+      'POST /api/v1/schedule/interval-overlap',
+      'POST /api/v1/schedule/project-timeline',
+      'POST /api/v1/schedule/shift-calculator',
+      'POST /api/v1/schedule/countdown-workdays',
+      'POST /api/v1/schedule/recurring-monthly',
+      'POST /api/v1/schedule/age-in-days',
+      'POST /api/v1/schedule/time-blocks'
+    ]
+  },
+  {
+    family: 'color',
+    routes: [
+      'POST /api/v1/color/hex-to-rgb',
+      'POST /api/v1/color/rgb-to-hex',
+      'POST /api/v1/color/rgb-to-hsl',
+      'POST /api/v1/color/hsl-to-rgb',
+      'POST /api/v1/color/contrast-ratio',
+      'POST /api/v1/color/luminance',
+      'POST /api/v1/color/tint-shade',
+      'POST /api/v1/color/cmyk-conversion',
+      'POST /api/v1/typography/px-to-rem',
+      'POST /api/v1/typography/line-height'
+    ]
+  },
+  {
+    family: 'network',
+    routes: [
+      'POST /api/v1/network/ip-parse',
+      'POST /api/v1/network/cidr-range',
+      'POST /api/v1/network/user-agent-parse',
+      'POST /api/v1/network/query-string-parse',
+      'POST /api/v1/network/slug-sanitize',
+      'POST /api/v1/network/port-lookup',
+      'POST /api/v1/network/http-status-lookup',
+      'POST /api/v1/network/mime-lookup',
+      'POST /api/v1/network/uuid-v5',
+      'POST /api/v1/network/mac-format'
+    ]
+  },
+  {
     family: 'time',
     routes: ['GET /v1/time', 'POST /v1/time/batch']
   },
@@ -259,7 +356,17 @@ const ENDPOINT_FAMILIES = [
       'POST /v1/finance/markup-margin',
       'POST /v1/finance/break-even',
       'POST /v1/finance/salestax',
-      'POST /v1/finance/cagr'
+      'POST /v1/finance/cagr',
+      'POST /api/v1/finance/npv',
+      'POST /api/v1/finance/irr-approximation',
+      'POST /api/v1/finance/bond-yield',
+      'POST /api/v1/finance/depreciation-straight-line',
+      'POST /api/v1/finance/depreciation-declining',
+      'POST /api/v1/finance/loan-payoff-extra',
+      'POST /api/v1/finance/effective-annual-rate',
+      'POST /api/v1/finance/markup-margin-split',
+      'POST /api/v1/finance/break-even-multi',
+      'POST /api/v1/finance/tip-split'
     ]
   },
   {
@@ -299,7 +406,17 @@ const ENDPOINT_FAMILIES = [
       'POST /api/v1/math/cone-geometry',
       'POST /api/v1/math/torus-geometry',
       'POST /api/v1/math/arithmetic-progression',
-      'POST /api/v1/math/geometric-progression'
+      'POST /api/v1/math/geometric-progression',
+      'POST /api/v1/math/matrix-multiply',
+      'POST /api/v1/math/vector-magnitude',
+      'POST /api/v1/math/vector-dot-product',
+      'POST /api/v1/math/quadratic-vertex',
+      'POST /api/v1/math/factorial-gamma',
+      'POST /api/v1/math/fibonacci',
+      'POST /api/v1/math/base-n-convert',
+      'POST /api/v1/math/percentile-calc',
+      'POST /api/v1/math/wind-chill',
+      'POST /api/v1/math/heat-index'
     ]
   },
   {
@@ -1007,6 +1124,65 @@ export async function buildServer({
   app.post('/api/v1/crypto/base64-decode', billableRoute(1), async (request, reply) => (
     cached(request, reply, 'crypto.base64_decode', request.body || {}, () => base64Decode(request.body || {}), deterministicCache(604_800))
   ));
+
+  const batch3Routes = [
+    ['/api/v1/schedule/cron-parser', 'schedule.cron_parser', cronParser],
+    ['/api/v1/schedule/workday-shift', 'schedule.workday_shift', workdayShift],
+    ['/api/v1/schedule/date-range-split', 'schedule.date_range_split', dateRangeSplit],
+    ['/api/v1/schedule/interval-overlap', 'schedule.interval_overlap', intervalOverlap],
+    ['/api/v1/schedule/project-timeline', 'schedule.project_timeline', projectTimeline],
+    ['/api/v1/schedule/shift-calculator', 'schedule.shift_calculator', shiftCalculator],
+    ['/api/v1/schedule/countdown-workdays', 'schedule.countdown_workdays', countdownWorkdays],
+    ['/api/v1/schedule/recurring-monthly', 'schedule.recurring_monthly', recurringMonthly],
+    ['/api/v1/schedule/age-in-days', 'schedule.age_in_days', ageInDays],
+    ['/api/v1/schedule/time-blocks', 'schedule.time_blocks', timeBlocks],
+    ['/api/v1/color/hex-to-rgb', 'color.hex_to_rgb', hexToRgb],
+    ['/api/v1/color/rgb-to-hex', 'color.rgb_to_hex', rgbToHex],
+    ['/api/v1/color/rgb-to-hsl', 'color.rgb_to_hsl', rgbToHsl],
+    ['/api/v1/color/hsl-to-rgb', 'color.hsl_to_rgb', hslToRgb],
+    ['/api/v1/color/contrast-ratio', 'color.contrast_ratio', contrastRatio],
+    ['/api/v1/color/luminance', 'color.luminance', luminance],
+    ['/api/v1/color/tint-shade', 'color.tint_shade', tintShade],
+    ['/api/v1/color/cmyk-conversion', 'color.cmyk_conversion', cmykConversion],
+    ['/api/v1/typography/px-to-rem', 'typography.px_to_rem', pxToRem],
+    ['/api/v1/typography/line-height', 'typography.line_height', lineHeight],
+    ['/api/v1/network/ip-parse', 'network.ip_parse', ipParse],
+    ['/api/v1/network/cidr-range', 'network.cidr_range', cidrRange],
+    ['/api/v1/network/user-agent-parse', 'network.user_agent_parse', userAgentParse],
+    ['/api/v1/network/query-string-parse', 'network.query_string_parse', queryStringParse],
+    ['/api/v1/network/slug-sanitize', 'network.slug_sanitize', slugSanitize],
+    ['/api/v1/network/port-lookup', 'network.port_lookup', portLookup],
+    ['/api/v1/network/http-status-lookup', 'network.http_status_lookup', httpStatusLookup],
+    ['/api/v1/network/mime-lookup', 'network.mime_lookup', mimeLookup],
+    ['/api/v1/network/uuid-v5', 'network.uuid_v5', uuidV5],
+    ['/api/v1/network/mac-format', 'network.mac_format', macFormat],
+    ['/api/v1/finance/npv', 'finance.npv', npv],
+    ['/api/v1/finance/irr-approximation', 'finance.irr_approximation', irrApproximation],
+    ['/api/v1/finance/bond-yield', 'finance.bond_yield', bondYield],
+    ['/api/v1/finance/depreciation-straight-line', 'finance.depreciation_straight_line', depreciationStraightLine],
+    ['/api/v1/finance/depreciation-declining', 'finance.depreciation_declining', depreciationDeclining],
+    ['/api/v1/finance/loan-payoff-extra', 'finance.loan_payoff_extra', loanPayoffExtra],
+    ['/api/v1/finance/effective-annual-rate', 'finance.effective_annual_rate', effectiveAnnualRate],
+    ['/api/v1/finance/markup-margin-split', 'finance.markup_margin_split', markupMarginSplit],
+    ['/api/v1/finance/break-even-multi', 'finance.break_even_multi', breakEvenMulti],
+    ['/api/v1/finance/tip-split', 'finance.tip_split', tipSplit],
+    ['/api/v1/math/matrix-multiply', 'math.matrix_multiply', matrixMultiply],
+    ['/api/v1/math/vector-magnitude', 'math.vector_magnitude', vectorMagnitude],
+    ['/api/v1/math/vector-dot-product', 'math.vector_dot_product', vectorDotProduct],
+    ['/api/v1/math/quadratic-vertex', 'math.quadratic_vertex', quadraticVertex],
+    ['/api/v1/math/factorial-gamma', 'math.factorial_gamma', factorialGamma],
+    ['/api/v1/math/fibonacci', 'math.fibonacci', fibonacci],
+    ['/api/v1/math/base-n-convert', 'math.base_n_convert', baseNConvert],
+    ['/api/v1/math/percentile-calc', 'math.percentile_calc', percentileCalc],
+    ['/api/v1/math/wind-chill', 'math.wind_chill', windChill],
+    ['/api/v1/math/heat-index', 'math.heat_index', heatIndex]
+  ];
+
+  for (const [path, namespace, handler] of batch3Routes) {
+    app.post(path, billableRoute(1), async (request, reply) => (
+      cached(request, reply, namespace, request.body || {}, () => handler(request.body || {}), deterministicCache(604_800))
+    ));
+  }
 
   app.get('/v1/astronomy/ephemeris', billableRoute(), async (request, reply) => (
     cached(request, reply, 'astronomy.ephemeris', request.query, () => ephemerisForDate(request.query))

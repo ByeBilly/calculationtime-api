@@ -500,7 +500,7 @@ Sample response shape:
 
 # Endpoint Reference
 
-The regenerated OpenAPI contract now exposes `156` unique paths. Batch two currently includes `34` visible zero-cost developer utility routes from the Telegram-visible list: 10 conversion routes, 5 crypto/encoding routes, 9 astronomy routes, and 10 engineering/math routes. Some middle sections of Billy's original 50-endpoint prompt were truncated in this agent context, so no unstated endpoints were invented.
+The regenerated OpenAPI contract now exposes `206` unique paths. Batch two includes `34` visible zero-cost developer utility routes. Batch three adds `50` deterministic zero-cost developer endpoints across scheduling, colour/design/typography, network utilities, finance extensions, and specialist math.
 
 ## Batch Two Developer Utility Routes
 
@@ -542,6 +542,18 @@ All routes below are `POST`, API-key protected, one-credit, deterministic local 
 | POST | `/api/v1/math/torus-geometry` | `{"major_radius":5,"minor_radius":2}` | Torus surface area and volume |
 | POST | `/api/v1/math/arithmetic-progression` | `{"first":2,"difference":3,"n":10}` | Arithmetic sequence term and sum |
 | POST | `/api/v1/math/geometric-progression` | `{"first":2,"ratio":3,"n":5}` | Geometric sequence term and sum |
+
+## Batch Three Developer Utility Routes
+
+All routes below are `POST`, API-key protected, one-credit, deterministic local calculations. The exact request-body examples and generated client contract are in `docs/openapi.json`.
+
+| Group | Paths |
+|---|---|
+| Scheduling and recurrence | `/api/v1/schedule/cron-parser`, `/api/v1/schedule/workday-shift`, `/api/v1/schedule/date-range-split`, `/api/v1/schedule/interval-overlap`, `/api/v1/schedule/project-timeline`, `/api/v1/schedule/shift-calculator`, `/api/v1/schedule/countdown-workdays`, `/api/v1/schedule/recurring-monthly`, `/api/v1/schedule/age-in-days`, `/api/v1/schedule/time-blocks` |
+| Colour, design, and typography | `/api/v1/color/hex-to-rgb`, `/api/v1/color/rgb-to-hex`, `/api/v1/color/rgb-to-hsl`, `/api/v1/color/hsl-to-rgb`, `/api/v1/color/contrast-ratio`, `/api/v1/color/luminance`, `/api/v1/color/tint-shade`, `/api/v1/color/cmyk-conversion`, `/api/v1/typography/px-to-rem`, `/api/v1/typography/line-height` |
+| Network, IP, and request utilities | `/api/v1/network/ip-parse`, `/api/v1/network/cidr-range`, `/api/v1/network/user-agent-parse`, `/api/v1/network/query-string-parse`, `/api/v1/network/slug-sanitize`, `/api/v1/network/port-lookup`, `/api/v1/network/http-status-lookup`, `/api/v1/network/mime-lookup`, `/api/v1/network/uuid-v5`, `/api/v1/network/mac-format` |
+| Finance and investment extensions | `/api/v1/finance/npv`, `/api/v1/finance/irr-approximation`, `/api/v1/finance/bond-yield`, `/api/v1/finance/depreciation-straight-line`, `/api/v1/finance/depreciation-declining`, `/api/v1/finance/loan-payoff-extra`, `/api/v1/finance/effective-annual-rate`, `/api/v1/finance/markup-margin-split`, `/api/v1/finance/break-even-multi`, `/api/v1/finance/tip-split` |
+| Specialist math extensions | `/api/v1/math/matrix-multiply`, `/api/v1/math/vector-magnitude`, `/api/v1/math/vector-dot-product`, `/api/v1/math/quadratic-vertex`, `/api/v1/math/factorial-gamma`, `/api/v1/math/fibonacci`, `/api/v1/math/base-n-convert`, `/api/v1/math/percentile-calc`, `/api/v1/math/wind-chill`, `/api/v1/math/heat-index` |
 
 The following catalog is generated from the current OpenAPI contract. For POST routes, the example body shown is the documented sample request body. For GET routes, query parameters are listed where the OpenAPI generator declares them; public reference-data routes also support practical filters such as `q`, `limit`, and route-specific filters like `extension` for MIME types and `at` for timezones.
 
