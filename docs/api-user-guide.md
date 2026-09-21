@@ -28,10 +28,11 @@ The API is served by the `time-coordinate-api` Node/Fastify service on the Munic
 
 ### Route Prefixes
 
-Most CalculationTime API routes use `/v1/...`. Public reference-data endpoints are available in both forms:
+Most original CalculationTime API routes use `/v1/...`. Public reference-data endpoints are available in both forms, and the batch-two developer utility routes intentionally use `/api/v1/...`:
 
 - Canonical backend form: `/v1/data/...`
 - Frontend/developer alias form: `/api/v1/data/...`
+- Batch-two developer utility form: `/api/v1/convert/...`, `/api/v1/astronomy/...`, and `/api/v1/math/...`
 
 Both return the same style of JSON and make no external network calls at request time.
 
@@ -498,6 +499,42 @@ Sample response shape:
 
 
 # Endpoint Reference
+
+The regenerated OpenAPI contract now exposes `149` unique paths. Batch two added `27` visible zero-cost developer utility routes from the untruncated Telegram-visible list: 8 conversion routes, 9 astronomy routes, and 10 engineering/math routes. The middle of Billy's original 50-endpoint prompt was truncated in this agent context, so no unstated endpoints were invented.
+
+## Batch Two Developer Utility Routes
+
+All routes below are `POST`, API-key protected, one-credit, deterministic local calculations.
+
+| Method | Path | Sample body | Description |
+|---|---|---|---|
+| POST | `/api/v1/convert/length` | `{"value":1,"from":"mile","to":"kilometer"}` | Length unit conversion |
+| POST | `/api/v1/convert/weight` | `{"value":10,"from":"pound","to":"kilogram"}` | Weight/mass unit conversion |
+| POST | `/api/v1/convert/temperature` | `{"value":32,"from":"fahrenheit","to":"celsius"}` | Temperature scale conversion |
+| POST | `/api/v1/convert/area` | `{"value":1,"from":"acre","to":"square_meter"}` | Area unit conversion |
+| POST | `/api/v1/convert/volume` | `{"value":1,"from":"gallon","to":"liter"}` | Volume unit conversion |
+| POST | `/api/v1/convert/speed` | `{"value":100,"from":"kmh","to":"mph"}` | Speed unit conversion |
+| POST | `/api/v1/convert/pressure` | `{"value":1,"from":"atmosphere","to":"psi"}` | Pressure unit conversion |
+| POST | `/api/v1/convert/energy` | `{"value":1,"from":"kilowatt_hour","to":"joule"}` | Energy unit conversion |
+| POST | `/api/v1/astronomy/solar-declination` | `{"date":"2026-06-21"}` | Approximate solar declination |
+| POST | `/api/v1/astronomy/equation-of-time` | `{"date":"2026-06-21"}` | Apparent solar time offset |
+| POST | `/api/v1/astronomy/moon-illumination` | `{"timestamp":"2026-06-21T00:00:00Z"}` | Moon illumination and phase angle |
+| POST | `/api/v1/astronomy/sidereal-conversion` | `{"solar_hours":24}` | Solar-time interval to sidereal interval |
+| POST | `/api/v1/astronomy/golden-hour` | `{"date":"2026-06-21","lat":48.137154,"lon":11.576124}` | Morning/evening golden-hour windows |
+| POST | `/api/v1/astronomy/blue-hour` | `{"date":"2026-06-21","lat":48.137154,"lon":11.576124}` | Morning/evening blue-hour windows |
+| POST | `/api/v1/astronomy/season-progress` | `{"timestamp":"2026-06-21T00:00:00Z"}` | Astronomical season progress |
+| POST | `/api/v1/astronomy/zodiac-sign` | `{"date":"2026-06-21"}` | Tropical zodiac sign by date |
+| POST | `/api/v1/astronomy/daylight-delta` | `{"date":"2026-06-21","lat":48.137154,"lon":11.576124}` | Daylight gain/loss versus previous day |
+| POST | `/api/v1/math/ohm-law` | `{"voltage":12,"resistance":4}` | Ohm law solver |
+| POST | `/api/v1/math/projectile-range` | `{"velocity":30,"angle_degrees":45}` | Ideal projectile motion |
+| POST | `/api/v1/math/kinetic-energy` | `{"mass":10,"velocity":12}` | Kinetic energy |
+| POST | `/api/v1/math/potential-energy` | `{"mass":10,"height":5}` | Gravitational potential energy |
+| POST | `/api/v1/math/circle-sector` | `{"radius":10,"angle_degrees":90}` | Sector area, arc, chord |
+| POST | `/api/v1/math/sphere-surface` | `{"radius":3}` | Sphere surface area and volume |
+| POST | `/api/v1/math/cone-geometry` | `{"radius":3,"height":4}` | Cone surface area and volume |
+| POST | `/api/v1/math/torus-geometry` | `{"major_radius":5,"minor_radius":2}` | Torus surface area and volume |
+| POST | `/api/v1/math/arithmetic-progression` | `{"first":2,"difference":3,"n":10}` | Arithmetic sequence term and sum |
+| POST | `/api/v1/math/geometric-progression` | `{"first":2,"ratio":3,"n":5}` | Geometric sequence term and sum |
 
 The following catalog is generated from the current OpenAPI contract. For POST routes, the example body shown is the documented sample request body. For GET routes, query parameters are listed where the OpenAPI generator declares them; public reference-data routes also support practical filters such as `q`, `limit`, and route-specific filters like `extension` for MIME types and `at` for timezones.
 

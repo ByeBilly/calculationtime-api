@@ -35,18 +35,28 @@ import {
   cruxCurrent,
   cruxHourly,
   cruxMidnightRange,
+  blueHour,
   dayLength,
+  daylightDelta,
   ephemerisForDate,
+  equationOfTime,
   equinoxSolstice,
+  goldenHour,
   julianDate,
+  moonIllumination,
   moonPhase,
   moonPosition,
   polarNightCheck,
+  seasonProgress,
   siderealTime,
+  siderealConversion,
+  solarDeclination,
   solarNoon,
   sunPosition,
-  twilightCalculator
+  twilightCalculator,
+  zodiacSign
 } from './astronomy-service.js';
+import { unitConversion } from './conversion-service.js';
 import { solarPosition } from './solar-service.js';
 import { dailyTagline, secondsUntilNextUtcMidnight } from './tagline-service.js';
 import { createObservatoryShareStore } from './observatory-share-store.js';
@@ -78,18 +88,27 @@ import { bmi, bmr, macroSplit, paceCalculator, tdee } from './health-service.js'
 import {
   circleGeometry,
   combinatorics,
+  arithmeticProgression,
+  circleSector,
+  coneGeometry,
   cylinderGeometry,
   exponentEval,
+  geometricProgression,
   gcdLcm,
+  kineticEnergy,
   logarithmEval,
   matrixDeterminant,
+  ohmLaw,
   percentError,
   percentageChange,
+  potentialEnergy,
+  projectileRange,
   proportionSolver,
   pythagoreanSolve,
   quadraticSolver,
   sphereGeometry,
   statisticsSummary,
+  torusGeometry,
   triangleHeron
 } from './math-service.js';
 import {
@@ -132,6 +151,19 @@ const ENDPOINT_FAMILIES = [
       'GET /v1/data/constellations',
       'GET /v1/data/stars/bright',
       'GET /v1/data/meteor-showers'
+    ]
+  },
+  {
+    family: 'conversion',
+    routes: [
+      'POST /api/v1/convert/length',
+      'POST /api/v1/convert/weight',
+      'POST /api/v1/convert/temperature',
+      'POST /api/v1/convert/area',
+      'POST /api/v1/convert/volume',
+      'POST /api/v1/convert/speed',
+      'POST /api/v1/convert/pressure',
+      'POST /api/v1/convert/energy'
     ]
   },
   {
@@ -186,7 +218,16 @@ const ENDPOINT_FAMILIES = [
       'POST /v1/astronomy/sun-position',
       'POST /v1/astronomy/moon-position',
       'POST /v1/astronomy/day-length',
-      'POST /v1/astronomy/polar-night-check'
+      'POST /v1/astronomy/polar-night-check',
+      'POST /api/v1/astronomy/solar-declination',
+      'POST /api/v1/astronomy/equation-of-time',
+      'POST /api/v1/astronomy/moon-illumination',
+      'POST /api/v1/astronomy/sidereal-conversion',
+      'POST /api/v1/astronomy/golden-hour',
+      'POST /api/v1/astronomy/blue-hour',
+      'POST /api/v1/astronomy/season-progress',
+      'POST /api/v1/astronomy/zodiac-sign',
+      'POST /api/v1/astronomy/daylight-delta'
     ]
   },
   {
@@ -235,7 +276,17 @@ const ENDPOINT_FAMILIES = [
       'POST /v1/math/proportion-solver',
       'POST /v1/math/logarithm-eval',
       'POST /v1/math/exponent-eval',
-      'POST /v1/math/combinatorics'
+      'POST /v1/math/combinatorics',
+      'POST /api/v1/math/ohm-law',
+      'POST /api/v1/math/projectile-range',
+      'POST /api/v1/math/kinetic-energy',
+      'POST /api/v1/math/potential-energy',
+      'POST /api/v1/math/circle-sector',
+      'POST /api/v1/math/sphere-surface',
+      'POST /api/v1/math/cone-geometry',
+      'POST /api/v1/math/torus-geometry',
+      'POST /api/v1/math/arithmetic-progression',
+      'POST /api/v1/math/geometric-progression'
     ]
   },
   {
@@ -917,6 +968,12 @@ export async function buildServer({
     cached(request, reply, 'holidays.is_business_day', request.query, () => isBusinessDayInJurisdiction(request.query))
   ));
 
+  for (const group of ['length', 'weight', 'temperature', 'area', 'volume', 'speed', 'pressure', 'energy']) {
+    app.post(`/api/v1/convert/${group}`, billableRoute(1), async (request, reply) => (
+      cached(request, reply, `convert.${group}`, request.body || {}, () => unitConversion(group, request.body || {}), deterministicCache(604_800))
+    ));
+  }
+
   app.get('/v1/astronomy/ephemeris', billableRoute(), async (request, reply) => (
     cached(request, reply, 'astronomy.ephemeris', request.query, () => ephemerisForDate(request.query))
   ));
@@ -965,6 +1022,42 @@ export async function buildServer({
 
   app.post('/v1/astronomy/polar-night-check', billableRoute(1), async (request, reply) => (
     cached(request, reply, 'astronomy.polar_night', request.body || {}, () => polarNightCheck(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/solar-declination', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.solar_declination', request.body || {}, () => solarDeclination(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/equation-of-time', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.equation_of_time', request.body || {}, () => equationOfTime(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/moon-illumination', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.moon_illumination', request.body || {}, () => moonIllumination(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/sidereal-conversion', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.sidereal_conversion', request.body || {}, () => siderealConversion(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/golden-hour', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.golden_hour', request.body || {}, () => goldenHour(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/blue-hour', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.blue_hour', request.body || {}, () => blueHour(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/season-progress', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.season_progress', request.body || {}, () => seasonProgress(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/zodiac-sign', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.zodiac_sign', request.body || {}, () => zodiacSign(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/astronomy/daylight-delta', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'astronomy.daylight_delta', request.body || {}, () => daylightDelta(request.body || {}), deterministicCache(604_800))
   ));
 
   app.get('/v1/solar/position', billableRoute(), async (request, reply) => (
@@ -1078,6 +1171,46 @@ export async function buildServer({
 
   app.post('/v1/math/combinatorics', billableRoute(1), async (request, reply) => (
     cached(request, reply, 'math.combinatorics', request.body || {}, () => combinatorics(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/ohm-law', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.ohm_law', request.body || {}, () => ohmLaw(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/projectile-range', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.projectile_range', request.body || {}, () => projectileRange(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/kinetic-energy', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.kinetic_energy', request.body || {}, () => kineticEnergy(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/potential-energy', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.potential_energy', request.body || {}, () => potentialEnergy(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/circle-sector', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.circle_sector', request.body || {}, () => circleSector(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/sphere-surface', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.sphere_surface', request.body || {}, () => sphereGeometry(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/cone-geometry', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.cone_geometry', request.body || {}, () => coneGeometry(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/torus-geometry', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.torus_geometry', request.body || {}, () => torusGeometry(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/arithmetic-progression', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.arithmetic_progression', request.body || {}, () => arithmeticProgression(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/math/geometric-progression', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'math.geometric_progression', request.body || {}, () => geometricProgression(request.body || {}), deterministicCache(604_800))
   ));
 
   app.post('/v1/tradie/job-margin', billableRoute(2), async (request) => tradieJobMargin(request.body || {}));

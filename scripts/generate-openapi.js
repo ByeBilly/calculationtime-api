@@ -106,6 +106,14 @@ const routes = [
   billableGet('/v1/holidays', 'Holidays for a jurisdiction and year', ['jurisdiction', 'year']),
   billableGet('/v1/holidays/next', 'Next holiday for a jurisdiction', ['jurisdiction', 'from']),
   billableGet('/v1/holidays/is-business-day', 'Business-day check for one date', ['jurisdiction', 'date']),
+  billablePost('/api/v1/convert/length', 'Zero-cost length unit conversion', 1, { value: 1, from: 'mile', to: 'kilometer' }),
+  billablePost('/api/v1/convert/weight', 'Zero-cost weight and mass unit conversion', 1, { value: 10, from: 'pound', to: 'kilogram' }),
+  billablePost('/api/v1/convert/temperature', 'Temperature scale conversion', 1, { value: 32, from: 'fahrenheit', to: 'celsius' }),
+  billablePost('/api/v1/convert/area', 'Area unit conversion', 1, { value: 1, from: 'acre', to: 'square_meter' }),
+  billablePost('/api/v1/convert/volume', 'Volume unit conversion', 1, { value: 1, from: 'gallon', to: 'liter' }),
+  billablePost('/api/v1/convert/speed', 'Speed unit conversion', 1, { value: 100, from: 'kmh', to: 'mph' }),
+  billablePost('/api/v1/convert/pressure', 'Pressure unit conversion', 1, { value: 1, from: 'atmosphere', to: 'psi' }),
+  billablePost('/api/v1/convert/energy', 'Energy unit conversion', 1, { value: 1, from: 'kilowatt_hour', to: 'joule' }),
   billableGet('/v1/geo/distance', 'Distance between two coordinates', ['lat1', 'lon1', 'lat2', 'lon2']),
   billablePost('/v1/geo/distance/batch', 'Batch distance calculations', 1, {
     pairs: [{ from: { lat: 48.137154, lon: 11.576124 }, to: { lat: 51.5072, lon: -0.1276 } }]
@@ -171,6 +179,15 @@ const routes = [
     lat: 80,
     lon: 0
   }),
+  billablePost('/api/v1/astronomy/solar-declination', 'Approximate solar declination angle for a date', 1, { date: '2026-06-21' }),
+  billablePost('/api/v1/astronomy/equation-of-time', 'Approximate equation of time for a date', 1, { date: '2026-06-21' }),
+  billablePost('/api/v1/astronomy/moon-illumination', 'Moon illumination fraction and phase angle', 1, { timestamp: '2026-06-21T00:00:00Z' }),
+  billablePost('/api/v1/astronomy/sidereal-conversion', 'Convert solar hours to sidereal interval', 1, { solar_hours: 24 }),
+  billablePost('/api/v1/astronomy/golden-hour', 'Morning and evening golden-hour windows', 1, { date: '2026-06-21', lat: 48.137154, lon: 11.576124 }),
+  billablePost('/api/v1/astronomy/blue-hour', 'Morning and evening blue-hour windows', 1, { date: '2026-06-21', lat: 48.137154, lon: 11.576124 }),
+  billablePost('/api/v1/astronomy/season-progress', 'Astronomical season progress at a timestamp', 1, { timestamp: '2026-06-21T00:00:00Z' }),
+  billablePost('/api/v1/astronomy/zodiac-sign', 'Tropical zodiac sign by calendar date', 1, { date: '2026-06-21' }),
+  billablePost('/api/v1/astronomy/daylight-delta', 'Day-length gain or loss versus previous day', 1, { date: '2026-06-21', lat: 48.137154, lon: 11.576124 }),
   billablePost('/v1/finance/margin-markup', 'Gross margin, markup, selling price, and cost variance', 1, {
     cost: 80,
     selling_price: 125,
@@ -327,6 +344,16 @@ const routes = [
     n: 10,
     r: 3
   }),
+  billablePost('/api/v1/math/ohm-law', 'Ohm law solver for voltage, current, resistance, and power', 1, { voltage: 12, resistance: 4 }),
+  billablePost('/api/v1/math/projectile-range', 'Ideal projectile range, flight time, and max height', 1, { velocity: 30, angle_degrees: 45 }),
+  billablePost('/api/v1/math/kinetic-energy', 'Kinetic energy from mass and velocity', 1, { mass: 10, velocity: 12 }),
+  billablePost('/api/v1/math/potential-energy', 'Gravitational potential energy', 1, { mass: 10, height: 5 }),
+  billablePost('/api/v1/math/circle-sector', 'Circle sector area, arc, and chord length', 1, { radius: 10, angle_degrees: 90 }),
+  billablePost('/api/v1/math/sphere-surface', 'Sphere surface area and volume alias', 1, { radius: 3 }),
+  billablePost('/api/v1/math/cone-geometry', 'Cone slant height, surface area, and volume', 1, { radius: 3, height: 4 }),
+  billablePost('/api/v1/math/torus-geometry', 'Torus surface area and volume', 1, { major_radius: 5, minor_radius: 2 }),
+  billablePost('/api/v1/math/arithmetic-progression', 'Arithmetic progression nth term and partial sum', 1, { first: 2, difference: 3, n: 10 }),
+  billablePost('/api/v1/math/geometric-progression', 'Geometric progression nth term and partial sum', 1, { first: 2, ratio: 3, n: 5 }),
   billablePost('/v1/stats/summary', 'Descriptive statistics for a numeric dataset', 3, { values: [1, 2, 2, 4, 9] }),
   billablePost('/v1/payroll/decimal-hours', 'Clock time to decimal hours and overtime conversion', 1, {
     hours: 1,

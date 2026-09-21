@@ -4,16 +4,25 @@ import {
   cruxCurrent,
   cruxHourly,
   cruxMidnightRange,
+  blueHour,
   dayLength,
+  daylightDelta,
+  equationOfTime,
   equinoxSolstice,
+  goldenHour,
   julianDate,
+  moonIllumination,
   moonPhase,
   moonPosition,
   polarNightCheck,
+  seasonProgress,
+  siderealConversion,
   siderealTime,
+  solarDeclination,
   solarNoon,
   sunPosition,
-  twilightCalculator
+  twilightCalculator,
+  zodiacSign
 } from '../src/astronomy-service.js';
 
 test('crux midnight range is zeroed at Parkes local midnight on 2026-03-31', () => {
@@ -114,4 +123,16 @@ test('advanced astronomy endpoints validate required inputs', () => {
     () => siderealTime({ timestamp: '2026-06-21T00:00:00Z' }),
     (error) => error.statusCode === 400 && error.code === 'missing_lon'
   );
+});
+
+test('batch two astronomy utilities return deterministic low-cost values', () => {
+  assert.ok(solarDeclination({ date: '2026-06-21' }).declination_degrees > 23);
+  assert.ok(Math.abs(equationOfTime({ date: '2026-06-21' }).equation_of_time_minutes) < 5);
+  assert.ok(moonIllumination({ timestamp: '2026-06-21T00:00:00Z' }).moon_illumination.fraction > 0.4);
+  assert.ok(siderealConversion({ solar_hours: 24 }).sidereal_hours > 24);
+  assert.match(goldenHour({ date: '2026-06-21', lat: 48.137154, lon: 11.576124 }).morning.starts_utc, /^2026-06-21T/);
+  assert.match(blueHour({ date: '2026-06-21', lat: 48.137154, lon: 11.576124 }).morning.starts_utc, /^2026-06-21T/);
+  assert.equal(seasonProgress({ timestamp: '2026-06-22T00:00:00Z' }).season, 'june_solstice_to_september_equinox');
+  assert.equal(zodiacSign({ date: '2026-06-21' }).zodiac_sign, 'cancer');
+  assert.ok(Math.abs(daylightDelta({ date: '2026-06-21', lat: 48.137154, lon: 11.576124 }).delta_minutes) < 1);
 });

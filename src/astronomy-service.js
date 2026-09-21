@@ -352,6 +352,140 @@ export function polarNightCheck(input = {}) {
   };
 }
 
+export function solarDeclination(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const dayOfYear = Number(date.toFormat('o'));
+  const declination = 23.44 * Math.sin((360 / 365 * (dayOfYear - 81)) * Math.PI / 180);
+  return {
+    input: { date: date.toISODate(), day_of_year: dayOfYear },
+    declination_degrees: round(declination, 9),
+    method: 'cooper_approximate_solar_declination'
+  };
+}
+
+export function equationOfTime(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const dayOfYear = Number(date.toFormat('o'));
+  const b = (360 / 365 * (dayOfYear - 81)) * Math.PI / 180;
+  const minutes = 9.87 * Math.sin(2 * b) - 7.53 * Math.cos(b) - 1.5 * Math.sin(b);
+  return {
+    input: { date: date.toISODate(), day_of_year: dayOfYear },
+    equation_of_time_minutes: round(minutes, 9),
+    apparent_minus_mean_solar_time_minutes: round(minutes, 9),
+    method: 'noaa_approximate_equation_of_time'
+  };
+}
+
+export function moonIllumination(input = {}) {
+  const phase = moonPhase(input);
+  return {
+    input: phase.input,
+    moon_illumination: {
+      fraction: round(phase.moon.illumination_percent / 100, 9),
+      percent: phase.moon.illumination_percent,
+      phase_angle_degrees: phase.moon.phase_angle_degrees,
+      phase_name: phase.moon.phase_name
+    },
+    method: 'astronomy_engine_moon_illumination'
+  };
+}
+
+export function siderealConversion(input = {}) {
+  const solarHours = numberInRange(requiredValue(input.solar_hours ?? input.hours, 'solar_hours'), 'solar_hours', -1000000, 1000000);
+  const siderealHours = solarHours * 1.002737909350795;
+  return {
+    input: { solar_hours: solarHours },
+    sidereal_hours: round(siderealHours, 12),
+    sidereal_seconds: round(siderealHours * 3600, 9),
+    method: 'mean_solar_to_sidereal_interval'
+  };
+}
+
+export function goldenHour(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const observer = observerFromInput(input);
+  return {
+    input: astronomyLocationInput(input, date),
+    morning: altitudeWindow(observer, date.toJSDate(), -4, 6),
+    evening: altitudeWindow(observer, date.toJSDate(), 6, -4),
+    method: 'sun_altitude_window_minus4_to_plus6_degrees'
+  };
+}
+
+export function blueHour(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const observer = observerFromInput(input);
+  return {
+    input: astronomyLocationInput(input, date),
+    morning: altitudeWindow(observer, date.toJSDate(), -6, -4),
+    evening: altitudeWindow(observer, date.toJSDate(), -4, -6),
+    method: 'sun_altitude_window_minus6_to_minus4_degrees'
+  };
+}
+
+export function seasonProgress(input = {}) {
+  const timestamp = parseOptionalTimestamp(input.timestamp ?? input.at, 'timestamp');
+  const seasons = Astronomy.Seasons(timestamp.year);
+  const events = [
+    ['march_equinox', DateTime.fromJSDate(seasons.mar_equinox.date, { zone: 'utc' })],
+    ['june_solstice', DateTime.fromJSDate(seasons.jun_solstice.date, { zone: 'utc' })],
+    ['september_equinox', DateTime.fromJSDate(seasons.sep_equinox.date, { zone: 'utc' })],
+    ['december_solstice', DateTime.fromJSDate(seasons.dec_solstice.date, { zone: 'utc' })]
+  ];
+  const previousDecember = DateTime.fromJSDate(Astronomy.Seasons(timestamp.year - 1).dec_solstice.date, { zone: 'utc' });
+  const nextMarch = DateTime.fromJSDate(Astronomy.Seasons(timestamp.year + 1).mar_equinox.date, { zone: 'utc' });
+  const boundaries = [['december_solstice', previousDecember], ...events, ['next_march_equinox', nextMarch]];
+  let index = 0;
+  for (let i = 0; i < boundaries.length - 1; i += 1) {
+    if (timestamp >= boundaries[i][1] && timestamp < boundaries[i + 1][1]) index = i;
+  }
+  const start = boundaries[index];
+  const end = boundaries[index + 1];
+  const progress = timestamp.diff(start[1]).milliseconds / end[1].diff(start[1]).milliseconds;
+  return {
+    input: { timestamp: timestamp.toUTC().toISO() },
+    season: seasonName(start[0]),
+    starts_at: start[1].toISO(),
+    ends_at: end[1].toISO(),
+    progress_fraction: round(progress, 9),
+    progress_percent: round(progress * 100, 6),
+    method: 'astronomy_engine_season_boundaries_progress'
+  };
+}
+
+export function zodiacSign(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const monthDay = Number(date.toFormat('MMdd'));
+  const signs = [
+    ['capricorn', 120], ['aquarius', 219], ['pisces', 321], ['aries', 420],
+    ['taurus', 521], ['gemini', 621], ['cancer', 723], ['leo', 823],
+    ['virgo', 923], ['libra', 1023], ['scorpio', 1122], ['sagittarius', 1222], ['capricorn', 1232]
+  ];
+  const sign = signs.find(([, cutoff]) => monthDay < cutoff)?.[0] ?? 'capricorn';
+  return {
+    input: { date: date.toISODate() },
+    zodiac_sign: sign,
+    system: 'tropical_sun_sign_calendar_boundaries',
+    method: 'fixed_tropical_zodiac_date_ranges'
+  };
+}
+
+export function daylightDelta(input = {}) {
+  const date = parseIsoDate(input.date ?? currentUtcDate(), 'date');
+  const today = dayLength(input);
+  const yesterday = dayLength({ ...input, date: date.minus({ days: 1 }).toISODate() });
+  const deltaHours = today.daylight.hours_decimal - yesterday.daylight.hours_decimal;
+  return {
+    input: astronomyLocationInput(input, date),
+    daylight_hours: today.daylight.hours_decimal,
+    previous_daylight_hours: yesterday.daylight.hours_decimal,
+    delta_hours: round(deltaHours, 9),
+    delta_minutes: round(deltaHours * 60, 6),
+    direction: deltaHours > 0 ? 'gaining_daylight' : deltaHours < 0 ? 'losing_daylight' : 'unchanged',
+    method: 'day_length_difference_previous_calendar_day'
+  };
+}
+
 function bodyTelemetry(body, date, observer) {
   const geocentric = Astronomy.GeoVector(body, date, true);
   const heliocentric = Astronomy.HelioVector(body, date);
@@ -491,6 +625,24 @@ function twilightPair(observer, start, altitude) {
     morning_utc: morning?.date.toISOString() ?? null,
     evening_utc: evening?.date.toISOString() ?? null
   };
+}
+
+function altitudeWindow(observer, start, startAltitude, endAltitude) {
+  const begins = Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, +1, start, 1, startAltitude);
+  const ends = Astronomy.SearchAltitude(Astronomy.Body.Sun, observer, +1, start, 1, endAltitude);
+  return {
+    start_altitude_degrees: startAltitude,
+    end_altitude_degrees: endAltitude,
+    starts_utc: begins?.date.toISOString() ?? null,
+    ends_utc: ends?.date.toISOString() ?? null
+  };
+}
+
+function seasonName(boundaryName) {
+  if (boundaryName === 'march_equinox') return 'march_equinox_to_june_solstice';
+  if (boundaryName === 'june_solstice') return 'june_solstice_to_september_equinox';
+  if (boundaryName === 'september_equinox') return 'september_equinox_to_december_solstice';
+  return 'december_solstice_to_march_equinox';
 }
 
 function moonPhaseName(phaseAngle) {

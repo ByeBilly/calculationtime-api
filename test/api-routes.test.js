@@ -1785,7 +1785,57 @@ test('phase 3 math routes return calculations and one-credit costs', async () =>
   const status = await app.inject('/v1/status');
   await app.close();
 
-  assert.equal(status.json().endpoint_families.some((family) => family.family === 'math' && family.routes.length === 15), true);
+  assert.equal(status.json().endpoint_families.some((family) => family.family === 'math' && family.routes.length >= 25), true);
+  for (const [url] of requests) {
+    assert.equal(debits.some(([route, cost]) => route === url && cost === 1), true, url);
+  }
+});
+
+test('batch two visible zero-cost developer routes return one-credit calculations', async () => {
+  const debits = [];
+  const keyStore = {
+    async findByKey() {
+      return {
+        customerId: 'customer_a',
+        planId: 'database',
+        rateLimitPerMinute: 240,
+        keyFingerprint: 'ct_live_test',
+        authenticated: true
+      };
+    },
+    async checkBillableAccess(_customerId, options) {
+      return { balance: 1000, required: options.creditCost };
+    },
+    async debitBillableRequest(_customerId, event) {
+      debits.push([event.route, event.creditCost]);
+    },
+    async recordUsage() {}
+  };
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_CACHE: 'memory'
+    },
+    keyStore,
+    logger: false
+  });
+  const headers = { 'x-api-key': 'test-key' };
+  const requests = [
+    ['/api/v1/convert/length', { value: 1, from: 'mile', to: 'kilometer' }, 'result'],
+    ['/api/v1/convert/temperature', { value: 32, from: 'fahrenheit', to: 'celsius' }, 'result'],
+    ['/api/v1/astronomy/solar-declination', { date: '2026-06-21' }, 'declination_degrees'],
+    ['/api/v1/astronomy/daylight-delta', { date: '2026-06-21', lat: 48.137154, lon: 11.576124 }, 'delta_minutes'],
+    ['/api/v1/math/ohm-law', { voltage: 12, resistance: 4 }, 'values'],
+    ['/api/v1/math/cone-geometry', { radius: 3, height: 4 }, 'volume']
+  ];
+
+  for (const [url, payload, marker] of requests) {
+    const response = await app.inject({ method: 'POST', url, headers, payload });
+    assert.equal(response.statusCode, 200, url);
+    assert.notEqual(response.json()[marker], undefined, url);
+  }
+  await app.close();
+
   for (const [url] of requests) {
     assert.equal(debits.some(([route, cost]) => route === url && cost === 1), true, url);
   }

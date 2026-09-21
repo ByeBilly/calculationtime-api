@@ -261,6 +261,151 @@ export function combinatorics(input = {}) {
   };
 }
 
+export function ohmLaw(input = {}) {
+  const voltage = optionalNumber(input.voltage ?? input.v, 'voltage', -1_000_000_000, 1_000_000_000);
+  const current = optionalNumber(input.current ?? input.i, 'current', -1_000_000_000, 1_000_000_000);
+  const resistance = optionalPositive(input.resistance ?? input.r, 'resistance');
+  const power = optionalNumber(input.power ?? input.p, 'power', 0, 1_000_000_000_000);
+  const supplied = [voltage, current, resistance, power].filter((value) => value !== null).length;
+  if (supplied < 2) throw badRequest('at least two of voltage, current, resistance, and power are required', 'insufficient_inputs');
+
+  let v = voltage;
+  let i = current;
+  let r = resistance;
+  let p = power;
+  for (let pass = 0; pass < 4; pass += 1) {
+    if (v === null && i !== null && r !== null) v = i * r;
+    if (i === null && v !== null && r !== null) i = v / r;
+    if (r === null && v !== null && i !== null) r = v / i;
+    if (p === null && v !== null && i !== null) p = v * i;
+    if (v === null && p !== null && i !== null) v = p / i;
+    if (i === null && p !== null && v !== null) i = p / v;
+    if (r === null && v !== null && p !== null) r = (v ** 2) / p;
+    if (r === null && p !== null && i !== null) r = p / (i ** 2);
+    if (v === null && p !== null && r !== null) v = Math.sqrt(p * r);
+    if (i === null && p !== null && r !== null) i = Math.sqrt(p / r);
+  }
+  if ([v, i, r, p].some((value) => value === null || !Number.isFinite(value))) {
+    throw badRequest('inputs could not produce a finite Ohm law solution', 'unsolved_ohm_law');
+  }
+  return {
+    input: { voltage, current, resistance, power },
+    values: {
+      voltage_volts: round(v, 12),
+      current_amps: round(i, 12),
+      resistance_ohms: round(r, 12),
+      power_watts: round(p, 12)
+    },
+    method: 'ohm_law_v_equals_i_r_and_power_identities'
+  };
+}
+
+export function projectileRange(input = {}) {
+  const velocity = positive(input.velocity ?? input.initial_velocity ?? input.v0, 'velocity');
+  const angleDegrees = number(input.angle_degrees ?? input.angle, 'angle_degrees', -90, 90);
+  const gravity = positive(input.gravity ?? 9.80665, 'gravity');
+  const height = optionalNumber(input.initial_height ?? input.height ?? 0, 'initial_height', 0, 1_000_000);
+  const angle = angleDegrees * Math.PI / 180;
+  const vx = velocity * Math.cos(angle);
+  const vy = velocity * Math.sin(angle);
+  const discriminant = vy ** 2 + 2 * gravity * height;
+  const flightTime = (vy + Math.sqrt(discriminant)) / gravity;
+  return {
+    input: { velocity, angle_degrees: angleDegrees, gravity, initial_height: height },
+    flight_time_seconds: round(flightTime, 12),
+    range: round(vx * flightTime, 12),
+    max_height: round(height + (vy ** 2) / (2 * gravity), 12),
+    components: { horizontal_velocity: round(vx, 12), vertical_velocity: round(vy, 12) },
+    method: 'ideal_projectile_motion_no_drag'
+  };
+}
+
+export function kineticEnergy(input = {}) {
+  const mass = positive(input.mass ?? input.mass_kg, 'mass');
+  const velocity = number(input.velocity ?? input.velocity_mps, 'velocity', -1_000_000, 1_000_000);
+  return {
+    input: { mass_kg: mass, velocity_mps: velocity },
+    kinetic_energy_joules: round(0.5 * mass * velocity ** 2, 12),
+    method: 'one_half_mass_velocity_squared'
+  };
+}
+
+export function potentialEnergy(input = {}) {
+  const mass = positive(input.mass ?? input.mass_kg, 'mass');
+  const height = number(input.height ?? input.height_meters, 'height', -1_000_000_000, 1_000_000_000);
+  const gravity = positive(input.gravity ?? 9.80665, 'gravity');
+  return {
+    input: { mass_kg: mass, height_meters: height, gravity_mps2: gravity },
+    potential_energy_joules: round(mass * gravity * height, 12),
+    method: 'mass_gravity_height'
+  };
+}
+
+export function circleSector(input = {}) {
+  const radius = positive(input.radius ?? input.r, 'radius');
+  const angleDegrees = number(input.angle_degrees ?? input.angle, 'angle_degrees', 0, 360);
+  return {
+    input: { radius, angle_degrees: angleDegrees },
+    arc_length: round(2 * Math.PI * radius * angleDegrees / 360, 12),
+    sector_area: round(Math.PI * radius ** 2 * angleDegrees / 360, 12),
+    chord_length: round(2 * radius * Math.sin((angleDegrees * Math.PI / 180) / 2), 12),
+    method: 'circle_sector_angle_fraction'
+  };
+}
+
+export function coneGeometry(input = {}) {
+  const radius = positive(input.radius ?? input.r, 'radius');
+  const height = positive(input.height ?? input.h, 'height');
+  const slantHeight = Math.sqrt(radius ** 2 + height ** 2);
+  return {
+    input: { radius, height },
+    slant_height: round(slantHeight, 12),
+    base_area: round(Math.PI * radius ** 2, 12),
+    lateral_surface_area: round(Math.PI * radius * slantHeight, 12),
+    total_surface_area: round(Math.PI * radius * (radius + slantHeight), 12),
+    volume: round(Math.PI * radius ** 2 * height / 3, 12),
+    method: 'right_circular_cone_geometry'
+  };
+}
+
+export function torusGeometry(input = {}) {
+  const majorRadius = positive(input.major_radius ?? input.R, 'major_radius');
+  const minorRadius = positive(input.minor_radius ?? input.r, 'minor_radius');
+  return {
+    input: { major_radius: majorRadius, minor_radius: minorRadius },
+    surface_area: round(4 * Math.PI ** 2 * majorRadius * minorRadius, 12),
+    volume: round(2 * Math.PI ** 2 * majorRadius * minorRadius ** 2, 12),
+    method: 'torus_major_minor_radius_geometry'
+  };
+}
+
+export function arithmeticProgression(input = {}) {
+  const first = number(input.first ?? input.a1, 'first', -1_000_000_000, 1_000_000_000);
+  const difference = number(input.difference ?? input.d, 'difference', -1_000_000_000, 1_000_000_000);
+  const n = integer(input.n, 'n', 1, 1_000_000);
+  const nthTerm = first + (n - 1) * difference;
+  return {
+    input: { first, difference, n },
+    nth_term: round(nthTerm, 12),
+    sum_n_terms: round((n / 2) * (first + nthTerm), 12),
+    method: 'arithmetic_sequence_nth_term_and_sum'
+  };
+}
+
+export function geometricProgression(input = {}) {
+  const first = number(input.first ?? input.a1, 'first', -1_000_000_000, 1_000_000_000);
+  const ratio = number(input.ratio ?? input.r, 'ratio', -1_000_000, 1_000_000);
+  const n = integer(input.n, 'n', 1, 1_000_000);
+  const nthTerm = first * ratio ** (n - 1);
+  const sum = ratio === 1 ? first * n : first * (1 - ratio ** n) / (1 - ratio);
+  return {
+    input: { first, ratio, n },
+    nth_term: round(nthTerm, 12),
+    sum_n_terms: round(sum, 12),
+    method: 'geometric_sequence_nth_term_and_sum'
+  };
+}
+
 function numberArray(value, name) {
   if (!Array.isArray(value) || value.length === 0 || value.length > MAX_NUMBER_ARRAY) {
     throw badRequest(`${name} must contain 1 to ${MAX_NUMBER_ARRAY} numbers`, 'invalid_array_length');

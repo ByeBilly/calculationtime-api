@@ -2,19 +2,28 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   circleGeometry,
+  arithmeticProgression,
+  circleSector,
   combinatorics,
+  coneGeometry,
   cylinderGeometry,
   exponentEval,
+  geometricProgression,
   gcdLcm,
+  kineticEnergy,
   logarithmEval,
   matrixDeterminant,
+  ohmLaw,
   percentError,
   percentageChange,
+  potentialEnergy,
+  projectileRange,
   proportionSolver,
   pythagoreanSolve,
   quadraticSolver,
   sphereGeometry,
   statisticsSummary,
+  torusGeometry,
   triangleHeron
 } from '../src/math-service.js';
 
@@ -47,6 +56,18 @@ test('calculates proportion, logarithm, exponent, and combinatorics utilities', 
   assert.equal(exponentEval({ base: 27, exponent: 2, root: 3 }).root_value, 3);
   assert.equal(combinatorics({ n: 10, r: 3 }).permutations, 720);
   assert.equal(combinatorics({ n: 10, r: 3 }).combinations, 120);
+});
+
+test('calculates engineering and progression batch-two utilities', () => {
+  assert.equal(ohmLaw({ voltage: 12, resistance: 4 }).values.current_amps, 3);
+  assert.equal(projectileRange({ velocity: 10, angle_degrees: 45 }).max_height, 2.549290532445);
+  assert.equal(kineticEnergy({ mass: 2, velocity: 3 }).kinetic_energy_joules, 9);
+  assert.equal(potentialEnergy({ mass: 2, height: 10, gravity: 9.8 }).potential_energy_joules, 196);
+  assert.equal(circleSector({ radius: 10, angle_degrees: 90 }).sector_area, 78.539816339745);
+  assert.equal(coneGeometry({ radius: 3, height: 4 }).slant_height, 5);
+  assert.equal(torusGeometry({ major_radius: 5, minor_radius: 2 }).volume, 394.784176043574);
+  assert.equal(arithmeticProgression({ first: 2, difference: 3, n: 10 }).sum_n_terms, 155);
+  assert.equal(geometricProgression({ first: 2, ratio: 3, n: 5 }).sum_n_terms, 242);
 });
 
 test('math utilities reject malformed inputs cleanly', () => {

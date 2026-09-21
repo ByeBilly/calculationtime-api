@@ -930,6 +930,46 @@ curl 'https://api.calculationtime.com/v1/math/combinatorics' \
   -d '{"n":10,"r":3}'
 ```
 
+## Batch Two Developer Utility Endpoints
+
+The following `/api/v1/...` endpoints are staged as zero-cost developer utilities: pure local JavaScript arithmetic, deterministic astronomy approximations, or existing local astronomy-engine calculations. All are `POST`, API-key protected, and cost `1` credit per call.
+
+### Unit conversion
+
+- `/api/v1/convert/length` — `{ "value": 1, "from": "mile", "to": "kilometer" }`
+- `/api/v1/convert/weight` — `{ "value": 10, "from": "pound", "to": "kilogram" }`
+- `/api/v1/convert/temperature` — `{ "value": 32, "from": "fahrenheit", "to": "celsius" }`
+- `/api/v1/convert/area` — `{ "value": 1, "from": "acre", "to": "square_meter" }`
+- `/api/v1/convert/volume` — `{ "value": 1, "from": "gallon", "to": "liter" }`
+- `/api/v1/convert/speed` — `{ "value": 100, "from": "kmh", "to": "mph" }`
+- `/api/v1/convert/pressure` — `{ "value": 1, "from": "atmosphere", "to": "psi" }`
+- `/api/v1/convert/energy` — `{ "value": 1, "from": "kilowatt_hour", "to": "joule" }`
+
+### Astronomy
+
+- `/api/v1/astronomy/solar-declination`
+- `/api/v1/astronomy/equation-of-time`
+- `/api/v1/astronomy/moon-illumination`
+- `/api/v1/astronomy/sidereal-conversion`
+- `/api/v1/astronomy/golden-hour`
+- `/api/v1/astronomy/blue-hour`
+- `/api/v1/astronomy/season-progress`
+- `/api/v1/astronomy/zodiac-sign`
+- `/api/v1/astronomy/daylight-delta`
+
+### Engineering, physics, and geometry math
+
+- `/api/v1/math/ohm-law`
+- `/api/v1/math/projectile-range`
+- `/api/v1/math/kinetic-energy`
+- `/api/v1/math/potential-energy`
+- `/api/v1/math/circle-sector`
+- `/api/v1/math/sphere-surface`
+- `/api/v1/math/cone-geometry`
+- `/api/v1/math/torus-geometry`
+- `/api/v1/math/arithmetic-progression`
+- `/api/v1/math/geometric-progression`
+
 ## Health And Practical Body Math Endpoints
 
 These endpoints are protected, billable, and cost `1` credit each. They are arithmetic support tools, not medical advice.
