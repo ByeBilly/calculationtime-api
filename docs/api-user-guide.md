@@ -500,7 +500,7 @@ Sample response shape:
 
 # Endpoint Reference
 
-The regenerated OpenAPI contract now exposes `149` unique paths. Batch two added `27` visible zero-cost developer utility routes from the untruncated Telegram-visible list: 8 conversion routes, 9 astronomy routes, and 10 engineering/math routes. The middle of Billy's original 50-endpoint prompt was truncated in this agent context, so no unstated endpoints were invented.
+The regenerated OpenAPI contract now exposes `156` unique paths. Batch two currently includes `34` visible zero-cost developer utility routes from the Telegram-visible list: 10 conversion routes, 5 crypto/encoding routes, 9 astronomy routes, and 10 engineering/math routes. Some middle sections of Billy's original 50-endpoint prompt were truncated in this agent context, so no unstated endpoints were invented.
 
 ## Batch Two Developer Utility Routes
 
@@ -516,6 +516,13 @@ All routes below are `POST`, API-key protected, one-credit, deterministic local 
 | POST | `/api/v1/convert/speed` | `{"value":100,"from":"kmh","to":"mph"}` | Speed unit conversion |
 | POST | `/api/v1/convert/pressure` | `{"value":1,"from":"atmosphere","to":"psi"}` | Pressure unit conversion |
 | POST | `/api/v1/convert/energy` | `{"value":1,"from":"kilowatt_hour","to":"joule"}` | Energy unit conversion |
+| POST | `/api/v1/convert/power` | `{"value":1,"from":"horsepower","to":"watt"}` | Power unit conversion |
+| POST | `/api/v1/convert/data-storage` | `{"value":1,"from":"gigabyte","to":"megabyte"}` | Data storage unit conversion |
+| POST | `/api/v1/crypto/hash-md5` | `{"text":"calculationtime"}` | MD5 checksum |
+| POST | `/api/v1/crypto/hash-sha256` | `{"text":"calculationtime"}` | SHA-256 hash |
+| POST | `/api/v1/crypto/hash-sha512` | `{"text":"calculationtime"}` | SHA-512 hash |
+| POST | `/api/v1/crypto/base64-encode` | `{"text":"calculationtime"}` | Base64 encode text |
+| POST | `/api/v1/crypto/base64-decode` | `{"base64":"Y2FsY3VsYXRpb250aW1l"}` | Base64 decode text |
 | POST | `/api/v1/astronomy/solar-declination` | `{"date":"2026-06-21"}` | Approximate solar declination |
 | POST | `/api/v1/astronomy/equation-of-time` | `{"date":"2026-06-21"}` | Apparent solar time offset |
 | POST | `/api/v1/astronomy/moon-illumination` | `{"timestamp":"2026-06-21T00:00:00Z"}` | Moon illumination and phase angle |

@@ -167,6 +167,55 @@ const UNIT_GROUPS = {
       kwh: 3600000,
       btu: 1055.05585262
     }
+  },
+  power: {
+    base_unit: 'watt',
+    units: {
+      watt: 1,
+      watts: 1,
+      w: 1,
+      kilowatt: 1000,
+      kilowatts: 1000,
+      kw: 1000,
+      megawatt: 1000000,
+      megawatts: 1000000,
+      mw: 1000000,
+      horsepower: 745.6998715822702,
+      hp: 745.6998715822702
+    }
+  },
+  data_storage: {
+    base_unit: 'byte',
+    units: {
+      byte: 1,
+      bytes: 1,
+      b: 1,
+      kilobyte: 1000,
+      kilobytes: 1000,
+      kb: 1000,
+      megabyte: 1000000,
+      megabytes: 1000000,
+      mb: 1000000,
+      gigabyte: 1000000000,
+      gigabytes: 1000000000,
+      gb: 1000000000,
+      terabyte: 1000000000000,
+      terabytes: 1000000000000,
+      tb: 1000000000000,
+      petabyte: 1000000000000000,
+      petabytes: 1000000000000000,
+      pb: 1000000000000000,
+      kibibyte: 1024,
+      kib: 1024,
+      mebibyte: 1048576,
+      mib: 1048576,
+      gibibyte: 1073741824,
+      gib: 1073741824,
+      tebibyte: 1099511627776,
+      tib: 1099511627776,
+      pebibyte: 1125899906842624,
+      pib: 1125899906842624
+    }
   }
 };
 

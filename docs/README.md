@@ -944,6 +944,16 @@ The following `/api/v1/...` endpoints are staged as zero-cost developer utilitie
 - `/api/v1/convert/speed` — `{ "value": 100, "from": "kmh", "to": "mph" }`
 - `/api/v1/convert/pressure` — `{ "value": 1, "from": "atmosphere", "to": "psi" }`
 - `/api/v1/convert/energy` — `{ "value": 1, "from": "kilowatt_hour", "to": "joule" }`
+- `/api/v1/convert/power` — `{ "value": 1, "from": "horsepower", "to": "watt" }`
+- `/api/v1/convert/data-storage` — `{ "value": 1, "from": "gigabyte", "to": "megabyte" }`
+
+### Cryptography and encoding
+
+- `/api/v1/crypto/hash-md5` — `{ "text": "calculationtime" }`
+- `/api/v1/crypto/hash-sha256` — `{ "text": "calculationtime" }`
+- `/api/v1/crypto/hash-sha512` — `{ "text": "calculationtime" }`
+- `/api/v1/crypto/base64-encode` — `{ "text": "calculationtime" }`
+- `/api/v1/crypto/base64-decode` — `{ "base64": "Y2FsY3VsYXRpb250aW1l" }`
 
 ### Astronomy
 

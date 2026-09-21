@@ -114,6 +114,13 @@ const routes = [
   billablePost('/api/v1/convert/speed', 'Speed unit conversion', 1, { value: 100, from: 'kmh', to: 'mph' }),
   billablePost('/api/v1/convert/pressure', 'Pressure unit conversion', 1, { value: 1, from: 'atmosphere', to: 'psi' }),
   billablePost('/api/v1/convert/energy', 'Energy unit conversion', 1, { value: 1, from: 'kilowatt_hour', to: 'joule' }),
+  billablePost('/api/v1/convert/power', 'Power unit conversion', 1, { value: 1, from: 'horsepower', to: 'watt' }),
+  billablePost('/api/v1/convert/data-storage', 'Data storage unit conversion', 1, { value: 1, from: 'gigabyte', to: 'megabyte' }),
+  billablePost('/api/v1/crypto/hash-md5', 'Compute MD5 checksum for a small payload', 1, { text: 'calculationtime' }),
+  billablePost('/api/v1/crypto/hash-sha256', 'Compute SHA-256 hash for a small payload', 1, { text: 'calculationtime' }),
+  billablePost('/api/v1/crypto/hash-sha512', 'Compute SHA-512 hash for a small payload', 1, { text: 'calculationtime' }),
+  billablePost('/api/v1/crypto/base64-encode', 'Encode text to Base64', 1, { text: 'calculationtime' }),
+  billablePost('/api/v1/crypto/base64-decode', 'Decode Base64 text', 1, { base64: 'Y2FsY3VsYXRpb250aW1l' }),
   billableGet('/v1/geo/distance', 'Distance between two coordinates', ['lat1', 'lon1', 'lat2', 'lon2']),
   billablePost('/v1/geo/distance/batch', 'Batch distance calculations', 1, {
     pairs: [{ from: { lat: 48.137154, lon: 11.576124 }, to: { lat: 51.5072, lon: -0.1276 } }]

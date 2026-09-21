@@ -1823,6 +1823,11 @@ test('batch two visible zero-cost developer routes return one-credit calculation
   const requests = [
     ['/api/v1/convert/length', { value: 1, from: 'mile', to: 'kilometer' }, 'result'],
     ['/api/v1/convert/temperature', { value: 32, from: 'fahrenheit', to: 'celsius' }, 'result'],
+    ['/api/v1/convert/power', { value: 1, from: 'horsepower', to: 'watt' }, 'result'],
+    ['/api/v1/convert/data-storage', { value: 1, from: 'gigabyte', to: 'megabyte' }, 'result'],
+    ['/api/v1/crypto/hash-sha256', { text: 'abc' }, 'digest_hex'],
+    ['/api/v1/crypto/base64-encode', { text: 'calculationtime' }, 'base64'],
+    ['/api/v1/crypto/base64-decode', { base64: 'Y2FsY3VsYXRpb250aW1l' }, 'text'],
     ['/api/v1/astronomy/solar-declination', { date: '2026-06-21' }, 'declination_degrees'],
     ['/api/v1/astronomy/daylight-delta', { date: '2026-06-21', lat: 48.137154, lon: 11.576124 }, 'delta_minutes'],
     ['/api/v1/math/ohm-law', { voltage: 12, resistance: 4 }, 'values'],

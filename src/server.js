@@ -57,6 +57,7 @@ import {
   zodiacSign
 } from './astronomy-service.js';
 import { unitConversion } from './conversion-service.js';
+import { base64Decode, base64Encode, hashPayload } from './crypto-service.js';
 import { solarPosition } from './solar-service.js';
 import { dailyTagline, secondsUntilNextUtcMidnight } from './tagline-service.js';
 import { createObservatoryShareStore } from './observatory-share-store.js';
@@ -163,7 +164,19 @@ const ENDPOINT_FAMILIES = [
       'POST /api/v1/convert/volume',
       'POST /api/v1/convert/speed',
       'POST /api/v1/convert/pressure',
-      'POST /api/v1/convert/energy'
+      'POST /api/v1/convert/energy',
+      'POST /api/v1/convert/power',
+      'POST /api/v1/convert/data-storage'
+    ]
+  },
+  {
+    family: 'crypto',
+    routes: [
+      'POST /api/v1/crypto/hash-md5',
+      'POST /api/v1/crypto/hash-sha256',
+      'POST /api/v1/crypto/hash-sha512',
+      'POST /api/v1/crypto/base64-encode',
+      'POST /api/v1/crypto/base64-decode'
     ]
   },
   {
@@ -968,11 +981,32 @@ export async function buildServer({
     cached(request, reply, 'holidays.is_business_day', request.query, () => isBusinessDayInJurisdiction(request.query))
   ));
 
-  for (const group of ['length', 'weight', 'temperature', 'area', 'volume', 'speed', 'pressure', 'energy']) {
+  for (const group of ['length', 'weight', 'temperature', 'area', 'volume', 'speed', 'pressure', 'energy', 'power', 'data-storage']) {
+    const serviceGroup = group.replace('-', '_');
     app.post(`/api/v1/convert/${group}`, billableRoute(1), async (request, reply) => (
-      cached(request, reply, `convert.${group}`, request.body || {}, () => unitConversion(group, request.body || {}), deterministicCache(604_800))
+      cached(request, reply, `convert.${group}`, request.body || {}, () => unitConversion(serviceGroup, request.body || {}), deterministicCache(604_800))
     ));
   }
+
+  app.post('/api/v1/crypto/hash-md5', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'crypto.hash_md5', request.body || {}, () => hashPayload('md5', request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/crypto/hash-sha256', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'crypto.hash_sha256', request.body || {}, () => hashPayload('sha256', request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/crypto/hash-sha512', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'crypto.hash_sha512', request.body || {}, () => hashPayload('sha512', request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/crypto/base64-encode', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'crypto.base64_encode', request.body || {}, () => base64Encode(request.body || {}), deterministicCache(604_800))
+  ));
+
+  app.post('/api/v1/crypto/base64-decode', billableRoute(1), async (request, reply) => (
+    cached(request, reply, 'crypto.base64_decode', request.body || {}, () => base64Decode(request.body || {}), deterministicCache(604_800))
+  ));
 
   app.get('/v1/astronomy/ephemeris', billableRoute(), async (request, reply) => (
     cached(request, reply, 'astronomy.ephemeris', request.query, () => ephemerisForDate(request.query))
