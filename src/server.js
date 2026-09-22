@@ -193,7 +193,9 @@ const ENDPOINT_FAMILIES = [
       'GET /',
       'GET /beginner',
       'GET /learn',
+      'GET /v1/learn/date-add-7',
       'GET /v1/learn/date-add-30',
+      'GET /v1/learn/date-add-90',
       'GET /v1/learn/next-saturday-business-day',
       'GET /v1/learn/random-id',
       'GET /health',
@@ -653,14 +655,18 @@ export async function buildServer({
     return dailyTagline();
   });
 
-  app.get('/v1/learn/date-add-30', async () => {
+  function learningDateAdd(days) {
     const today = new Date().toISOString().slice(0, 10);
     return {
-      lesson: 'add_30_days_to_today',
-      ...addToDate({ start: today, days: 30 }),
+      lesson: `add_${days}_days_to_today`,
+      ...addToDate({ start: today, days }),
       note: 'Public fixed learning demo. The full date-add endpoint requires an API key.'
     };
-  });
+  }
+
+  app.get('/v1/learn/date-add-7', async () => learningDateAdd(7));
+  app.get('/v1/learn/date-add-30', async () => learningDateAdd(30));
+  app.get('/v1/learn/date-add-90', async () => learningDateAdd(90));
 
   app.get('/v1/learn/next-saturday-business-day', async () => {
     const today = new Date();

@@ -185,10 +185,13 @@ test('learning ladder is public HTML and offers click-led API calls', async () =
   assert.match(response.headers['content-type'], /^text\/html/);
   assert.match(response.body, /Learn APIs By Clicking/);
   assert.match(response.body, /data-demo="time"/);
-  assert.match(response.body, /\/v1\/data\/http-status\?q=404/);
+  assert.match(response.body, /HTTP status lookup/);
   assert.match(response.body, /data-demo="dateAdd"/);
   assert.match(response.body, /data-demo="saturday"/);
   assert.match(response.body, /data-demo="randomId"/);
+  assert.match(response.body, /id="choices"/);
+  assert.match(response.body, /id="clicked"/);
+  assert.match(response.body, /Copy this URL/);
 });
 
 test('learning demo endpoints are public and return beginner-safe calculations', async () => {
@@ -201,6 +204,8 @@ test('learning demo endpoints are public and return beginner-safe calculations',
     logger: false
   });
   const dateAdd = await app.inject('/v1/learn/date-add-30');
+  const dateAdd7 = await app.inject('/v1/learn/date-add-7');
+  const dateAdd90 = await app.inject('/v1/learn/date-add-90');
   const saturday = await app.inject('/v1/learn/next-saturday-business-day');
   const randomId = await app.inject('/v1/learn/random-id');
   await app.close();
@@ -208,6 +213,10 @@ test('learning demo endpoints are public and return beginner-safe calculations',
   assert.equal(dateAdd.statusCode, 200);
   assert.equal(dateAdd.json().lesson, 'add_30_days_to_today');
   assert.match(dateAdd.json().result_date, /^\d{4}-\d{2}-\d{2}$/);
+  assert.equal(dateAdd7.statusCode, 200);
+  assert.equal(dateAdd7.json().input.days, 7);
+  assert.equal(dateAdd90.statusCode, 200);
+  assert.equal(dateAdd90.json().input.days, 90);
   assert.equal(saturday.statusCode, 200);
   assert.equal(saturday.json().lesson, 'is_next_saturday_a_business_day');
   assert.equal(saturday.json().is_business_day, false);
@@ -225,7 +234,9 @@ test('public OpenAPI omits internal admin routes and removed MD5 route', async (
   const paths = response.json().paths;
   assert.equal(paths['/beginner'].get.security.length, 0);
   assert.equal(paths['/learn'].get.security.length, 0);
+  assert.equal(paths['/v1/learn/date-add-7'].get.security.length, 0);
   assert.equal(paths['/v1/learn/date-add-30'].get.security.length, 0);
+  assert.equal(paths['/v1/learn/date-add-90'].get.security.length, 0);
   assert.equal(paths['/v1/learn/next-saturday-business-day'].get.security.length, 0);
   assert.equal(paths['/v1/learn/random-id'].get.security.length, 0);
   assert.equal(paths['/api/v1/crypto/hash-md5'], undefined);

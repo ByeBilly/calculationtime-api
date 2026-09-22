@@ -47,9 +47,31 @@
         "security": []
       }
     },
+    "/v1/learn/date-add-7": {
+      "get": {
+        "summary": "Learning demo: add 7 days to today",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
     "/v1/learn/date-add-30": {
       "get": {
         "summary": "Learning demo: add 30 days to today",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/learn/date-add-90": {
+      "get": {
+        "summary": "Learning demo: add 90 days to today",
         "responses": {
           "200": {
             "description": "Successful response"

@@ -153,7 +153,9 @@ Public routes:
 - `GET /`
 - `GET /beginner`
 - `GET /learn`
+- `GET /v1/learn/date-add-7`
 - `GET /v1/learn/date-add-30`
+- `GET /v1/learn/date-add-90`
 - `GET /v1/learn/next-saturday-business-day`
 - `GET /v1/learn/random-id`
 - `GET /health`
