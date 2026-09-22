@@ -188,7 +188,16 @@ const STARTED_AT = new Date();
 const ENDPOINT_FAMILIES = [
   {
     family: 'public',
-    routes: ['GET /', 'GET /health', 'GET /openapi.json', 'GET /v1/status', 'GET /v1/time/utc', 'GET /api/v1/utility/tagline']
+    routes: [
+      'GET /',
+      'GET /beginner',
+      'GET /learn',
+      'GET /health',
+      'GET /openapi.json',
+      'GET /v1/status',
+      'GET /v1/time/utc',
+      'GET /api/v1/utility/tagline'
+    ]
   },
   {
     family: 'data',
@@ -615,6 +624,16 @@ export async function buildServer({
   app.get('/', async (_request, reply) => {
     const readme = await readFile(new URL('../docs/README.md', import.meta.url), 'utf8');
     reply.type('text/markdown; charset=utf-8').send(readme);
+  });
+
+  app.get('/beginner', async (_request, reply) => {
+    const guide = await readFile(new URL('../docs/beginner-api-gateway.md', import.meta.url), 'utf8');
+    reply.type('text/markdown; charset=utf-8').send(guide);
+  });
+
+  app.get('/learn', async (_request, reply) => {
+    const page = await readFile(new URL('../docs/api-learning-ladder.html', import.meta.url), 'utf8');
+    reply.type('text/html; charset=utf-8').send(page);
   });
 
   app.get('/openapi.json', async (_request, reply) => {

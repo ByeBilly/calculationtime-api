@@ -15,6 +15,8 @@ const anyObject = {
 
 const routes = [
   publicRoute('get', '/', 'Markdown API documentation'),
+  publicRoute('get', '/beginner', 'Beginner-friendly first API call guide'),
+  publicRoute('get', '/learn', 'Kid-level clickable API learning ladder'),
   publicRoute('get', '/health', 'Low-level service health'),
   publicRoute('get', '/openapi.json', 'OpenAPI contract for live routes'),
   publicRoute('get', '/v1/status', 'Public measured service status and endpoint inventory'),

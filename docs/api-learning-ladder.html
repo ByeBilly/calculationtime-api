@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CalculationTime API Learning Ladder</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #17202a;
+        --muted: #5f6b7a;
+        --line: #d8dee8;
+        --paper: #ffffff;
+        --soft: #f5f7fb;
+        --accent: #176b87;
+        --accent-strong: #0f4e63;
+        --good: #13795b;
+        --code: #111827;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--soft);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      main {
+        width: min(1060px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 32px 0 44px;
+      }
+
+      header {
+        margin-bottom: 24px;
+      }
+
+      h1 {
+        margin: 0 0 10px;
+        font-size: clamp(2rem, 5vw, 4rem);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        font-size: 1.35rem;
+        letter-spacing: 0;
+      }
+
+      p {
+        margin: 0 0 12px;
+      }
+
+      .lead {
+        max-width: 760px;
+        color: var(--muted);
+        font-size: 1.12rem;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+        gap: 18px;
+        align-items: start;
+      }
+
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 18px;
+      }
+
+      .tasks {
+        display: grid;
+        gap: 10px;
+      }
+
+      button {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #ffffff;
+        color: var(--ink);
+        cursor: pointer;
+        padding: 14px;
+        text-align: left;
+        font: inherit;
+        transition: border-color 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+      }
+
+      button:hover,
+      button:focus-visible {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(23, 107, 135, 0.14);
+        outline: 0;
+      }
+
+      button:active {
+        transform: translateY(1px);
+      }
+
+      .task-title {
+        display: block;
+        font-weight: 750;
+      }
+
+      .task-note {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 0.94rem;
+      }
+
+      .status {
+        display: inline-flex;
+        min-height: 30px;
+        align-items: center;
+        border-radius: 999px;
+        background: #e8f5f0;
+        color: var(--good);
+        padding: 4px 10px;
+        font-weight: 700;
+        font-size: 0.88rem;
+      }
+
+      .answer {
+        min-height: 96px;
+        margin: 14px 0;
+        padding: 16px;
+        border-radius: 8px;
+        background: #eef7fb;
+        border: 1px solid #c9e7f1;
+        font-size: 1.08rem;
+      }
+
+      .small-label {
+        margin: 14px 0 6px;
+        color: var(--muted);
+        font-size: 0.86rem;
+        font-weight: 750;
+        text-transform: uppercase;
+      }
+
+      code,
+      pre {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      }
+
+      pre {
+        overflow: auto;
+        margin: 0;
+        border-radius: 8px;
+        background: var(--code);
+        color: #f9fafb;
+        padding: 14px;
+        font-size: 0.9rem;
+      }
+
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .step {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        padding: 14px;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .step span {
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent-strong);
+        font-weight: 750;
+      }
+
+      @media (max-width: 800px) {
+        main {
+          width: min(100% - 20px, 680px);
+          padding-top: 22px;
+        }
+
+        .grid,
+        .steps {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Learn APIs By Clicking</h1>
+        <p class="lead">No typing wall. No scary setup. Pick a question, click it, see the answer, then see the tiny API address that made it happen.</p>
+      </header>
+
+      <section class="grid" aria-label="API learning ladder">
+        <div class="panel">
+          <h2>Pick one safe first step</h2>
+          <p>These buttons only use public CalculationTime API endpoints. They are here for learning.</p>
+          <div class="tasks">
+            <button type="button" data-demo="time">
+              <span class="task-title">What time is it in UTC?</span>
+              <span class="task-note">Your first API call. One click, one answer.</span>
+            </button>
+            <button type="button" data-demo="country">
+              <span class="task-title">Find Australia in country data</span>
+              <span class="task-note">Learn how a search input changes the answer.</span>
+            </button>
+            <button type="button" data-demo="status">
+              <span class="task-title">What does HTTP 404 mean?</span>
+              <span class="task-note">Use an API to explain web status codes.</span>
+            </button>
+            <button type="button" data-demo="density">
+              <span class="task-title">How dense is steel?</span>
+              <span class="task-note">Ask a public reference table for useful data.</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel" aria-live="polite">
+          <span class="status" id="status">Ready</span>
+          <div class="answer" id="answer">Click any button. I will make the API call for you.</div>
+
+          <div class="small-label">The API address</div>
+          <pre id="url">https://api.calculationtime.com/v1/time/utc</pre>
+
+          <div class="small-label">What came back</div>
+          <pre id="json">{}</pre>
+        </div>
+      </section>
+
+      <section class="steps" aria-label="Learning steps">
+        <div class="step">
+          <strong>1. Click</strong>
+          <span>The page sends the API request. You do not type anything yet.</span>
+        </div>
+        <div class="step">
+          <strong>2. Notice</strong>
+          <span>The answer comes back as JSON, which is just labelled data.</span>
+        </div>
+        <div class="step">
+          <strong>3. Try</strong>
+          <span>Open the API address yourself when you feel ready.</span>
+        </div>
+      </section>
+
+      <p style="margin-top: 20px;">
+        When this feels easy, move to the <a href="/beginner">beginner guide</a>, then the full <a href="/">API docs</a>.
+      </p>
+    </main>
+
+    <script>
+      const demos = {
+        time: {
+          url: '/v1/time/utc',
+          explain(data) {
+            return `The API says the current UTC time is ${data.utc_time}.`;
+          }
+        },
+        country: {
+          url: '/v1/data/countries?q=australia',
+          explain(data) {
+            const item = Array.isArray(data.data) ? data.data[0] : undefined;
+            return item ? `The API found ${item.name}, using country code ${item.iso_alpha2}.` : 'The API returned country search data.';
+          }
+        },
+        status: {
+          url: '/v1/data/http-status?q=404',
+          explain(data) {
+            const item = Array.isArray(data.data) ? data.data[0] : undefined;
+            return item ? `HTTP ${item.code} means ${item.phrase}.` : 'The API returned HTTP status data.';
+          }
+        },
+        density: {
+          url: '/v1/data/materials/density?q=steel',
+          explain(data) {
+            const item = Array.isArray(data.data) ? data.data[0] : undefined;
+            return item ? `The API found ${item.name}, with density around ${item.density} ${item.unit}.` : 'The API returned material density data.';
+          }
+        }
+      };
+
+      const statusEl = document.querySelector('#status');
+      const answerEl = document.querySelector('#answer');
+      const urlEl = document.querySelector('#url');
+      const jsonEl = document.querySelector('#json');
+
+      async function runDemo(name) {
+        const demo = demos[name];
+        const fullUrl = `${window.location.origin}${demo.url}`;
+
+        statusEl.textContent = 'Calling API';
+        answerEl.textContent = 'Asking CalculationTime API...';
+        urlEl.textContent = fullUrl;
+        jsonEl.textContent = '{}';
+
+        try {
+          const response = await fetch(demo.url);
+          const data = await response.json();
+
+          statusEl.textContent = 'Done';
+          answerEl.textContent = demo.explain(data);
+          jsonEl.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          statusEl.textContent = 'Try again';
+          answerEl.textContent = 'The request did not finish. The API may be unavailable or your browser may have blocked the request.';
+          jsonEl.textContent = JSON.stringify({ error: error.message }, null, 2);
+        }
+      }
+
+      document.querySelectorAll('[data-demo]').forEach((button) => {
+        button.addEventListener('click', () => runDemo(button.dataset.demo));
+      });
+    </script>
+  </body>
+</html>

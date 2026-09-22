@@ -25,6 +25,28 @@
         "security": []
       }
     },
+    "/beginner": {
+      "get": {
+        "summary": "Beginner-friendly first API call guide",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/learn": {
+      "get": {
+        "summary": "Kid-level clickable API learning ladder",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
     "/health": {
       "get": {
         "summary": "Low-level service health",
