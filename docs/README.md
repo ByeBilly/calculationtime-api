@@ -12,7 +12,7 @@ The API is built around visible assumptions and auditable calculation methods. I
 
 For the current running route inventory, see [`docs/running-endpoints-directory.md`](./running-endpoints-directory.md). It is generated from the OpenAPI contract after the live service has loaded the latest code.
 
-For endpoint creation and pruning rules, see [`docs/api-governance-rulebook.md`](./api-governance-rulebook.md). New routes must pass the direct pain point, zero-redundancy, and lean payload gates before implementation.
+For endpoint creation and pruning rules, see [`docs/api-governance-rulebook.md`](./api-governance-rulebook.md). New routes must pass all four gates in that rulebook before implementation.
 
 ## Public Demo Endpoint
 
