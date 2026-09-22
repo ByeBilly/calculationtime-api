@@ -82,6 +82,32 @@
         gap: 10px;
       }
 
+      .quest-track {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        margin: 0 0 18px;
+      }
+
+      .quest-step {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        padding: 10px;
+        color: var(--muted);
+        font-size: 0.88rem;
+      }
+
+      .quest-step strong {
+        display: block;
+        color: var(--ink);
+      }
+
+      .quest-step.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(23, 107, 135, 0.12);
+      }
+
       button {
         width: 100%;
         border: 1px solid var(--line);
@@ -118,6 +144,26 @@
         font-size: 0.94rem;
       }
 
+      .choices {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .choice-button {
+        min-height: 44px;
+        padding: 10px 12px;
+        text-align: center;
+        font-weight: 750;
+      }
+
+      .copy-button {
+        margin-top: 8px;
+        text-align: center;
+        font-weight: 750;
+      }
+
       .status {
         display: inline-flex;
         min-height: 30px;
@@ -138,6 +184,24 @@
         background: #eef7fb;
         border: 1px solid #c9e7f1;
         font-size: 1.08rem;
+      }
+
+      .explain {
+        display: grid;
+        gap: 8px;
+        margin: 14px 0 0;
+      }
+
+      .explain-row {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfcfe;
+        padding: 10px;
+      }
+
+      .explain-row strong {
+        display: block;
+        margin-bottom: 3px;
       }
 
       .small-label {
@@ -198,7 +262,9 @@
         }
 
         .grid,
-        .steps {
+        .steps,
+        .quest-track,
+        .choices {
           grid-template-columns: 1fr;
         }
       }
@@ -208,8 +274,15 @@
     <main>
       <header>
         <h1>Learn APIs By Clicking</h1>
-        <p class="lead">No typing wall. No scary setup. Pick a question, click it, see the answer, then see the tiny API address that made it happen.</p>
+        <p class="lead">No typing wall. No scary setup. Pick a question, choose a safe input, see the answer, then see the tiny API address that made it happen.</p>
       </header>
+
+      <section class="quest-track" aria-label="API quest progress">
+        <div class="quest-step active" id="quest-step-1"><strong>1. Pick</strong>Choose a question.</div>
+        <div class="quest-step" id="quest-step-2"><strong>2. Change</strong>Click a safe input.</div>
+        <div class="quest-step" id="quest-step-3"><strong>3. See</strong>Read the answer.</div>
+        <div class="quest-step" id="quest-step-4"><strong>4. Copy</strong>Keep the URL.</div>
+      </section>
 
       <section class="grid" aria-label="API learning ladder">
         <div class="panel">
@@ -221,19 +294,19 @@
               <span class="task-note">Your first API call. One click, one answer.</span>
             </button>
             <button type="button" data-demo="country">
-              <span class="task-title">Find Australia in country data</span>
+              <span class="task-title">Find a country</span>
               <span class="task-note">Learn how a search input changes the answer.</span>
             </button>
             <button type="button" data-demo="status">
-              <span class="task-title">What does HTTP 404 mean?</span>
+              <span class="task-title">Explain a web status code</span>
               <span class="task-note">Use an API to explain web status codes.</span>
             </button>
             <button type="button" data-demo="density">
-              <span class="task-title">How dense is steel?</span>
+              <span class="task-title">Find a material density</span>
               <span class="task-note">Ask a public reference table for useful data.</span>
             </button>
             <button type="button" data-demo="dateAdd">
-              <span class="task-title">Add 30 days to today</span>
+              <span class="task-title">Add days to today</span>
               <span class="task-note">Watch the API do date math without typing dates.</span>
             </button>
             <button type="button" data-demo="saturday">
@@ -245,6 +318,10 @@
               <span class="task-note">Create a useful ID for forms, records, or examples.</span>
             </button>
           </div>
+
+          <div class="small-label">Safe choices</div>
+          <div id="choiceText">Pick a question first. I will show choices that cannot break anything.</div>
+          <div class="choices" id="choices"></div>
         </div>
 
         <div class="panel" aria-live="polite">
@@ -253,6 +330,14 @@
 
           <div class="small-label">The API address</div>
           <pre id="url">https://api.calculationtime.com/v1/time/utc</pre>
+          <button type="button" class="copy-button" id="copyUrl">Copy this URL</button>
+
+          <div class="small-label">What changed?</div>
+          <div class="explain">
+            <div class="explain-row"><strong>You clicked</strong><span id="clicked">Nothing yet.</span></div>
+            <div class="explain-row"><strong>The URL became</strong><span id="became">No request yet.</span></div>
+            <div class="explain-row"><strong>The API answered with</strong><span id="answered">No answer yet.</span></div>
+          </div>
 
           <div class="small-label">What came back</div>
           <pre id="json">{}</pre>
@@ -282,46 +367,91 @@
     <script>
       const demos = {
         time: {
+          label: 'current UTC time',
           url: '/v1/time/utc',
+          answerKind: 'current UTC time',
           explain(data) {
             return `The API says the current UTC time is ${data.utc_time}.`;
           }
         },
         country: {
-          url: '/v1/data/countries?q=australia',
+          label: 'country search',
+          answerKind: 'country reference data',
+          choices: [
+            { label: 'Australia', value: 'australia' },
+            { label: 'Germany', value: 'germany' },
+            { label: 'Japan', value: 'japan' },
+            { label: 'Brazil', value: 'brazil' }
+          ],
+          url(choice = 'australia') {
+            return `/v1/data/countries?q=${encodeURIComponent(choice)}`;
+          },
           explain(data) {
             const item = Array.isArray(data.data) ? data.data[0] : undefined;
             return item ? `The API found ${item.name}, using country code ${item.iso_alpha2}.` : 'The API returned country search data.';
           }
         },
         status: {
-          url: '/v1/data/http-status?q=404',
+          label: 'HTTP status lookup',
+          answerKind: 'HTTP status explanation',
+          choices: [
+            { label: '200', value: '200' },
+            { label: '404', value: '404' },
+            { label: '429', value: '429' },
+            { label: '500', value: '500' }
+          ],
+          url(choice = '404') {
+            return `/v1/data/http-status?q=${encodeURIComponent(choice)}`;
+          },
           explain(data) {
             const item = Array.isArray(data.data) ? data.data[0] : undefined;
             return item ? `HTTP ${item.code} means ${item.phrase}.` : 'The API returned HTTP status data.';
           }
         },
         density: {
-          url: '/v1/data/materials/density?q=steel',
+          label: 'material density lookup',
+          answerKind: 'material density reference data',
+          choices: [
+            { label: 'Steel', value: 'steel' },
+            { label: 'Aluminium', value: 'aluminium' },
+            { label: 'Concrete', value: 'concrete' },
+            { label: 'Oak', value: 'oak' }
+          ],
+          url(choice = 'steel') {
+            return `/v1/data/materials/density?q=${encodeURIComponent(choice)}`;
+          },
           explain(data) {
             const item = Array.isArray(data.data) ? data.data[0] : undefined;
             return item ? `The API found ${item.name}, with density around ${item.density} ${item.unit}.` : 'The API returned material density data.';
           }
         },
         dateAdd: {
-          url: '/v1/learn/date-add-30',
+          label: 'date math',
+          answerKind: 'date calculation',
+          choices: [
+            { label: '7 days', value: '7' },
+            { label: '30 days', value: '30' },
+            { label: '90 days', value: '90' }
+          ],
+          url(choice = '30') {
+            return `/v1/learn/date-add-${encodeURIComponent(choice)}`;
+          },
           explain(data) {
-            return `Starting from ${data.input.start}, 30 days later is ${data.result_date}, which is a ${data.weekday}.`;
+            return `Starting from ${data.input.start}, ${data.input.days} days later is ${data.result_date}, which is a ${data.weekday}.`;
           }
         },
         saturday: {
+          label: 'business-day check',
           url: '/v1/learn/next-saturday-business-day',
+          answerKind: 'weekend and business-day explanation',
           explain(data) {
             return `${data.input.date} is ${data.is_business_day ? '' : 'not '}a business day. ${data.answer}`;
           }
         },
         randomId: {
+          label: 'random ID generation',
           url: '/v1/learn/random-id',
+          answerKind: 'UUID v4 identifier',
           explain(data) {
             return `The API generated this random ID: ${data.id}`;
           }
@@ -332,32 +462,95 @@
       const answerEl = document.querySelector('#answer');
       const urlEl = document.querySelector('#url');
       const jsonEl = document.querySelector('#json');
+      const choicesEl = document.querySelector('#choices');
+      const choiceTextEl = document.querySelector('#choiceText');
+      const clickedEl = document.querySelector('#clicked');
+      const becameEl = document.querySelector('#became');
+      const answeredEl = document.querySelector('#answered');
+      const copyUrlButton = document.querySelector('#copyUrl');
+      let currentUrl = `${window.location.origin}/v1/time/utc`;
 
-      async function runDemo(name) {
+      function demoUrl(demo, choice) {
+        return typeof demo.url === 'function' ? demo.url(choice) : demo.url;
+      }
+
+      function setQuestStep(step) {
+        document.querySelectorAll('.quest-step').forEach((item, index) => {
+          item.classList.toggle('active', index + 1 === step);
+        });
+      }
+
+      function showChoices(name) {
         const demo = demos[name];
-        const fullUrl = `${window.location.origin}${demo.url}`;
+        choicesEl.innerHTML = '';
+
+        if (!demo.choices) {
+          choiceTextEl.textContent = 'This one has no setup. The button is enough.';
+          runDemo(name);
+          return;
+        }
+
+        choiceTextEl.textContent = 'Now change one safe input. Notice how the URL changes.';
+        demo.choices.forEach((choice) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'choice-button';
+          button.textContent = choice.label;
+          button.addEventListener('click', () => runDemo(name, choice.value, choice.label));
+          choicesEl.appendChild(button);
+        });
+        setQuestStep(2);
+      }
+
+      async function runDemo(name, choice, choiceLabel) {
+        const demo = demos[name];
+        const path = demoUrl(demo, choice);
+        const fullUrl = `${window.location.origin}${path}`;
+        currentUrl = fullUrl;
 
         statusEl.textContent = 'Calling API';
         answerEl.textContent = 'Asking CalculationTime API...';
         urlEl.textContent = fullUrl;
         jsonEl.textContent = '{}';
+        clickedEl.textContent = choiceLabel || demo.label;
+        becameEl.textContent = path;
+        answeredEl.textContent = 'Waiting for the API...';
+        setQuestStep(3);
 
         try {
-          const response = await fetch(demo.url);
+          const response = await fetch(path);
           const data = await response.json();
 
           statusEl.textContent = 'Done';
           answerEl.textContent = demo.explain(data);
           jsonEl.textContent = JSON.stringify(data, null, 2);
+          answeredEl.textContent = demo.answerKind;
+          setQuestStep(4);
         } catch (error) {
           statusEl.textContent = 'Try again';
           answerEl.textContent = 'The request did not finish. The API may be unavailable or your browser may have blocked the request.';
           jsonEl.textContent = JSON.stringify({ error: error.message }, null, 2);
+          answeredEl.textContent = 'An error message';
         }
       }
 
       document.querySelectorAll('[data-demo]').forEach((button) => {
-        button.addEventListener('click', () => runDemo(button.dataset.demo));
+        button.addEventListener('click', () => showChoices(button.dataset.demo));
+      });
+
+      copyUrlButton.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(currentUrl);
+          copyUrlButton.textContent = 'Copied';
+          setTimeout(() => {
+            copyUrlButton.textContent = 'Copy this URL';
+          }, 1500);
+        } catch {
+          copyUrlButton.textContent = 'Copy failed';
+          setTimeout(() => {
+            copyUrlButton.textContent = 'Copy this URL';
+          }, 1500);
+        }
       });
     </script>
   </body>
