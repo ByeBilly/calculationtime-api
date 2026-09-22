@@ -10,6 +10,8 @@ https://api.calculationtime.com
 
 The API is built around visible assumptions and auditable calculation methods. It is useful when a product needs more than a loose snippet: scheduling rules, local time, business-day windows, geospatial estimates, solar geometry, or calculation utilities that should be repeatable and explainable.
 
+New to APIs? Start with the clickable [`GET /learn`](https://api.calculationtime.com/learn) page, then [`GET /beginner`](https://api.calculationtime.com/beginner) or [`docs/beginner-api-gateway.md`](./beginner-api-gateway.md). These start with a first browser-based API call before introducing keys, curl, JSON, or the full contract.
+
 For the current running route inventory, see [`docs/running-endpoints-directory.md`](./running-endpoints-directory.md). It is generated from the OpenAPI contract after the live service has loaded the latest code.
 
 For endpoint creation and pruning rules, see [`docs/api-governance-rulebook.md`](./api-governance-rulebook.md). New routes must pass all four gates in that rulebook before implementation.

@@ -151,6 +151,43 @@ test('public UTC and status proof routes match advertised contract', async () =>
   assert.equal(status.json().endpoint_families.some((family) => family.family === 'admin'), false);
 });
 
+test('beginner guide is public and teaches the first API call', async () => {
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_KEYS: 'customer_a:test-key',
+      TIME_API_CACHE: 'memory'
+    },
+    logger: false
+  });
+  const response = await app.inject('/beginner');
+  await app.close();
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.headers['content-type'], /^text\/markdown/);
+  assert.match(response.body, /Your First API Call/);
+  assert.match(response.body, /https:\/\/api\.calculationtime\.com\/v1\/time\/utc/);
+});
+
+test('learning ladder is public HTML and offers click-led API calls', async () => {
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_KEYS: 'customer_a:test-key',
+      TIME_API_CACHE: 'memory'
+    },
+    logger: false
+  });
+  const response = await app.inject('/learn');
+  await app.close();
+
+  assert.equal(response.statusCode, 200);
+  assert.match(response.headers['content-type'], /^text\/html/);
+  assert.match(response.body, /Learn APIs By Clicking/);
+  assert.match(response.body, /data-demo="time"/);
+  assert.match(response.body, /\/v1\/data\/http-status\?q=404/);
+});
+
 test('public OpenAPI omits internal admin routes and removed MD5 route', async () => {
   const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
   const response = await app.inject('/openapi.json');
@@ -158,6 +195,8 @@ test('public OpenAPI omits internal admin routes and removed MD5 route', async (
 
   assert.equal(response.statusCode, 200);
   const paths = response.json().paths;
+  assert.equal(paths['/beginner'].get.security.length, 0);
+  assert.equal(paths['/learn'].get.security.length, 0);
   assert.equal(paths['/api/v1/crypto/hash-md5'], undefined);
   assert.equal(Object.keys(paths).some((path) => path.startsWith('/v1/admin/')), false);
   assert.equal(response.json().components.securitySchemes.AdminKeyAuth, undefined);
