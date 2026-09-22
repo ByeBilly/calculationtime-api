@@ -129,7 +129,6 @@ Protected routes accept either `X-API-Key` or `Authorization: Bearer ...`. A pro
 |---|---|---|---:|---|
 | POST | `/api/v1/crypto/base64-decode` | API key | 1 | Decode Base64 text |
 | POST | `/api/v1/crypto/base64-encode` | API key | 1 | Encode text to Base64 |
-| POST | `/api/v1/crypto/hash-md5` | API key | 1 | Compute MD5 checksum for a small payload |
 | POST | `/api/v1/crypto/hash-sha256` | API key | 1 | Compute SHA-256 hash for a small payload |
 | POST | `/api/v1/crypto/hash-sha512` | API key | 1 | Compute SHA-512 hash for a small payload |
 
@@ -281,18 +280,6 @@ Protected routes accept either `X-API-Key` or `Authorization: Bearer ...`. A pro
 | GET | `/v1/account/profile` | API key | - | Authenticated customer profile |
 | GET | `/v1/account/usage` | API key | - | Authenticated customer usage summary |
 
-## Admin
-
-| Method | Path | Auth | Credits | Summary |
-|---|---|---|---:|---|
-| GET | `/v1/admin/customers` | API key | - | Admin customer list and usage summary |
-| POST | `/v1/admin/customers` | API key | - | Admin create or update customer |
-| GET | `/v1/admin/customers/{customer_id}` | API key | - | Admin customer detail |
-| POST | `/v1/admin/customers/{customer_id}/credits` | API key | - | Admin append credit ledger event |
-| GET | `/v1/admin/customers/{customer_id}/credits` | API key | - | Admin customer credit ledger |
-| GET | `/v1/admin/customers/{customer_id}/webhooks` | API key | - | Admin list customer webhooks |
-| PUT | `/v1/admin/customers/{customer_id}/webhooks` | API key | - | Admin register or update customer webhook |
-
 ## Observatory
 
 | Method | Path | Auth | Credits | Summary |
@@ -347,4 +334,3 @@ Protected routes accept either `X-API-Key` or `Authorization: Bearer ...`. A pro
 | Method | Path | Auth | Credits | Summary |
 |---|---|---|---:|---|
 | GET | `/v1/status` | Public | - | Public measured service status and endpoint inventory |
-

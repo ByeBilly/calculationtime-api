@@ -60,14 +60,6 @@ curl 'https://api.calculationtime.com/v1/canary' \
 
 Never place `ct_live_...` keys in public site code, screenshots, git commits, browser bundles, public docs, or client-side JavaScript. Public reference-data routes and status routes do not require a key.
 
-Admin endpoints require a separate private admin key:
-
-```http
-X-Admin-Key: admin-key
-```
-
-Customer API keys cannot call admin endpoints.
-
 ## Rate Limits, Quotas, And Credits
 
 The API uses minute buckets. Defaults from the current codebase:
@@ -170,10 +162,6 @@ Protected customer routes:
 - `GET /v1/canary`
 - `GET /v1/account/...`
 - All core calculation routes under `/v1/time`, `/v1/date`, `/v1/geo`, `/v1/solar`, `/v1/astronomy`, `/v1/finance`, `/v1/health`, `/v1/math`, `/v1/stats`, `/v1/payroll`, and `/v1/tradie`.
-
-Admin routes:
-
-- `/v1/admin/...`, using `X-Admin-Key`.
 
 ## High-Value Examples
 
@@ -518,7 +506,6 @@ All routes below are `POST`, API-key protected, one-credit, deterministic local 
 | POST | `/api/v1/convert/energy` | `{"value":1,"from":"kilowatt_hour","to":"joule"}` | Energy unit conversion |
 | POST | `/api/v1/convert/power` | `{"value":1,"from":"horsepower","to":"watt"}` | Power unit conversion |
 | POST | `/api/v1/convert/data-storage` | `{"value":1,"from":"gigabyte","to":"megabyte"}` | Data storage unit conversion |
-| POST | `/api/v1/crypto/hash-md5` | `{"text":"calculationtime"}` | MD5 checksum |
 | POST | `/api/v1/crypto/hash-sha256` | `{"text":"calculationtime"}` | SHA-256 hash |
 | POST | `/api/v1/crypto/hash-sha512` | `{"text":"calculationtime"}` | SHA-512 hash |
 | POST | `/api/v1/crypto/base64-encode` | `{"text":"calculationtime"}` | Base64 encode text |
@@ -694,7 +681,7 @@ The following catalog is generated from the current OpenAPI contract. For POST r
 | POST | `/v1/tradie/tool-depreciation` | API key | `{"purchase_price":1200,"salvage_value":200,"useful_life_years":5}` | Straight-line tool and equipment depreciation schedule |
 | POST | `/v1/tradie/invoice-aging` | API key | `{"as_of":"2026-09-19","invoices":[{"invoice_id":"INV-1","due_date":"2026-08-01","amount":400}]}` | Receivables aging buckets for unpaid invoices |
 
-## Account, admin, observatory
+## Account and observatory
 
 | Method | Path | Auth | Parameters / body | Summary |
 |---|---|---|---|---|
@@ -703,20 +690,13 @@ The following catalog is generated from the current OpenAPI contract. For POST r
 | GET | `/v1/account/usage` | API key | - | Authenticated customer usage summary |
 | GET | `/v1/account/limits` | API key | - | Authenticated customer plan and batch limits |
 | GET | `/v1/account/credits` | API key | - | Authenticated customer credit balance |
-| GET | `/v1/admin/customers` | Admin key | limit, include_inactive | Admin customer list and usage summary |
-| POST | `/v1/admin/customers` | Admin key | `{"customer_id":"taxserve-demo","display_name":"Tax Serve Demo","rate_limit_per_minute":240,"status":"active"}` | Admin create or update customer |
-| GET | `/v1/admin/customers/{customer_id}` | Admin key | customer_id (required) | Admin customer detail |
-| POST | `/v1/admin/customers/{customer_id}/credits` | Admin key | `{"delta":1000000,"reason":"trial grant","reference":"manual:onboarding","metadata":{"trial_ends_at":"2027-09-19T00:00:00.000Z"}}` | Admin append credit ledger event |
-| GET | `/v1/admin/customers/{customer_id}/credits` | Admin key | customer_id (required), limit | Admin customer credit ledger |
-| GET | `/v1/admin/customers/{customer_id}/webhooks` | Admin key | customer_id (required) | Admin list customer webhooks |
-| PUT | `/v1/admin/customers/{customer_id}/webhooks` | Admin key | `{"event_type":"calculation.heavy.completed","destination_url":"https://integrator.example/webhooks/calculationtime","status":"active"}` | Admin register or update customer webhook |
 | POST | `/v1/observatory/share` | Public | `{"poster":"moment","date":"2026-08-01","ttl_days":7}` | Create private Observatory share token |
 | GET | `/v1/observatory/share/{token}` | Public | token (required) | Resolve private Observatory share token |
 
 
 ## Webhooks
 
-Tenant webhooks can be configured by admin endpoints for the event type:
+Tenant webhooks can be configured internally for the event type:
 
 ```text
 calculation.heavy.completed

@@ -209,61 +209,6 @@ To enable database-backed credits, apply:
 docs/credit-ledger-schema.sql
 ```
 
-## Admin Commercial Operations
-
-Admin endpoints are disabled unless `TIME_API_ADMIN_KEY` is configured on the server. They require `X-Admin-Key`; ordinary customer `X-API-Key` credentials cannot call them.
-
-### `GET /v1/admin/customers`
-
-Returns active customer accounts with active key count, rate limit, current-month usage, credit balance, trial expiry, and last request timestamp.
-
-```bash
-curl 'https://api.calculationtime.com/v1/admin/customers?limit=100' \
-  -H 'X-Admin-Key: admin-key'
-```
-
-Use `include_inactive=true` to include paused or disabled accounts.
-
-### `GET /v1/admin/customers/{customer_id}`
-
-Returns detailed customer account state, including usage, credit balance, trial expiry, and non-secret API key prefixes.
-
-```bash
-curl 'https://api.calculationtime.com/v1/admin/customers/customer_slug' \
-  -H 'X-Admin-Key: admin-key'
-```
-
-### `POST /v1/admin/customers`
-
-Creates or updates a customer account in the persistent API database.
-
-```bash
-curl 'https://api.calculationtime.com/v1/admin/customers' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Admin-Key: admin-key' \
-  -d '{"customer_id":"customer_slug","display_name":"Customer Name","rate_limit_per_minute":120,"status":"active"}'
-```
-
-### `POST /v1/admin/customers/{customer_id}/credits`
-
-Adds an append-only credit ledger event for a customer. Positive `delta` grants credits; negative `delta` records a reversal or future debit.
-
-```bash
-curl 'https://api.calculationtime.com/v1/admin/customers/customer_slug/credits' \
-  -H 'Content-Type: application/json' \
-  -H 'X-Admin-Key: admin-key' \
-  -d '{"delta":1000,"reason":"launch grant","reference":"manual:launch"}'
-```
-
-### `GET /v1/admin/customers/{customer_id}/credits`
-
-Returns the customer's current credit balance and recent credit ledger events.
-
-```bash
-curl 'https://api.calculationtime.com/v1/admin/customers/customer_slug/credits?limit=25' \
-  -H 'X-Admin-Key: admin-key'
-```
-
 ## Commercial Enforcement
 
 Protected calculation endpoints are billable. Before a billable request runs, the API checks that the authenticated customer is active, has not passed a recorded trial expiry, and has a positive API-credit balance. Successful billable responses append a `-1` `billable_request` event to `calculationtime_api.credit_ledger`.
@@ -953,7 +898,6 @@ The following `/api/v1/...` endpoints are staged as zero-cost developer utilitie
 
 ### Cryptography and encoding
 
-- `/api/v1/crypto/hash-md5` — `{ "text": "calculationtime" }`
 - `/api/v1/crypto/hash-sha256` — `{ "text": "calculationtime" }`
 - `/api/v1/crypto/hash-sha512` — `{ "text": "calculationtime" }`
 - `/api/v1/crypto/base64-encode` — `{ "text": "calculationtime" }`
@@ -1201,15 +1145,6 @@ Eligible routes:
 - `POST /v1/tradie/vat-return-summary`
 - `POST /v1/tradie/tool-depreciation`
 - `POST /v1/tradie/invoice-aging`
-
-Register or update a tenant webhook with the admin key:
-
-```bash
-curl -X PUT 'https://api.calculationtime.com/v1/admin/customers/taxserve-demo/webhooks' \
-  -H 'X-Admin-Key: admin-key' \
-  -H 'Content-Type: application/json' \
-  -d '{"event_type":"calculation.heavy.completed","destination_url":"https://integrator.example/webhooks/calculationtime","status":"active"}'
-```
 
 Webhook payloads include event id, event type, customer id, route, method, status code, duration, and credit cost. Delivery is non-blocking: a webhook timeout or remote error is logged but does not fail the customer's calculation response.
 

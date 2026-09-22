@@ -116,7 +116,6 @@ const routes = [
   billablePost('/api/v1/convert/energy', 'Energy unit conversion', 1, { value: 1, from: 'kilowatt_hour', to: 'joule' }),
   billablePost('/api/v1/convert/power', 'Power unit conversion', 1, { value: 1, from: 'horsepower', to: 'watt' }),
   billablePost('/api/v1/convert/data-storage', 'Data storage unit conversion', 1, { value: 1, from: 'gigabyte', to: 'megabyte' }),
-  billablePost('/api/v1/crypto/hash-md5', 'Compute MD5 checksum for a small payload', 1, { text: 'calculationtime' }),
   billablePost('/api/v1/crypto/hash-sha256', 'Compute SHA-256 hash for a small payload', 1, { text: 'calculationtime' }),
   billablePost('/api/v1/crypto/hash-sha512', 'Compute SHA-512 hash for a small payload', 1, { text: 'calculationtime' }),
   billablePost('/api/v1/crypto/base64-encode', 'Encode text to Base64', 1, { text: 'calculationtime' }),
@@ -453,27 +452,6 @@ const routes = [
   protectedGet('/v1/account/usage', 'Authenticated customer usage summary'),
   protectedGet('/v1/account/limits', 'Authenticated customer plan and batch limits'),
   protectedGet('/v1/account/credits', 'Authenticated customer credit balance'),
-  adminGet('/v1/admin/customers', 'Admin customer list and usage summary', ['limit', 'include_inactive']),
-  adminGet('/v1/admin/customers/{customer_id}', 'Admin customer detail', [], ['customer_id']),
-  adminPost('/v1/admin/customers', 'Admin create or update customer', {
-    customer_id: 'taxserve-demo',
-    display_name: 'Tax Serve Demo',
-    rate_limit_per_minute: 240,
-    status: 'active'
-  }),
-  adminPost('/v1/admin/customers/{customer_id}/credits', 'Admin append credit ledger event', {
-    delta: 1000000,
-    reason: 'trial grant',
-    reference: 'manual:onboarding',
-    metadata: { trial_ends_at: '2027-09-19T00:00:00.000Z' }
-  }, ['customer_id']),
-  adminGet('/v1/admin/customers/{customer_id}/credits', 'Admin customer credit ledger', ['limit'], ['customer_id']),
-  adminGet('/v1/admin/customers/{customer_id}/webhooks', 'Admin list customer webhooks', [], ['customer_id']),
-  adminPut('/v1/admin/customers/{customer_id}/webhooks', 'Admin register or update customer webhook', {
-    event_type: 'calculation.heavy.completed',
-    destination_url: 'https://integrator.example/webhooks/calculationtime',
-    status: 'active'
-  }, ['customer_id']),
   publicPost('/v1/observatory/share', 'Create private Observatory share token', {
     poster: 'moment',
     date: '2026-08-01',
@@ -493,7 +471,7 @@ const spec = {
   info: {
     title: 'CalculationTime API',
     version: '0.1.0',
-    description: 'CalculationTime v1 API for time, date, holiday, geospatial, solar, astronomy, finance, payroll, statistics, tradie accounting, tenant account, admin, and webhook-management workflows.'
+    description: 'CalculationTime v1 API for time, date, holiday, geospatial, solar, astronomy, finance, payroll, statistics, tradie accounting, tenant account, and webhook-management workflows.'
   },
   servers: [
     { url: 'https://api.calculationtime.com' },
@@ -503,8 +481,7 @@ const spec = {
   components: {
     securitySchemes: {
       ApiKeyAuth: { type: 'apiKey', in: 'header', name: 'X-API-Key' },
-      BearerAuth: { type: 'http', scheme: 'bearer' },
-      AdminKeyAuth: { type: 'apiKey', in: 'header', name: 'X-Admin-Key' }
+      BearerAuth: { type: 'http', scheme: 'bearer' }
     },
     schemas: {
       ErrorResponse: {
@@ -582,39 +559,6 @@ function billablePost(path, summary, creditCost, example) {
       requestBody: jsonBody(example),
       responses: protectedResponses(),
       extra: { 'x-credit-cost': creditCost }
-    })
-  };
-}
-
-function adminGet(path, summary, queryParams = [], pathParams = []) {
-  return {
-    method: 'get',
-    path,
-    operation: operation(summary, {
-      security: [{ AdminKeyAuth: [] }],
-      parameters: [...pathParameters(pathParams), ...queryParameters(queryParams)],
-      responses: protectedResponses()
-    })
-  };
-}
-
-function adminPost(path, summary, example, pathParams = []) {
-  return adminWrite('post', path, summary, example, pathParams);
-}
-
-function adminPut(path, summary, example, pathParams = []) {
-  return adminWrite('put', path, summary, example, pathParams);
-}
-
-function adminWrite(method, path, summary, example, pathParams) {
-  return {
-    method,
-    path,
-    operation: operation(summary, {
-      security: [{ AdminKeyAuth: [] }],
-      parameters: pathParameters(pathParams),
-      requestBody: jsonBody(example),
-      responses: protectedResponses(201)
     })
   };
 }
