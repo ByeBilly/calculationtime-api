@@ -148,6 +148,7 @@ test('public UTC and status proof routes match advertised contract', async () =>
   assert.equal(status.json().monitoring.protected_canary, '/v1/canary');
   assert.ok(status.json().endpoint_families.some((family) => family.family === 'observatory'));
   assert.ok(status.json().endpoint_families.some((family) => family.family === 'account'));
+  assert.equal(status.json().endpoint_families.some((family) => family.family === 'admin'), false);
 });
 
 test('public OpenAPI omits internal admin routes and removed MD5 route', async () => {

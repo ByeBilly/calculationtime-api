@@ -439,10 +439,6 @@ const ENDPOINT_FAMILIES = [
     routes: ['GET /v1/account/profile', 'GET /v1/account/usage', 'GET /v1/account/limits', 'GET /v1/account/credits']
   },
   {
-    family: 'admin',
-    routes: ['GET /v1/admin/customers', 'GET /v1/admin/customers/:customer_id', 'POST /v1/admin/customers', 'POST /v1/admin/customers/:customer_id/credits', 'GET /v1/admin/customers/:customer_id/credits', 'GET /v1/admin/customers/:customer_id/webhooks', 'PUT /v1/admin/customers/:customer_id/webhooks']
-  },
-  {
     family: 'observatory',
     routes: ['POST /v1/observatory/share', 'GET /v1/observatory/share/:token']
   }
