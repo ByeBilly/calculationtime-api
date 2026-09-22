@@ -150,6 +150,18 @@ test('public UTC and status proof routes match advertised contract', async () =>
   assert.ok(status.json().endpoint_families.some((family) => family.family === 'account'));
 });
 
+test('public OpenAPI omits internal admin routes and removed MD5 route', async () => {
+  const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
+  const response = await app.inject('/openapi.json');
+  await app.close();
+
+  assert.equal(response.statusCode, 200);
+  const paths = response.json().paths;
+  assert.equal(paths['/api/v1/crypto/hash-md5'], undefined);
+  assert.equal(Object.keys(paths).some((path) => path.startsWith('/v1/admin/')), false);
+  assert.equal(response.json().components.securitySchemes.AdminKeyAuth, undefined);
+});
+
 test('public reference data routes return cacheable JSON without authentication', async () => {
   const app = await buildServer({
     env: {
@@ -1844,6 +1856,26 @@ test('batch two visible zero-cost developer routes return one-credit calculation
   for (const [url] of requests) {
     assert.equal(debits.some(([route, cost]) => route === url && cost === 1), true, url);
   }
+});
+
+test('MD5 hash route is removed from the public API surface', async () => {
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_KEYS: 'customer_a:test-key',
+      TIME_API_CACHE: 'memory'
+    },
+    logger: false
+  });
+  const response = await app.inject({
+    method: 'POST',
+    url: '/api/v1/crypto/hash-md5',
+    headers: { 'x-api-key': 'test-key' },
+    payload: { text: 'calculationtime' }
+  });
+  await app.close();
+
+  assert.equal(response.statusCode, 404);
 });
 
 test('tradie accounting routes return calculations and weighted credit costs', async () => {

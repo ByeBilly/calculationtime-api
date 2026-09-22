@@ -224,7 +224,6 @@ const ENDPOINT_FAMILIES = [
   {
     family: 'crypto',
     routes: [
-      'POST /api/v1/crypto/hash-md5',
       'POST /api/v1/crypto/hash-sha256',
       'POST /api/v1/crypto/hash-sha512',
       'POST /api/v1/crypto/base64-encode',
@@ -1104,10 +1103,6 @@ export async function buildServer({
       cached(request, reply, `convert.${group}`, request.body || {}, () => unitConversion(serviceGroup, request.body || {}), deterministicCache(604_800))
     ));
   }
-
-  app.post('/api/v1/crypto/hash-md5', billableRoute(1), async (request, reply) => (
-    cached(request, reply, 'crypto.hash_md5', request.body || {}, () => hashPayload('md5', request.body || {}), deterministicCache(604_800))
-  ));
 
   app.post('/api/v1/crypto/hash-sha256', billableRoute(1), async (request, reply) => (
     cached(request, reply, 'crypto.hash_sha256', request.body || {}, () => hashPayload('sha256', request.body || {}), deterministicCache(604_800))
