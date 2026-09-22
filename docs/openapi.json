@@ -47,6 +47,39 @@
         "security": []
       }
     },
+    "/v1/learn/date-add-30": {
+      "get": {
+        "summary": "Learning demo: add 30 days to today",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/learn/next-saturday-business-day": {
+      "get": {
+        "summary": "Learning demo: check whether next Saturday is a business day",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/learn/random-id": {
+      "get": {
+        "summary": "Learning demo: generate a random UUID",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "security": []
+      }
+    },
     "/health": {
       "get": {
         "summary": "Low-level service health",

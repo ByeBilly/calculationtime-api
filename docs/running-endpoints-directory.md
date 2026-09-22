@@ -3,8 +3,8 @@
 Generated from the CalculationTime API OpenAPI contract after the live Node service restart.
 
 - Public base URL: `https://api.calculationtime.com`
-- Generated at: `2026-09-22T14:48:48.804Z`
-- OpenAPI path count: `208`
+- Generated at: `2026-09-22T15:35:57.877Z`
+- OpenAPI path count: `211`
 - Service: `time-coordinate-api`
 
 Protected routes accept either `X-API-Key` or `Authorization: Bearer ...`. A protected route returning `401 unauthorized` without a key means the route is loaded and live, but requires credentials.
@@ -16,6 +16,9 @@ Protected routes accept either `X-API-Key` or `Authorization: Bearer ...`. A pro
 | GET | `/` | Public | - | Markdown API documentation |
 | GET | `/beginner` | Public | - | Beginner-friendly first API call guide |
 | GET | `/learn` | Public | - | Kid-level clickable API learning ladder |
+| GET | `/v1/learn/date-add-30` | Public | - | Learning demo: add 30 days to today |
+| GET | `/v1/learn/next-saturday-business-day` | Public | - | Learning demo: check whether next Saturday is a business day |
+| GET | `/v1/learn/random-id` | Public | - | Learning demo: generate a random UUID |
 | GET | `/health` | Public | - | Low-level service health |
 | GET | `/openapi.json` | Public | - | OpenAPI contract for live routes |
 

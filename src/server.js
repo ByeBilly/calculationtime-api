@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -192,6 +193,9 @@ const ENDPOINT_FAMILIES = [
       'GET /',
       'GET /beginner',
       'GET /learn',
+      'GET /v1/learn/date-add-30',
+      'GET /v1/learn/next-saturday-business-day',
+      'GET /v1/learn/random-id',
       'GET /health',
       'GET /openapi.json',
       'GET /v1/status',
@@ -648,6 +652,38 @@ export async function buildServer({
     reply.header('Vercel-CDN-Cache-Control', `public, s-maxage=${ttlSeconds}`);
     return dailyTagline();
   });
+
+  app.get('/v1/learn/date-add-30', async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    return {
+      lesson: 'add_30_days_to_today',
+      ...addToDate({ start: today, days: 30 }),
+      note: 'Public fixed learning demo. The full date-add endpoint requires an API key.'
+    };
+  });
+
+  app.get('/v1/learn/next-saturday-business-day', async () => {
+    const today = new Date();
+    const currentDay = today.getUTCDay();
+    const daysUntilSaturday = (6 - currentDay + 7) % 7 || 7;
+    const saturday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() + daysUntilSaturday));
+    const date = saturday.toISOString().slice(0, 10);
+    return {
+      lesson: 'is_next_saturday_a_business_day',
+      input: { date },
+      is_business_day: false,
+      answer: 'No. Saturday is treated as a weekend day in this beginner demo.',
+      weekend_definition: 'Saturday and Sunday excluded',
+      note: 'Public fixed learning demo. Jurisdiction-aware business-day endpoints require an API key.'
+    };
+  });
+
+  app.get('/v1/learn/random-id', async () => ({
+    lesson: 'generate_a_random_id',
+    id: randomUUID(),
+    format: 'uuid_v4',
+    note: 'Public fixed learning demo. Production UUID and network utility endpoints may require an API key.'
+  }));
 
   registerReferenceRoute(app, '/v1/data/countries', 'data.countries', countriesReference);
   registerReferenceRoute(app, '/v1/data/timezones', 'data.timezones', timezonesReference, { ttlSeconds: 86_400 });
