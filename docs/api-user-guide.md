@@ -26,7 +26,7 @@ curl 'https://api.calculationtime.com/openapi.json'
 
 The API is served by the `time-coordinate-api` Node/Fastify service on the Munich VPS. Public documentation is also exposed at `GET /`, and the machine-readable OpenAPI contract is at `GET /openapi.json`.
 
-If you have never used an API before, start with the clickable [`GET /learn`](https://api.calculationtime.com/learn) page, then [`GET /beginner`](https://api.calculationtime.com/beginner) or [`docs/beginner-api-gateway.md`](./beginner-api-gateway.md). These begin with one small success before introducing API keys or developer tooling.
+If you have never used an API before, start with the clickable [`GET /learn`](https://api.calculationtime.com/learn) page, then [`GET /beginner`](https://api.calculationtime.com/beginner) or [`docs/beginner-api-gateway.md`](./beginner-api-gateway.md). These begin with button-led public learning demos before introducing API keys or developer tooling.
 
 ### Route Prefixes
 
@@ -153,6 +153,9 @@ Public routes:
 - `GET /`
 - `GET /beginner`
 - `GET /learn`
+- `GET /v1/learn/date-add-30`
+- `GET /v1/learn/next-saturday-business-day`
+- `GET /v1/learn/random-id`
 - `GET /health`
 - `GET /openapi.json`
 - `GET /v1/status`

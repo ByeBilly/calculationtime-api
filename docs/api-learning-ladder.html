@@ -232,6 +232,18 @@
               <span class="task-title">How dense is steel?</span>
               <span class="task-note">Ask a public reference table for useful data.</span>
             </button>
+            <button type="button" data-demo="dateAdd">
+              <span class="task-title">Add 30 days to today</span>
+              <span class="task-note">Watch the API do date math without typing dates.</span>
+            </button>
+            <button type="button" data-demo="saturday">
+              <span class="task-title">Is next Saturday a business day?</span>
+              <span class="task-note">Click through a weekend/business-day example.</span>
+            </button>
+            <button type="button" data-demo="randomId">
+              <span class="task-title">Generate a random ID</span>
+              <span class="task-note">Create a useful ID for forms, records, or examples.</span>
+            </button>
           </div>
         </div>
 
@@ -294,6 +306,24 @@
           explain(data) {
             const item = Array.isArray(data.data) ? data.data[0] : undefined;
             return item ? `The API found ${item.name}, with density around ${item.density} ${item.unit}.` : 'The API returned material density data.';
+          }
+        },
+        dateAdd: {
+          url: '/v1/learn/date-add-30',
+          explain(data) {
+            return `Starting from ${data.input.start}, 30 days later is ${data.result_date}, which is a ${data.weekday}.`;
+          }
+        },
+        saturday: {
+          url: '/v1/learn/next-saturday-business-day',
+          explain(data) {
+            return `${data.input.date} is ${data.is_business_day ? '' : 'not '}a business day. ${data.answer}`;
+          }
+        },
+        randomId: {
+          url: '/v1/learn/random-id',
+          explain(data) {
+            return `The API generated this random ID: ${data.id}`;
           }
         }
       };
