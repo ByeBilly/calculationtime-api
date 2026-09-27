@@ -883,7 +883,7 @@ curl 'https://api.calculationtime.com/v1/math/combinatorics' \
 
 ## Batch Two Developer Utility Endpoints
 
-The following `/api/v1/...` endpoints are staged as zero-cost developer utilities: pure local JavaScript arithmetic, deterministic astronomy approximations, or existing local astronomy-engine calculations. All are `POST`, API-key protected, and cost `1` credit per call.
+The following `/api/v1/...` endpoints are staged as developer utilities: pure local JavaScript arithmetic, deterministic astronomy approximations, or existing local astronomy-engine calculations. The length and weight converters are public zero-cost routes that do not require an API key. The remaining routes are `POST`, API-key protected, and cost `1` credit per call.
 
 ### Unit conversion
 

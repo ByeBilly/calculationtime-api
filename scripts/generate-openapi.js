@@ -28,7 +28,7 @@ const routes = [
   publicRoute('get', '/v1/time/utc', 'Current UTC timestamp and clock-model metadata'),
   publicRoute('get', '/api/v1/utility/tagline', 'Deterministic daily CalculationTime tagline'),
   publicRoute('get', '/v1/data/countries', 'Country reference table with capitals, ISO codes, dialing codes, and currencies'),
-  publicRoute('get', '/v1/data/timezones', 'IANA timezone reference with current UTC offsets and DST status'),
+  publicRoute('get', '/v1/data/timezones', 'IANA timezone reference with current UTC offsets, DST support, and DST in-effect status'),
   publicRoute('get', '/v1/data/elements', 'Periodic table reference values'),
   publicRoute('get', '/v1/data/constants', 'Physical and mathematical constants reference table'),
   publicRoute('get', '/v1/data/materials/density', 'Common material density reference table'),
@@ -39,7 +39,7 @@ const routes = [
   publicRoute('get', '/v1/data/stars/bright', 'Bright star reference table'),
   publicRoute('get', '/v1/data/meteor-showers', 'Major annual meteor shower reference table'),
   publicRoute('get', '/api/v1/data/countries', 'Alias: country reference table'),
-  publicRoute('get', '/api/v1/data/timezones', 'Alias: IANA timezone reference'),
+  publicRoute('get', '/api/v1/data/timezones', 'Alias: IANA timezone reference with current UTC offsets, DST support, and DST in-effect status'),
   publicRoute('get', '/api/v1/data/elements', 'Alias: periodic table reference values'),
   publicRoute('get', '/api/v1/data/constants', 'Alias: physical and mathematical constants'),
   publicRoute('get', '/api/v1/data/materials/density', 'Alias: common material density reference table'),
@@ -110,11 +110,11 @@ const routes = [
     days: 14,
     weekend_days: [6, 7]
   }),
-  billableGet('/v1/holidays', 'Holidays for a jurisdiction and year', ['jurisdiction', 'year']),
-  billableGet('/v1/holidays/next', 'Next holiday for a jurisdiction', ['jurisdiction', 'from']),
-  billableGet('/v1/holidays/is-business-day', 'Business-day check for one date', ['jurisdiction', 'date']),
-  billablePost('/api/v1/convert/length', 'Zero-cost length unit conversion', 1, { value: 1, from: 'mile', to: 'kilometer' }),
-  billablePost('/api/v1/convert/weight', 'Zero-cost weight and mass unit conversion', 1, { value: 10, from: 'pound', to: 'kilogram' }),
+  publicGet('/v1/holidays', 'Free public holidays for a jurisdiction and year', ['jurisdiction', 'year']),
+  publicGet('/v1/holidays/next', 'Free public next holiday for a jurisdiction', ['jurisdiction', 'from']),
+  publicGet('/v1/holidays/is-business-day', 'Free public business-day check for one date', ['jurisdiction', 'date']),
+  publicPost('/api/v1/convert/length', 'Free public zero-cost length unit conversion', { value: 1, from: 'mile', to: 'kilometer' }),
+  publicPost('/api/v1/convert/weight', 'Free public zero-cost weight and mass unit conversion', { value: 10, from: 'pound', to: 'kilogram' }),
   billablePost('/api/v1/convert/temperature', 'Temperature scale conversion', 1, { value: 32, from: 'fahrenheit', to: 'celsius' }),
   billablePost('/api/v1/convert/area', 'Area unit conversion', 1, { value: 1, from: 'acre', to: 'square_meter' }),
   billablePost('/api/v1/convert/volume', 'Volume unit conversion', 1, { value: 1, from: 'gallon', to: 'liter' }),
@@ -536,6 +536,14 @@ function publicPost(path, summary, example) {
     method: 'post',
     path,
     operation: operation(summary, { security: [], requestBody: jsonBody(example) })
+  };
+}
+
+function publicGet(path, summary, queryParams = []) {
+  return {
+    method: 'get',
+    path,
+    operation: operation(summary, { security: [], parameters: queryParameters(queryParams) })
   };
 }
 

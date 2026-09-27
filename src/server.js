@@ -1142,21 +1142,22 @@ export async function buildServer({
     cached(request, reply, 'date.calendar_range', request.body || {}, () => calendarRange(request.body || {}), deterministicCache(604_800))
   ));
 
-  app.get('/v1/holidays', billableRoute(), async (request, reply) => (
+  app.get('/v1/holidays', async (request, reply) => (
     cached(request, reply, 'holidays.year', request.query, () => holidaysForYear(request.query))
   ));
 
-  app.get('/v1/holidays/next', billableRoute(), async (request, reply) => (
+  app.get('/v1/holidays/next', async (request, reply) => (
     cached(request, reply, 'holidays.next', request.query, () => nextHoliday(request.query))
   ));
 
-  app.get('/v1/holidays/is-business-day', billableRoute(), async (request, reply) => (
+  app.get('/v1/holidays/is-business-day', async (request, reply) => (
     cached(request, reply, 'holidays.is_business_day', request.query, () => isBusinessDayInJurisdiction(request.query))
   ));
 
   for (const group of ['length', 'weight', 'temperature', 'area', 'volume', 'speed', 'pressure', 'energy', 'power', 'data-storage']) {
     const serviceGroup = group.replace('-', '_');
-    app.post(`/api/v1/convert/${group}`, billableRoute(1), async (request, reply) => (
+    const routeOptions = ['length', 'weight'].includes(group) ? {} : billableRoute(1);
+    app.post(`/api/v1/convert/${group}`, routeOptions, async (request, reply) => (
       cached(request, reply, `convert.${group}`, request.body || {}, () => unitConversion(serviceGroup, request.body || {}), deterministicCache(604_800))
     ));
   }

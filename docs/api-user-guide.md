@@ -501,7 +501,7 @@ The regenerated OpenAPI contract now exposes `206` unique paths. Batch two inclu
 
 ## Batch Two Developer Utility Routes
 
-All routes below are `POST`, API-key protected, one-credit, deterministic local calculations.
+All routes below are deterministic local calculations. Length and weight conversion are public zero-cost routes that do not require an API key; the other routes in this table are `POST`, API-key protected, one-credit calculations.
 
 | Method | Path | Sample body | Description |
 |---|---|---|---|
@@ -569,7 +569,7 @@ The following catalog is generated from the current OpenAPI contract. For POST r
 | Method | Path | Auth | Parameters / body | Summary |
 |---|---|---|---|---|
 | GET | `/v1/data/countries` | Public | - | Country reference table with capitals, ISO codes, dialing codes, and currencies |
-| GET | `/v1/data/timezones` | Public | - | IANA timezone reference with current UTC offsets and DST status |
+| GET | `/v1/data/timezones` | Public | - | IANA timezone reference with current UTC offsets, DST support, and DST in-effect status |
 | GET | `/v1/data/elements` | Public | - | Periodic table reference values |
 | GET | `/v1/data/constants` | Public | - | Physical and mathematical constants reference table |
 | GET | `/v1/data/materials/density` | Public | - | Common material density reference table |
@@ -613,9 +613,9 @@ The following catalog is generated from the current OpenAPI contract. For POST r
 | POST | `/v1/date/days-in-month` | API key | `{"year":2028,"month":2}` | Days in a Gregorian month |
 | POST | `/v1/date/timezone-offset` | API key | `{"timestamp":"2026-09-21T00:00:00Z","offset":"+10:00"}` | Fixed UTC offset conversion without DST lookup |
 | POST | `/v1/date/calendar-range` | API key | `{"start":"2026-09-21","days":14,"weekend_days":[6,7]}` | Generate a deterministic date range with weekday and ISO week facts |
-| GET | `/v1/holidays` | API key | jurisdiction, year | Holidays for a jurisdiction and year |
-| GET | `/v1/holidays/next` | API key | jurisdiction, from | Next holiday for a jurisdiction |
-| GET | `/v1/holidays/is-business-day` | API key | jurisdiction, date | Business-day check for one date |
+| GET | `/v1/holidays` | Public | jurisdiction, year | Holidays for a jurisdiction and year |
+| GET | `/v1/holidays/next` | Public | jurisdiction, from | Next holiday for a jurisdiction |
+| GET | `/v1/holidays/is-business-day` | Public | jurisdiction, date | Business-day check for one date |
 | GET | `/v1/geo/distance` | API key | lat1, lon1, lat2, lon2 | Distance between two coordinates |
 | POST | `/v1/geo/distance/batch` | API key | `{"pairs":[{"from":{"lat":48.137154,"lon":11.576124},"to":{"lat":51.5072,"lon":-0.1276}}]}` | Batch distance calculations |
 | GET | `/v1/geo/midpoint` | API key | lat1, lon1, lat2, lon2 | Midpoint between two coordinates |

@@ -48,7 +48,7 @@ Protected routes accept either `X-API-Key` or `Authorization: Bearer ...`. A pro
 | GET | `/v1/data/meteor-showers` | Public | - | Major annual meteor shower reference table |
 | GET | `/v1/data/mime-types` | Public | - | MIME type and extension reference table |
 | GET | `/v1/data/stars/bright` | Public | - | Bright star reference table |
-| GET | `/v1/data/timezones` | Public | - | IANA timezone reference with current UTC offsets and DST status |
+| GET | `/v1/data/timezones` | Public | - | IANA timezone reference with current UTC offsets, DST support, and DST in-effect status |
 | GET | `/v1/data/unicode-blocks` | Public | - | Unicode block range reference table |
 
 ## Utility
@@ -320,21 +320,21 @@ Protected routes accept either `X-API-Key` or `Authorization: Bearer ...`. A pro
 | POST | `/api/v1/convert/area` | API key | 1 | Area unit conversion |
 | POST | `/api/v1/convert/data-storage` | API key | 1 | Data storage unit conversion |
 | POST | `/api/v1/convert/energy` | API key | 1 | Energy unit conversion |
-| POST | `/api/v1/convert/length` | API key | 1 | Zero-cost length unit conversion |
+| POST | `/api/v1/convert/length` | Public | - | Zero-cost length unit conversion |
 | POST | `/api/v1/convert/power` | API key | 1 | Power unit conversion |
 | POST | `/api/v1/convert/pressure` | API key | 1 | Pressure unit conversion |
 | POST | `/api/v1/convert/speed` | API key | 1 | Speed unit conversion |
 | POST | `/api/v1/convert/temperature` | API key | 1 | Temperature scale conversion |
 | POST | `/api/v1/convert/volume` | API key | 1 | Volume unit conversion |
-| POST | `/api/v1/convert/weight` | API key | 1 | Zero-cost weight and mass unit conversion |
+| POST | `/api/v1/convert/weight` | Public | - | Zero-cost weight and mass unit conversion |
 
 ## Holidays
 
 | Method | Path | Auth | Credits | Summary |
 |---|---|---|---:|---|
-| GET | `/v1/holidays` | API key | 1 | Holidays for a jurisdiction and year |
-| GET | `/v1/holidays/is-business-day` | API key | 1 | Business-day check for one date |
-| GET | `/v1/holidays/next` | API key | 1 | Next holiday for a jurisdiction |
+| GET | `/v1/holidays` | Public | - | Holidays for a jurisdiction and year |
+| GET | `/v1/holidays/is-business-day` | Public | - | Business-day check for one date |
+| GET | `/v1/holidays/next` | Public | - | Next holiday for a jurisdiction |
 
 ## Status
 

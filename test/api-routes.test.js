@@ -1025,7 +1025,14 @@ test('business-day endpoint preserves response contract', async () => {
 });
 
 test('holiday endpoint returns beta jurisdiction holidays with observed dates', async () => {
-  const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_KEYS: 'customer_a:test-key',
+      TIME_API_CACHE: 'memory'
+    },
+    logger: false
+  });
   const response = await app.inject('/v1/holidays?country=US&year=2026');
   await app.close();
 
@@ -1119,7 +1126,14 @@ test('status advertises phase 2 date route inventory', async () => {
 });
 
 test('holiday is-business-day endpoint identifies public holidays', async () => {
-  const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
+  const app = await buildServer({
+    env: {
+      REQUIRE_API_KEY: 'true',
+      TIME_API_KEYS: 'customer_a:test-key',
+      TIME_API_CACHE: 'memory'
+    },
+    logger: false
+  });
   const response = await app.inject('/v1/holidays/is-business-day?country=AU&date=2026-01-26');
   await app.close();
 
@@ -1885,7 +1899,7 @@ test('phase 3 math routes return calculations and one-credit costs', async () =>
   }
 });
 
-test('batch two visible zero-cost developer routes return one-credit calculations', async () => {
+test('batch two developer routes split public zero-cost converters from one-credit calculations', async () => {
   const debits = [];
   const keyStore = {
     async findByKey() {
@@ -1914,8 +1928,11 @@ test('batch two visible zero-cost developer routes return one-credit calculation
     logger: false
   });
   const headers = { 'x-api-key': 'test-key' };
-  const requests = [
+  const publicRequests = [
     ['/api/v1/convert/length', { value: 1, from: 'mile', to: 'kilometer' }, 'result'],
+    ['/api/v1/convert/weight', { value: 10, from: 'pound', to: 'kilogram' }, 'result']
+  ];
+  const billableRequests = [
     ['/api/v1/convert/temperature', { value: 32, from: 'fahrenheit', to: 'celsius' }, 'result'],
     ['/api/v1/convert/power', { value: 1, from: 'horsepower', to: 'watt' }, 'result'],
     ['/api/v1/convert/data-storage', { value: 1, from: 'gigabyte', to: 'megabyte' }, 'result'],
@@ -1928,16 +1945,38 @@ test('batch two visible zero-cost developer routes return one-credit calculation
     ['/api/v1/math/cone-geometry', { radius: 3, height: 4 }, 'volume']
   ];
 
-  for (const [url, payload, marker] of requests) {
+  for (const [url, payload, marker] of publicRequests) {
+    const response = await app.inject({ method: 'POST', url, payload });
+    assert.equal(response.statusCode, 200, url);
+    assert.notEqual(response.json()[marker], undefined, url);
+  }
+  for (const [url, payload, marker] of billableRequests) {
     const response = await app.inject({ method: 'POST', url, headers, payload });
     assert.equal(response.statusCode, 200, url);
     assert.notEqual(response.json()[marker], undefined, url);
   }
   await app.close();
 
-  for (const [url] of requests) {
+  for (const [url] of publicRequests) {
+    assert.equal(debits.some(([route]) => route === url), false, url);
+  }
+  for (const [url] of billableRequests) {
     assert.equal(debits.some(([route, cost]) => route === url && cost === 1), true, url);
   }
+});
+
+test('timezone reference separates DST support from DST in effect', async () => {
+  const app = await buildServer({ env: { TIME_API_CACHE: 'memory' }, logger: false });
+  const londonJanuary = await app.inject('/v1/data/timezones?q=Europe/London&at=2026-01-15T12:00:00Z');
+  const londonJuly = await app.inject('/v1/data/timezones?q=Europe/London&at=2026-07-15T12:00:00Z');
+  await app.close();
+
+  assert.equal(londonJanuary.statusCode, 200);
+  assert.equal(londonJuly.statusCode, 200);
+  assert.equal(londonJanuary.json().data[0].observes_dst, true);
+  assert.equal(londonJanuary.json().data[0].observes_dst_now, true);
+  assert.equal(londonJanuary.json().data[0].dst_in_effect, false);
+  assert.equal(londonJuly.json().data[0].dst_in_effect, true);
 });
 
 test('MD5 hash route is removed from the public API surface', async () => {
