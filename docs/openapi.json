@@ -170,7 +170,7 @@
     },
     "/v1/data/timezones": {
       "get": {
-        "summary": "IANA timezone reference with current UTC offsets and DST status",
+        "summary": "IANA timezone reference with current UTC offsets, DST support, and DST in-effect status",
         "responses": {
           "200": {
             "description": "Successful response"
@@ -291,7 +291,7 @@
     },
     "/api/v1/data/timezones": {
       "get": {
-        "summary": "Alias: IANA timezone reference",
+        "summary": "Alias: IANA timezone reference with current UTC offsets, DST support, and DST in-effect status",
         "responses": {
           "200": {
             "description": "Successful response"
@@ -1289,35 +1289,13 @@
     },
     "/v1/holidays": {
       "get": {
-        "summary": "Holidays for a jurisdiction and year",
+        "summary": "Free public holidays for a jurisdiction and year",
         "responses": {
           "200": {
             "description": "Successful response"
-          },
-          "400": {
-            "description": "Invalid request input"
-          },
-          "401": {
-            "description": "A valid API key is required"
-          },
-          "402": {
-            "description": "API credit balance is exhausted"
-          },
-          "403": {
-            "description": "Customer account is suspended or trial has expired"
-          },
-          "429": {
-            "description": "Rate limit exceeded"
           }
         },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          },
-          {
-            "BearerAuth": []
-          }
-        ],
+        "security": [],
         "parameters": [
           {
             "name": "jurisdiction",
@@ -1335,41 +1313,18 @@
               "type": "string"
             }
           }
-        ],
-        "x-credit-cost": 1
+        ]
       }
     },
     "/v1/holidays/next": {
       "get": {
-        "summary": "Next holiday for a jurisdiction",
+        "summary": "Free public next holiday for a jurisdiction",
         "responses": {
           "200": {
             "description": "Successful response"
-          },
-          "400": {
-            "description": "Invalid request input"
-          },
-          "401": {
-            "description": "A valid API key is required"
-          },
-          "402": {
-            "description": "API credit balance is exhausted"
-          },
-          "403": {
-            "description": "Customer account is suspended or trial has expired"
-          },
-          "429": {
-            "description": "Rate limit exceeded"
           }
         },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          },
-          {
-            "BearerAuth": []
-          }
-        ],
+        "security": [],
         "parameters": [
           {
             "name": "jurisdiction",
@@ -1387,41 +1342,18 @@
               "type": "string"
             }
           }
-        ],
-        "x-credit-cost": 1
+        ]
       }
     },
     "/v1/holidays/is-business-day": {
       "get": {
-        "summary": "Business-day check for one date",
+        "summary": "Free public business-day check for one date",
         "responses": {
           "200": {
             "description": "Successful response"
-          },
-          "400": {
-            "description": "Invalid request input"
-          },
-          "401": {
-            "description": "A valid API key is required"
-          },
-          "402": {
-            "description": "API credit balance is exhausted"
-          },
-          "403": {
-            "description": "Customer account is suspended or trial has expired"
-          },
-          "429": {
-            "description": "Rate limit exceeded"
           }
         },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          },
-          {
-            "BearerAuth": []
-          }
-        ],
+        "security": [],
         "parameters": [
           {
             "name": "jurisdiction",
@@ -1439,42 +1371,18 @@
               "type": "string"
             }
           }
-        ],
-        "x-credit-cost": 1
+        ]
       }
     },
     "/api/v1/convert/length": {
       "post": {
-        "summary": "Zero-cost length unit conversion",
+        "summary": "Free public zero-cost length unit conversion",
         "responses": {
           "200": {
             "description": "Successful response"
-          },
-          "400": {
-            "description": "Invalid request input"
-          },
-          "401": {
-            "description": "A valid API key is required"
-          },
-          "402": {
-            "description": "API credit balance is exhausted"
-          },
-          "403": {
-            "description": "Customer account is suspended or trial has expired"
-          },
-          "429": {
-            "description": "Rate limit exceeded"
           }
         },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          },
-          {
-            "BearerAuth": []
-          }
-        ],
-        "x-credit-cost": 1,
+        "security": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -1495,36 +1403,13 @@
     },
     "/api/v1/convert/weight": {
       "post": {
-        "summary": "Zero-cost weight and mass unit conversion",
+        "summary": "Free public zero-cost weight and mass unit conversion",
         "responses": {
           "200": {
             "description": "Successful response"
-          },
-          "400": {
-            "description": "Invalid request input"
-          },
-          "401": {
-            "description": "A valid API key is required"
-          },
-          "402": {
-            "description": "API credit balance is exhausted"
-          },
-          "403": {
-            "description": "Customer account is suspended or trial has expired"
-          },
-          "429": {
-            "description": "Rate limit exceeded"
           }
         },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          },
-          {
-            "BearerAuth": []
-          }
-        ],
-        "x-credit-cost": 1,
+        "security": [],
         "requestBody": {
           "required": true,
           "content": {

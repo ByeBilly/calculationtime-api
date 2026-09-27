@@ -200,11 +200,14 @@ export function timezonesReference(query = {}) {
   const at = validDate(query.at || new Date().toISOString(), 'at');
   const zones = Intl.supportedValuesOf('timeZone').map((timeZone) => {
     const offset = timezoneOffset(timeZone, at);
+    const dst = dstStatus(timeZone, at);
     return {
       time_zone: timeZone,
       current_utc_offset: offset.label,
       offset_minutes: offset.minutes,
-      observes_dst_now: observesDst(timeZone, at.getUTCFullYear())
+      observes_dst_now: dst.observes_dst,
+      observes_dst: dst.observes_dst,
+      dst_in_effect: dst.dst_in_effect
     };
   });
   return listResponse(filterList(zones, query, ['time_zone', 'current_utc_offset']), 'node_icu_iana_tzdb', { at: at.toISOString() });
@@ -323,6 +326,19 @@ function observesDst(timeZone, year) {
   const jan = timezoneOffset(timeZone, new Date(Date.UTC(year, 0, 1))).minutes;
   const jul = timezoneOffset(timeZone, new Date(Date.UTC(year, 6, 1))).minutes;
   return jan !== jul;
+}
+
+function dstStatus(timeZone, date) {
+  const year = date.getUTCFullYear();
+  const jan = timezoneOffset(timeZone, new Date(Date.UTC(year, 0, 1))).minutes;
+  const jul = timezoneOffset(timeZone, new Date(Date.UTC(year, 6, 1))).minutes;
+  const observes = jan !== jul;
+  if (!observes) return { observes_dst: false, dst_in_effect: false };
+  const standardOffset = Math.min(jan, jul);
+  return {
+    observes_dst: true,
+    dst_in_effect: timezoneOffset(timeZone, date).minutes !== standardOffset
+  };
 }
 
 function formatOffset(minutes) {
