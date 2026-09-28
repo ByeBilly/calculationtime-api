@@ -1191,13 +1191,13 @@ test('crux astronomy routes return sidereal positions and weighted credit costs'
     method: 'POST',
     url: '/v1/astronomy/crux-midnight',
     headers: { 'x-api-key': 'test-key' },
-    payload: { start_date: '2026-03-31', days: 3 }
+    payload: { start_date: '2026-04-01', days: 3 }
   });
   const hourly = await app.inject({
     method: 'POST',
     url: '/v1/astronomy/crux-hourly',
     headers: { 'x-api-key': 'test-key' },
-    payload: { date: '2026-03-31' }
+    payload: { date: '2026-04-01' }
   });
   const current = await app.inject({
     method: 'POST',
@@ -1214,8 +1214,9 @@ test('crux astronomy routes return sidereal positions and weighted credit costs'
   assert.equal(hourly.json().positions.length, 24);
   assert.equal(hourly.json().positions[0].crux_hand_degrees, 0);
   assert.equal(current.statusCode, 200);
-  assert.ok(current.json().crux_hand_degrees > 0.98);
-  assert.ok(current.json().crux_hand_degrees < 0.99);
+  assert.equal(current.json().crux_hand_degrees, 0);
+  assert.equal(current.json().reference_anchor.name, 'Cumnock, NSW midnight-zero meridian');
+  assert.equal(current.json().zero_alignment_delta.zero_reference, '2026-04-01T00:00:00+10:00');
   assert.equal(debits.some(([route, cost]) => route === '/v1/astronomy/crux-midnight' && cost === 2), true);
   assert.equal(debits.some(([route, cost]) => route === '/v1/astronomy/crux-hourly' && cost === 5), true);
   assert.equal(debits.some(([route, cost]) => route === '/v1/astronomy/crux-current' && cost === 2), true);

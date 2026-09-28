@@ -292,33 +292,33 @@ The beta endpoint accepts dates from `1900-01-01` through `2100-12-31`. Results 
 
 ### `POST /v1/astronomy/crux-midnight`
 
-Returns Parkes-calibrated midnight positions for the Hand of Crux clock face. The zero reference is `2026-03-31T00:00:00+10:00` at Parkes Observatory coordinates `32.99° S, 148.26° E`.
+Returns midnight positions for the Hand of Crux clock face using the Cumnock, NSW midnight-zero meridian. The zero reference is `2026-04-01T00:00:00+10:00` and the Crux hand right ascension is `12.506514` hours.
 
 ```bash
 curl 'https://api.calculationtime.com/v1/astronomy/crux-midnight' \
   -H 'Content-Type: application/json' \
   -H 'X-API-Key: your-key' \
-  -d '{"start_date":"2026-03-31","days":365,"timezone":"+10:00"}'
+  -d '{"start_date":"2026-04-01","days":365,"timezone":"+10:00"}'
 ```
 
 Credit cost: `2`.
 
 ### `POST /v1/astronomy/crux-hourly`
 
-Returns a 24-hour local-date table from `00:00` through `23:00`, using the same Parkes calibration and the sidereal hourly rate of roughly `15.041°` per solar hour.
+Returns a 24-hour local-date table from `00:00` through `23:00`, using the same Cumnock zero-meridian calibration and the linear IAU 1982 GMST formula.
 
 ```bash
 curl 'https://api.calculationtime.com/v1/astronomy/crux-hourly' \
   -H 'Content-Type: application/json' \
   -H 'X-API-Key: your-key' \
-  -d '{"date":"2026-03-31","timezone":"+10:00"}'
+  -d '{"date":"2026-04-01","timezone":"+10:00"}'
 ```
 
 Credit cost: `5`.
 
 ### `POST /v1/astronomy/crux-current`
 
-Returns the Crux hand angle for an exact timestamp, sidereal hours, and the Parkes alignment delta from the March 31, 2026 zero point. If `timestamp` is omitted, the API uses the server's current UTC time.
+Returns the Crux hand angle for an exact timestamp, sidereal hours, and the zero alignment delta from the `2026-04-01T00:00:00+10:00` AEST zero point. If `timestamp` is omitted, the API uses the server's current UTC time.
 
 ```bash
 curl 'https://api.calculationtime.com/v1/astronomy/crux-current' \

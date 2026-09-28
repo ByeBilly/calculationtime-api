@@ -341,7 +341,7 @@ Sample response shape:
 
 ### POST `/v1/astronomy/crux-current`
 
-Current Crux clock hand position and Parkes alignment delta
+Current Crux clock hand position and zero alignment delta
 
 Auth: **API key**  
 Inputs: JSON body shown below
@@ -629,9 +629,9 @@ The following catalog is generated from the current OpenAPI contract. For POST r
 | Method | Path | Auth | Parameters / body | Summary |
 |---|---|---|---|---|
 | GET | `/v1/astronomy/ephemeris` | API key | date | Astronomy ephemeris for a date |
-| POST | `/v1/astronomy/crux-midnight` | API key | `{"start_date":"2026-03-31","days":365,"timezone":"+10:00"}` | Crux clock hand midnight sidereal positions from Parkes Observatory calibration |
-| POST | `/v1/astronomy/crux-hourly` | API key | `{"date":"2026-03-31","timezone":"+10:00"}` | Crux clock hand hourly sidereal breakdown for one local date |
-| POST | `/v1/astronomy/crux-current` | API key | `{"timestamp":"2026-04-01T00:00:00+10:00"}` | Current Crux clock hand position and Parkes alignment delta |
+| POST | `/v1/astronomy/crux-midnight` | API key | `{"start_date":"2026-04-01","days":365,"timezone":"+10:00"}` | Crux clock hand midnight sidereal positions from the Cumnock zero meridian calibration |
+| POST | `/v1/astronomy/crux-hourly` | API key | `{"date":"2026-04-01","timezone":"+10:00"}` | Crux clock hand hourly sidereal breakdown for one local date |
+| POST | `/v1/astronomy/crux-current` | API key | `{"timestamp":"2026-04-01T00:00:00+10:00"}` | Current Crux clock hand position and zero alignment delta |
 | POST | `/v1/astronomy/solar-noon` | API key | `{"date":"2026-06-21","lat":48.137154,"lon":11.576124}` | Solar transit/noon timestamp for a coordinate and date |
 | POST | `/v1/astronomy/equinox-solstice` | API key | `{"year":2026}` | Equinox and solstice timestamps for a year |
 | POST | `/v1/astronomy/moon-phase` | API key | `{"timestamp":"2026-06-21T00:00:00Z"}` | Moon illumination, age, and phase name for a timestamp |

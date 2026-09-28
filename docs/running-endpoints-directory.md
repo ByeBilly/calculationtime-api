@@ -115,9 +115,9 @@ Protected routes accept either `X-API-Key` or `Authorization: Bearer ...`. A pro
 | POST | `/api/v1/astronomy/sidereal-conversion` | API key | 1 | Convert solar hours to sidereal interval |
 | POST | `/api/v1/astronomy/solar-declination` | API key | 1 | Approximate solar declination angle for a date |
 | POST | `/api/v1/astronomy/zodiac-sign` | API key | 1 | Tropical zodiac sign by calendar date |
-| POST | `/v1/astronomy/crux-current` | API key | 2 | Current Crux clock hand position and Parkes alignment delta |
+| POST | `/v1/astronomy/crux-current` | API key | 2 | Current Crux clock hand position and zero alignment delta |
 | POST | `/v1/astronomy/crux-hourly` | API key | 5 | Crux clock hand hourly sidereal breakdown for one local date |
-| POST | `/v1/astronomy/crux-midnight` | API key | 2 | Crux clock hand midnight sidereal positions from Parkes Observatory calibration |
+| POST | `/v1/astronomy/crux-midnight` | API key | 2 | Crux clock hand midnight sidereal positions from the Cumnock zero meridian calibration |
 | POST | `/v1/astronomy/day-length` | API key | 1 | Daylight duration between sunrise and sunset |
 | GET | `/v1/astronomy/ephemeris` | API key | 1 | Astronomy ephemeris for a date |
 | POST | `/v1/astronomy/equinox-solstice` | API key | 1 | Equinox and solstice timestamps for a year |

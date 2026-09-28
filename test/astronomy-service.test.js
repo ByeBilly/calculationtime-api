@@ -25,37 +25,45 @@ import {
   zodiacSign
 } from '../src/astronomy-service.js';
 
-test('crux midnight range is zeroed at Parkes local midnight on 2026-03-31', () => {
-  const result = cruxMidnightRange({ start_date: '2026-03-31', days: 4 });
+test('crux midnight range is zeroed at Cumnock midnight-zero meridian on 2026-04-01 AEST', () => {
+  const result = cruxMidnightRange({ start_date: '2026-04-01', days: 4 });
 
-  assert.equal(result.calibration.coordinates.latitude_degrees, -32.99);
-  assert.equal(result.calibration.coordinates.longitude_degrees, 148.26);
+  assert.equal(result.calibration.crux_hand_ra_hours, 12.506514);
+  assert.equal(result.calibration.gmst_formula, 'IAU1982 linear');
+  assert.equal(result.calibration.version, '2026-09-28');
+  assert.equal(result.calibration.reference_anchor.name, 'Cumnock, NSW midnight-zero meridian');
+  assert.equal(result.calibration.reference_anchor.latitude_degrees, -32.99839);
+  assert.equal(result.calibration.reference_anchor.longitude_degrees, 148.639301038);
   assert.equal(result.positions.length, 4);
-  assert.equal(result.positions[0].date, '2026-03-31');
+  assert.equal(result.positions[0].date, '2026-04-01');
   assert.equal(result.positions[0].day_index, 0);
   assert.equal(result.positions[0].crux_hand_degrees, 0);
   assert.equal(result.positions[1].day_index, 1);
   assert.ok(Math.abs(result.positions[1].crux_hand_degrees - 0.985647366) < 0.000001);
   assert.ok(Math.abs(result.positions[3].crux_hand_degrees - 2.956942099) < 0.000001);
+  assert.equal(result.method, 'crux_hand_sidereal_clock_zeroed_2026_04_01_aest_midnight');
 });
 
 test('crux hourly table advances by the sidereal hourly rate', () => {
-  const result = cruxHourly({ date: '2026-03-31' });
+  const result = cruxHourly({ date: '2026-04-01' });
 
   assert.equal(result.count, 24);
   assert.equal(result.positions[0].hour, 0);
   assert.equal(result.positions[0].crux_hand_degrees, 0);
-  assert.ok(Math.abs(result.positions[1].crux_hand_degrees - 15.04106864) < 0.000001);
-  assert.ok(Math.abs(result.positions[23].crux_hand_degrees - 345.944578726) < 0.000001);
+  assert.ok(Math.abs(result.positions[1].crux_hand_degrees - 15.041068585) < 0.000001);
+  assert.ok(Math.abs(result.positions[23].crux_hand_degrees - 345.944578615) < 0.000001);
+  assert.equal(result.method, 'crux_hourly_sidereal_clock_breakdown');
 });
 
 test('crux current accepts exact timestamp and reports alignment delta', () => {
   const result = cruxCurrent({ timestamp: '2026-04-01T00:00:00+10:00' });
 
-  assert.ok(Math.abs(result.crux_hand_degrees - 0.985647366) < 0.000001);
-  assert.equal(result.parkes_alignment_delta.zero_reference, '2026-03-31T00:00:00+10:00');
-  assert.ok(result.sidereal_time.hours > 0);
-  assert.equal(result.method, 'parkes_crux_current_sidereal_clock_position');
+  assert.equal(result.crux_hand_degrees, 0);
+  assert.equal(result.reference_anchor.name, 'Cumnock, NSW midnight-zero meridian');
+  assert.equal(result.zero_alignment_delta.zero_reference, '2026-04-01T00:00:00+10:00');
+  assert.equal(result.zero_alignment_delta.from_zero_degrees, 0);
+  assert.equal(result.sidereal_time.hours, 0);
+  assert.equal(result.method, 'crux_current_sidereal_clock_position');
 });
 
 test('crux endpoints reject malformed inputs', () => {

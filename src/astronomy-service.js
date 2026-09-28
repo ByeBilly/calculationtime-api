@@ -1,16 +1,21 @@
 import { DateTime } from 'luxon';
 import * as Astronomy from 'astronomy-engine';
 
-const CRUX_PARKES = {
-  latitude_degrees: -32.99,
-  longitude_degrees: 148.26,
-  elevation_meters: 415
+const CRUX_HAND_RA_HOURS = 12.506514;
+const CRUX_REFERENCE_ANCHOR = {
+  name: 'Cumnock, NSW midnight-zero meridian',
+  latitude_degrees: -32.99839,
+  longitude_degrees: 148.639301038,
+  note: 'Parkes Observatory latitude, 35 km due east of the Dish'
 };
-const CRUX_ZERO_DATE = '2026-03-31';
+const CRUX_ZERO_DATE = '2026-04-01';
 const CRUX_DEFAULT_TIMEZONE = '+10:00';
-const SIDEREAL_DEGREES_PER_SOLAR_HOUR = 360.9856473662862 / 24;
-const SIDEREAL_DEGREES_PER_SOLAR_DAY = SIDEREAL_DEGREES_PER_SOLAR_HOUR * 24;
+const SIDEREAL_DEGREES_PER_SOLAR_DAY = 360.98564736629;
+const SIDEREAL_DEGREES_PER_SOLAR_HOUR = SIDEREAL_DEGREES_PER_SOLAR_DAY / 24;
 const DAILY_MIDNIGHT_ADVANCE_DEGREES = SIDEREAL_DEGREES_PER_SOLAR_DAY % 360;
+const MILLISECONDS_PER_DAY = 86400000;
+const UNIX_EPOCH_JULIAN_DAY = 2440587.5;
+const J2000_JULIAN_DAY = 2451545;
 
 const BODIES = [
   Astronomy.Body.Sun,
@@ -92,7 +97,7 @@ export function cruxMidnightRange(input = {}) {
     calibration: cruxCalibration(),
     count: rows.length,
     positions: rows,
-    method: 'parkes_crux_hand_sidereal_clock_zeroed_2026_03_31_local_midnight'
+    method: 'crux_hand_sidereal_clock_zeroed_2026_04_01_aest_midnight'
   };
 }
 
@@ -103,12 +108,11 @@ export function cruxHourly(input = {}) {
 
   for (let hour = 0; hour < 24; hour += 1) {
     const localTime = withTimezone(date.toISODate(), `${String(hour).padStart(2, '0')}:00:00`, timezone);
-    const elapsedHours = elapsedSolarHoursSinceCruxZero(localTime);
     rows.push({
       hour,
       local_time: localTime.toISO(),
       utc_time: localTime.toUTC().toISO(),
-      elapsed_solar_hours: round(elapsedHours, 9),
+      elapsed_solar_hours: round(elapsedSolarHoursSinceCruxZero(localTime), 9),
       crux_hand_degrees: cruxAngleForLocalDateTime(localTime),
       sidereal_hours: siderealHoursForAngle(cruxAngleForLocalDateTime(localTime))
     });
@@ -122,7 +126,7 @@ export function cruxHourly(input = {}) {
     calibration: cruxCalibration(),
     count: rows.length,
     positions: rows,
-    method: 'parkes_crux_hourly_sidereal_clock_breakdown'
+    method: 'crux_hourly_sidereal_clock_breakdown'
   };
 }
 
@@ -138,7 +142,7 @@ export function cruxCurrent(input = {}) {
       timestamp: timestamp.toUTC().toISO(),
       timezone: timezone.label
     },
-    parkes_observatory: CRUX_PARKES,
+    reference_anchor: CRUX_REFERENCE_ANCHOR,
     calibration: cruxCalibration(),
     local_time: localTime.toISO(),
     utc_time: timestamp.toUTC().toISO(),
@@ -147,12 +151,12 @@ export function cruxCurrent(input = {}) {
       hours: siderealHoursForAngle(angle),
       degrees: angle
     },
-    parkes_alignment_delta: {
+    zero_alignment_delta: {
       from_zero_degrees: round(zeroDelta, 9),
       from_zero_sidereal_hours: siderealHoursForAngle(zeroDelta),
       zero_reference: `${CRUX_ZERO_DATE}T00:00:00${CRUX_DEFAULT_TIMEZONE}`
     },
-    method: 'parkes_crux_current_sidereal_clock_position'
+    method: 'crux_current_sidereal_clock_position'
   };
 }
 
@@ -543,7 +547,7 @@ function parseAstronomyDate(value) {
 }
 
 function cruxAngleForLocalDateTime(localTime) {
-  return round(positiveModulo(elapsedSolarHoursSinceCruxZero(localTime) * SIDEREAL_DEGREES_PER_SOLAR_HOUR, 360), 9);
+  return round(positiveModulo(gmstDegrees(localTime.toUTC()) + CRUX_REFERENCE_ANCHOR.longitude_degrees - CRUX_HAND_RA_HOURS * 15, 360), 9);
 }
 
 function elapsedSolarHoursSinceCruxZero(localTime) {
@@ -556,15 +560,22 @@ function cruxZeroLocalDate() {
 
 function cruxCalibration() {
   return {
-    observatory: 'Parkes Observatory',
-    coordinates: CRUX_PARKES,
+    crux_hand_ra_hours: CRUX_HAND_RA_HOURS,
+    gmst_formula: 'IAU1982 linear',
+    version: '2026-09-28',
+    reference_anchor: CRUX_REFERENCE_ANCHOR,
     zero_reference_local: `${CRUX_ZERO_DATE}T00:00:00${CRUX_DEFAULT_TIMEZONE}`,
     zero_angle_degrees: 0,
     sidereal_degrees_per_solar_hour: round(SIDEREAL_DEGREES_PER_SOLAR_HOUR, 12),
     sidereal_degrees_per_solar_day: round(SIDEREAL_DEGREES_PER_SOLAR_DAY, 12),
     midnight_advance_degrees_per_solar_day: round(DAILY_MIDNIGHT_ADVANCE_DEGREES, 12),
-    note: 'Crux hand angle is clockwise on the project clock face, zeroed at Parkes local midnight on 2026-03-31.'
+    note: 'Crux hand angle is clockwise on the project clock face, zeroed at AEST standard-time midnight on 2026-04-01.'
   };
+}
+
+function gmstDegrees(timestamp) {
+  const julianDay = timestamp.toMillis() / MILLISECONDS_PER_DAY + UNIX_EPOCH_JULIAN_DAY;
+  return positiveModulo(280.46061837 + 360.98564736629 * (julianDay - J2000_JULIAN_DAY), 360);
 }
 
 function parseIsoDate(value, label) {

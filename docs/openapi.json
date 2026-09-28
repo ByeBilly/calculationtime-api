@@ -5141,7 +5141,7 @@
     },
     "/v1/astronomy/crux-midnight": {
       "post": {
-        "summary": "Crux clock hand midnight sidereal positions from Parkes Observatory calibration",
+        "summary": "Crux clock hand midnight sidereal positions from the Cumnock zero meridian calibration",
         "responses": {
           "200": {
             "description": "Successful response"
@@ -5180,7 +5180,7 @@
                 "additionalProperties": true
               },
               "example": {
-                "start_date": "2026-03-31",
+                "start_date": "2026-04-01",
                 "days": 365,
                 "timezone": "+10:00"
               }
@@ -5230,7 +5230,7 @@
                 "additionalProperties": true
               },
               "example": {
-                "date": "2026-03-31",
+                "date": "2026-04-01",
                 "timezone": "+10:00"
               }
             }
@@ -5240,7 +5240,7 @@
     },
     "/v1/astronomy/crux-current": {
       "post": {
-        "summary": "Current Crux clock hand position and Parkes alignment delta",
+        "summary": "Current Crux clock hand position and zero alignment delta",
         "responses": {
           "200": {
             "description": "Successful response"
