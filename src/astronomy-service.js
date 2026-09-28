@@ -593,7 +593,7 @@ function parseIsoDate(value, label) {
 function parseTimestamp(value, label) {
   const parsed = DateTime.fromISO(String(value).trim(), { zone: 'utc' });
   if (parsed.isValid) return parsed.toUTC();
-  throw Object.assign(new Error(`${label} must be an ISO timestamp like 2026-03-31T00:00:00+10:00`), {
+  throw Object.assign(new Error(`${label} must be an ISO timestamp like 2026-04-01T00:00:00+10:00`), {
     statusCode: 400,
     code: `invalid_${label}`
   });
