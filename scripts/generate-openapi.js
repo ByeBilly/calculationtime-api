@@ -187,16 +187,16 @@ const routes = [
   billableGet('/v1/geo/nearby', 'Nearby stored geo points', ['lat', 'lon', 'radius_km']),
   billableGet('/v1/solar/position', 'Solar position for date and coordinate', ['lat', 'lon', 'at']),
   billableGet('/v1/astronomy/ephemeris', 'Astronomy ephemeris for a date', ['date']),
-  billablePost('/v1/astronomy/crux-midnight', 'Crux clock hand midnight sidereal positions from the Cumnock zero meridian calibration', 2, {
+  cruxBillablePost('/v1/astronomy/crux-midnight', 'Crux clock hand midnight sidereal positions from the Cumnock zero meridian calibration', 2, {
     start_date: '2026-04-01',
     days: 365,
     timezone: '+10:00'
   }),
-  billablePost('/v1/astronomy/crux-hourly', 'Crux clock hand hourly sidereal breakdown for one local date', 5, {
+  cruxBillablePost('/v1/astronomy/crux-hourly', 'Crux clock hand hourly sidereal breakdown for one local date', 5, {
     date: '2026-04-01',
     timezone: '+10:00'
   }),
-  billablePost('/v1/astronomy/crux-current', 'Current Crux clock hand position and zero alignment delta', 2, {
+  cruxBillablePost('/v1/astronomy/crux-current', 'Current Crux clock hand position and zero alignment delta', 2, {
     timestamp: '2026-04-01T00:00:00+10:00'
   }),
   billablePost('/v1/astronomy/solar-noon', 'Solar transit/noon timestamp for a coordinate and date', 1, {
@@ -568,6 +568,39 @@ function billablePost(path, summary, creditCost, example) {
       extra: { 'x-credit-cost': creditCost }
     })
   };
+}
+
+function cruxBillablePost(path, summary, creditCost, example) {
+  const route = billablePost(path, summary, creditCost, example);
+  route.operation.responses[200] = {
+    description: 'Successful response',
+    content: {
+      'application/json': {
+        schema: anyObject,
+        example: {
+          reference_anchor: {
+            name: 'Cumnock, NSW midnight-zero meridian',
+            latitude_degrees: -32.99839,
+            longitude_degrees: 148.639301038,
+            note: 'Parkes Observatory latitude, 35 km due east of the Dish'
+          },
+          calibration: {
+            crux_hand_ra_hours: 12.506514,
+            gmst_formula: 'IAU1982 linear',
+            version: '2026-09-28'
+          },
+          crux_hand_degrees: 0,
+          zero_alignment_delta: {
+            from_zero_degrees: 0,
+            from_zero_sidereal_hours: 0,
+            zero_reference: '2026-04-01T00:00:00+10:00'
+          },
+          method: 'crux_current_sidereal_clock_position'
+        }
+      }
+    }
+  };
+  return route;
 }
 
 function operation(summary, { security, parameters = [], requestBody, responses = { 200: { description: 'Successful response' } }, extra = {} }) {
