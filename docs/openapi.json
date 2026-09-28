@@ -8927,39 +8927,6 @@
         }
       }
     },
-    "/v1/canary": {
-      "get": {
-        "summary": "Protected monitoring canary for API-key path checks",
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          },
-          "400": {
-            "description": "Invalid request input"
-          },
-          "401": {
-            "description": "A valid API key is required"
-          },
-          "402": {
-            "description": "API credit balance is exhausted"
-          },
-          "403": {
-            "description": "Customer account is suspended or trial has expired"
-          },
-          "429": {
-            "description": "Rate limit exceeded"
-          }
-        },
-        "security": [
-          {
-            "ApiKeyAuth": []
-          },
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
     "/v1/account/profile": {
       "get": {
         "summary": "Authenticated customer profile",

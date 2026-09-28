@@ -454,7 +454,6 @@ const routes = [
     as_of: '2026-09-19',
     invoices: [{ invoice_id: 'INV-1', due_date: '2026-08-01', amount: 400 }]
   }),
-  protectedGet('/v1/canary', 'Protected monitoring canary for API-key path checks'),
   protectedGet('/v1/account/profile', 'Authenticated customer profile'),
   protectedGet('/v1/account/usage', 'Authenticated customer usage summary'),
   protectedGet('/v1/account/limits', 'Authenticated customer plan and batch limits'),
